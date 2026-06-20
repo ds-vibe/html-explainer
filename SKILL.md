@@ -36,11 +36,19 @@ filling in blanks. The things that matter most:
   load-bearing facts (dates, numbers, current state, anything past your training cutoff).
   Web-search / fetch primary sources and verify. A confident-but-wrong fact destroys an
   explainer's whole reason to exist.
-- **Ask 3–5 sharp scoping questions** before building — only the ones that change the
-  architecture. Always cover these axes:
+- **Ask 4–6 sharp scoping questions** before building — only the ones that change the
+  architecture. Cover these axes; each has a sensible default, so *ask* the ones that
+  genuinely fork the build and just state-and-default the rest:
   - **Audience & depth** (newcomer / practitioner / both-layered) — drives sequencing.
   - **Scope** (what's in vs out for v1).
-  - **Interactivity** (static page? filters? timeline? interactive diagrams? quiz?).
+  - **Interactivity** (static page? filters? timeline? interactive diagrams?).
+  - **Quiz / knowledge check?** — *always ask explicitly; don't assume no.* A short "test
+    yourself" — multiple-choice or fill-in with instant right/wrong feedback and a brief
+    "why" — is a high-value, low-cost addition that makes an explainer stickier (people love
+    checking what they retained). Works in a pure self-contained file (no server). Place it
+    *after* the relevant teaching, not before. Default **yes, a small end-of-section or
+    end-of-page quiz** unless the user declines or the topic is reference-style. See the
+    quiz pattern under Interactivity.
   - **AI chat / Q&A interface?** — *always ask this explicitly; don't assume no.* Does the
     user want a built-in "ask a question" chatbot grounded in the content? This is a major
     fork: **yes → you need a framework app + a server route + the BYOK key pattern** (you
@@ -48,9 +56,29 @@ filling in blanks. The things that matter most:
     providers (OpenAI / Anthropic / Gemini) and whether there's a server key or it's
     BYOK-only. If the user is unsure, default to **no chat for v1, designed so it can be
     added later** — and say so.
+  - **Audio — narration / sound / music?** — *ask explicitly when the topic or vibe could
+    benefit (walkthroughs, immersive/playful styles); fine to default off otherwise.* Options:
+    spoken **narration** per section, subtle **UI/interaction sound effects**, and/or
+    **background music/ambience**. Providers: **ElevenLabs** (best-in-class voices + a
+    text→**sound-effects** API + music) and **OpenAI** (cheap, steerable TTS via
+    `gpt-4o-mini-tts`; no native music). Key fact that drives architecture: **you can't put
+    these API keys in the browser.** For *fixed* page content, default to **pre-generating
+    the audio at build time** into files you ship next to the page (no server, no runtime
+    keys); only reach for a server route + BYOK when audio must be generated from *dynamic*
+    input at runtime. Default **off** unless asked; if yes, see the audio guide. Always:
+    mute control, no autoplay without a user gesture, and keep the on-page text as the
+    transcript.
   - **Output target** (self-contained HTML file / framework app / **Notion page** — see
-    the output-targets guide). Often *determined* by the chat answer (chat → framework), so
-    ask chat first. Notion trades away inline interactivity — flag that if they pick it.
+    the output-targets guide). Often *determined* by the chat/audio answers (server-side
+    chat or runtime audio → framework), so ask those first. Notion trades away inline
+    interactivity — flag that if they pick it.
+  - **Format / reading shape** — *ask this; it changes the whole IA.* **Scrolling page**
+    (default — best for skim, reference, and depth-on-demand) vs **slide deck / horizontal
+    click-through** (a "PowerPoint-shaped" lateral experience you advance with arrows/clicks
+    — great for linear narrative, talks, and guided walkthroughs) vs a **hybrid** (scroll
+    within, snap between chapters). The micro-demos and quiz live happily inside either.
+    Default **scrolling page**; offer the deck when the content is naturally linear or the
+    user wants something presentation-like. See the format guide for the deck mechanics.
   - **Visual style / vibe** — *always ask; it's the most personal axis and the cheapest to
     get wrong.* Offer presets and a recommended default, e.g. **minimal-editorial**
     (clean, Stripe-docs feel — good default) / **bold-playful** (color, big type, fun) /
@@ -172,6 +200,80 @@ After building each slice, **do not declare it done from the code.** Run the loo
   tiny self-contained HTML, host it, embed it). Tell the user this trade-off before building.
   Requires a Notion integration token / shared parent page.
 
+## Format & reading shape (chosen in Phase 0 — orthogonal to output target)
+
+Two shapes, same content and same micro-demos/quiz inside either. This is an *IA* choice,
+not a styling one — decide it before sequencing.
+
+- **Scrolling page (default).** One long vertical document, scroll-reveal, sticky nav,
+  depth-on-demand expanders. Best for skim, reference, sharing a deep link to a spot, and
+  "let me explore at my own pace." Most explainers want this.
+- **Slide deck / horizontal click-through ("PowerPoint shape").** Full-viewport panels you
+  advance laterally. Best for a *linear narrative*, a talk, or a guided walkthrough where you
+  want one idea on screen at a time and a sense of progress. Build it properly:
+  - **One concept per slide**, sized to a single viewport. If a slide overflows, let it
+    scroll *vertically within the slide* rather than cramming.
+  - **Advance controls, all of them:** on-screen prev/next buttons **and** keyboard
+    (`←`/`→`, `PageUp`/`PageDown`, `Space`), **and** touch-swipe on mobile. Never trap the
+    keyboard.
+  - **Always-visible progress:** a slide counter ("4 / 11") and/or a dot/bar indicator.
+  - **Deep-linkable & restorable:** sync the current slide to the URL hash (`#3`) so a slide
+    is shareable and refresh-safe; read the hash on load.
+  - **Mechanics:** a horizontal flex track with `transform: translateX(-N*100vw)` (or CSS
+    scroll-snap on the x-axis). Respect `prefers-reduced-motion` (cut the slide transition).
+    Keep focus management sane (move focus to the new slide's heading on advance).
+  - **Accessibility:** each slide is a labelled `section`/`region`; controls are real
+    buttons; arrow-key handling doesn't break form fields inside a micro-demo.
+  - **Trade-off to state up front:** decks are worse for skimming and reference, and a
+    reader can't see the whole shape at once — offer a "jump to slide" menu to compensate.
+- **Hybrid:** chaptered scroll with `scroll-snap` between chapters — a middle ground when
+  the content is mostly linear but some chapters run long.
+
+Keep the chosen shape in **one place** (a layout wrapper + a couple of tokens/flags) so
+switching scroll ⇄ deck later is a contained change, not a rewrite (Phase 6).
+
+## Audio: narration, sound & music (optional — chosen in Phase 0)
+
+Audio can lift a walkthrough or a playful piece, but it's an enhancement, not a crutch:
+the page must fully work **muted** (the on-page text is the transcript). Default **off**.
+
+**The architecture-deciding fact:** ElevenLabs and OpenAI keys **cannot live in the
+browser.** That forces one of two delivery models:
+
+- **Pre-generated at build time (default, and right for fixed content).** Walk your
+  structured content data, call the TTS / SFX API once per item in a small build script,
+  and save the results as audio files you ship next to the page; the page just plays
+  `<audio>`. No server, no runtime keys, works from a self-contained bundle, costs pennies
+  once. Keep a **manifest** mapping `sectionId → audio file` (same "data separate from
+  presentation" discipline as the rest of the skill). Re-run the script only when copy
+  changes.
+- **Runtime generation (only when content is dynamic).** Needed if you must narrate the
+  reader's *own* input or a live chat answer. Requires a **framework app + server route**;
+  the key stays server-side, or **BYOK** (in memory only, per-request header over HTTPS,
+  never stored or logged) — same rules as the chat pattern.
+
+**Providers (offer as options; the user has keys for both):**
+- **ElevenLabs** — best-in-class **voices** (narration), plus a text→**sound-effects** API
+  and **music/ambience** generation. Reach for it when voice quality or generated SFX/music
+  matters. Endpoints: text-to-speech and sound-generation.
+- **OpenAI** — cheap, steerable **TTS** (`gpt-4o-mini-tts` — you can direct tone/pace;
+  `tts-1`/`tts-1-hd`). No native music. Also offers STT (`whisper`/`gpt-4o-transcribe`) if
+  you want *voice input* into a demo.
+
+**Three uses, ranked by value for an explainer:**
+1. **Section narration** — a per-section "▶ Listen" toggle + a global play/pause; highlight
+   the paragraph being read if cheap. Pre-generate. Highest value.
+2. **Interaction sound effects** — tiny, subtle cues on demo events (a click, a correct quiz
+   answer, an outbreak spreading). Keep them quiet, debounced, and behind the mute. Short
+   pre-generated clips, or the Web Audio API for simple synth blips (no key needed).
+3. **Background music/ambience** — **off by default**, behind an explicit toggle, low
+   volume, loopable. Easy to overdo; use sparingly.
+
+**Non-negotiables:** a visible **mute/volume** control; **no autoplay** without a user
+gesture (browsers block it anyway); respect `prefers-reduced-motion` as a hint to keep
+things calm; never block comprehension on audio. Captions/transcript come free — it's the
+page text.
+
 ## Interactivity patterns (reach for the simplest that fits)
 
 - **★ Playable micro-demos (learn-by-doing) — reach for these first.** The highest-impact
@@ -194,6 +296,13 @@ After building each slice, **do not declare it done from the code.** Run the loo
 - **Click-through citations:** a shared slide-in drawer/modal that shows the source text +
   a deep link, reused everywhere.
 - **Interactive diagram:** pyramid/flow/grid where clicking a node reveals detail.
+- **Quiz / knowledge check:** a short "test yourself" — multiple-choice or fill-in — with
+  **instant** right/wrong feedback and a one-line *why* for each answer (the explanation is
+  the point, not the score). Place it *after* the teaching it checks; an end-of-section
+  mini-check or a 3–5 question end-of-page quiz both work. Pure client-side, no server.
+  Keep questions about understanding, not trivia recall; show a friendly final tally;
+  let the reader retry. Keep the questions in **structured data** (array of
+  `{q, options, answer, why}`) so they're easy to edit and re-order.
 - **Chat (optional, advanced):** ground it in your curated content (inject the corpus or
   retrieve over it); render citations. If users bring their own key (**BYOK**), keep the key
   **in memory only** (no localStorage/cookies), send it as a per-request header over HTTPS,
@@ -208,9 +317,19 @@ After building each slice, **do not declare it done from the code.** Run the loo
 - A wall of uniform text/cards with no visual variety or hierarchy.
 - Citations/claims with no traceable source.
 - Shipping a file that isn't actually reachable as a URL when the user wants to share it.
+- Putting an ElevenLabs/OpenAI (or any provider) **key in client code** → leaked key.
+  Pre-generate audio at build time, or proxy through a server route.
+- **Autoplaying** narration/music, or shipping audio with no mute → hostile; also blocked
+  by browsers without a user gesture.
+- A slide deck that **traps the keyboard**, can't be deep-linked, or hides all sense of
+  progress — a deck must be at least as navigable as the scroll it replaced.
+- A quiz placed *before* its teaching, or one that scores without explaining *why*.
 
 ## Definition of done
 
 Researched & fact-checked · sequenced for a newcomer with an expert fast-path · visually
 polished with a consistent learnable language · every interactive state looks good on
 desktop and mobile (verified by screenshot) · sources cited · reachable/shareable.
+Format-specific: if a **deck**, keyboard + swipe + deep-link + progress all work; if
+**audio**, it plays only on a gesture, has a mute, and the page is complete in silence;
+if a **quiz**, it gives instant feedback with a one-line *why* and lets the reader retry.
