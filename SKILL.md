@@ -125,15 +125,43 @@ filling in blanks. The things that matter most:
 ## Phase 2 — Visual design system (the 10x bar)
 
 - **Editorial, not corporate-template.** Aim for the polish of a great explainer
-  (Vox / FT / Stripe-docs feel), not a slide deck or a compliance PDF.
-- **A consistent visual language should teach.** Pick a small semantic system and use it
-  *everywhere* so it becomes learnable: e.g. color = category, a recurring motif = state
-  (a "before → after" strikethrough/highlight for change; a badge for status/confidence).
+  (Vox / FT / Stripe-docs / The Pudding feel), not a slide deck, a compliance PDF, or an
+  AI-generated SaaS landing page. Reference bar: the EU AI Act explainer at
+  **https://ai-act-seven.vercel.app** — editorial type, a restrained palette where color
+  carries meaning, no emoji. That's the target.
+- **Actively avoid the "AI slop" look — it's the fastest way to lose trust.** The tells that
+  scream "a robot made this," all to design *out*:
+  - **Emoji as icons or UI.** Emoji in section headers, feature cards, step labels, or
+    buttons (⏳🔒🚀✨🔍📊) is the #1 slop signal. Use a *cohesive* SVG icon set (one
+    style — line **or** solid, not mixed), simple CSS shapes, numerals, or **nothing**.
+    Never emoji as iconography.
+  - **Decorative gradients & rainbow color.** Pastel purple→blue→pink hero washes,
+    iridescent backgrounds, multi-colored titles, rainbow-coded rows. Color must be
+    *intentional and mostly semantic* (carrying meaning), not decoration — see the next bullet.
+  - **The default bento grid.** A 2×2 / 3×3 grid of identical rounded-white-cards-with-soft-
+    shadow as the answer to every section. Cards are *one* device; leaning on them everywhere
+    is the template look. Vary the treatment.
+  - **Generic SaaS texture:** a drop shadow on every box, faux-3D, "✨ AI-powered" flourishes,
+    Inter-on-pure-white blandness. Restraint reads as expensive; decoration reads as auto-generated.
+- **A consistent visual language should teach.** Pick a small *semantic* system and use it
+  *everywhere* so it becomes learnable: color = category/meaning (e.g. risk tier), a recurring
+  motif = state (a "before → after" strikethrough/highlight for change; a badge for
+  status/confidence). A considered palette is paper + ink + **one or two** accents that *mean*
+  something — not a swatch per section.
 - **Variety with rhythm:** each section gets a distinct visual treatment (cards, pyramid,
   flow diagram, timeline, matrix), but share spacing, type scale, and the color system so
   it feels like one thing. Alternate backgrounds to separate sections.
-- **Typography & space:** strong hierarchy, comfortable measure (~60–70ch), generous
-  whitespace, balanced headings.
+- **Typography & space:** strong hierarchy, comfortable measure (~60–70ch for prose),
+  generous whitespace, balanced headings. A real type pairing (e.g. a serif display + a clean
+  sans) beats system-Inter-everywhere.
+- **Use the horizontal space — proportioned, not a lonely column.** A ~720px column marooned
+  in a sea of side-margin is its own slop tell. Let the *page* use the width while *prose*
+  keeps its readable measure: give the **centerpiece** room (wide tables/matrices, timelines,
+  galleries, diagrams can span far wider than the text column); use **full-bleed section bands**
+  (a background color/rule spanning the viewport, content contained inside) to fill width and
+  separate sections; reach for **two-column / asymmetric** layouts (prose beside a sticky
+  visual, side-by-side compare) where they help. Cap the outer container generously
+  (~1100–1280px) with balanced gutters — wide and composed, never edge-to-edge sprawl.
 - **Motion with purpose:** scroll-reveal and smooth transitions add life; never gratuitous.
 - **Don't over-engineer the dataviz.** A clean, legible conventional chart/table beats an
   exotic treemap/sunburst almost every time. Fancy ≠ clear. Reach for advanced viz only
@@ -335,6 +363,13 @@ page text.
 - Over-engineered dataviz (treemap/sunburst when a table would be clearer).
 - Declaring it done without ever rendering and *looking* at it.
 - A wall of uniform text/cards with no visual variety or hierarchy.
+- **"AI slop" visual tells** (treat as blockers — they destroy trust on sight): **emoji used
+  as icons/UI**; decorative **pastel/iridescent gradients** or rainbow-colored text/rows;
+  the default **2×2 bento grid of identical soft-shadow cards**; a drop shadow on every box;
+  "✨ AI-powered" flourishes. Use a cohesive SVG icon set (or none), an intentional semantic
+  palette, and varied layouts instead.
+- **A narrow ~720px column stranded in wide empty margins** — let the centerpiece and section
+  bands use the horizontal space (prose stays ~60–70ch; the page does not).
 - Citations/claims with no traceable source.
 - Shipping a file that isn't actually reachable as a URL when the user wants to share it.
 - Putting an ElevenLabs/OpenAI (or any provider) **key in client code** → leaked key.
@@ -348,8 +383,11 @@ page text.
 ## Definition of done
 
 Researched & fact-checked · sequenced for a newcomer with an expert fast-path · visually
-polished with a consistent learnable language · every interactive state looks good on
-desktop and mobile (verified by screenshot) · sources cited · reachable/shareable.
+polished with a consistent learnable language · **no AI-slop tells** (no emoji icons, no
+decorative gradients/rainbow color, no generic bento-card grid) · **horizontal space used
+well** (composed and proportioned, not a narrow column in empty margins) · every interactive
+state looks good on desktop and mobile (verified by screenshot) · sources cited ·
+reachable/shareable.
 Format-specific: if a **deck**, keyboard + swipe + deep-link + progress all work; if
 **audio**, it plays only on a gesture, has a mute, and the page is complete in silence;
 if a **quiz**, it gives instant feedback with a one-line *why* and lets the reader retry.
