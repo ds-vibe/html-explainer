@@ -13,8 +13,10 @@ drill-downable underneath.
 This skill is a **process**, not a template. The quality comes from the loop, not from
 filling in blanks. The things that matter most:
 
-1. **Logical presentation & progressive complexity** — sequence concepts so a newcomer
-   can follow; reveal depth on demand.
+1. **A clear mental model & progressive complexity** — where the topic has one, give the
+   reader a single way to *think* about it early, then sequence concepts so a newcomer can
+   follow and reveal depth on demand. (A model that has to be forced is the wrong model —
+   see Phase 1.)
 2. **Show, don't tell — let the reader poke it.** The standout move: whenever a concept can
    be *demonstrated*, build a tiny **playable micro-demo** instead of writing a paragraph —
    a fill-in-the-blank, a slider that reshapes a live result, a click-to-reveal, a
@@ -95,8 +97,21 @@ filling in blanks. The things that matter most:
 
 - **Lead with orientation, not with the advanced/most-recent thing.** "What's new/changed"
   is great *for people who already know the topic* and confusing for newcomers. Default to
-  a **learning path**: what is it → core mental models → the specifics/payoff → details →
+  a **learning path**: what is it → the core mental model → the specifics/payoff → details →
   the news/edge cases.
+- **Find the load-bearing mental model — then commit to it (where the topic has one).**
+  The best explainers hand the reader *one way of thinking* about the subject early — a
+  metaphor, a reframing, or a single unifying picture — that the rest hangs on (e.g. "a
+  vaccine is a harmless *preview*, so your body remembers"). Name it, introduce it before
+  the details, and reuse it as a **throughline**: the centerpiece, the demos, and the
+  recurring visual motif should all reinforce the *same* model. The test: a reader who
+  finishes can restate it in a sentence.
+  - **Don't force it, and don't turn it into a worksheet.** This is a judgment call, not a
+    required field to fill in. Some topics — a reference matrix, a list of rules, a
+    catalogue — have no single honest model; a clunky or leaky analogy that breaks under
+    scrutiny is *worse* than none, because it quietly misleads. If a model only half-fits,
+    say where it breaks or drop it. Lock one in when it genuinely makes the topic click;
+    otherwise let clean structure carry the weight. One good model beats three half-models.
 - **Progressive complexity:** each section assumes only what earlier sections taught.
   Number or signpost the path ("Start here · 1 of 3") when it helps.
 - **Layered depth (3 layers):** (1) plain-language always visible, (2) "go deeper"
@@ -146,7 +161,8 @@ After building each slice, **do not declare it done from the code.** Run the loo
    Then **Read the screenshots** and judge them visually.
 2. **Critique like a human seeing it cold:** What's confusing? What looks merely "fine"
    instead of great? What's barren, cramped, misaligned, or low-contrast? Is the *order*
-   right? Would a newcomer follow it?
+   right? Would a newcomer follow it? If the piece leans on a mental model, does it land —
+   could the reader restate it — and does the throughline hold, or does it fade after the intro?
 3. **10x the weak spots** — then re-screenshot to confirm. Repeat until you'd be proud to
    ship it without being asked to improve it.
 4. "It builds / it renders text" is **not** "it's good." Almost every real improvement in
@@ -312,6 +328,10 @@ page text.
 
 - Planning/writing facts from memory instead of researching → confidently wrong content.
 - Leading with the advanced or "latest" material → loses newcomers.
+- **Forcing a mental model where the topic doesn't have one** — a clunky, leaky analogy
+  that breaks under scrutiny misleads more than it teaches. A wrong model is worse than none.
+- **A pile of facts with no organizing idea** when the topic *does* have a natural model —
+  introducing a framing in the intro, then abandoning it instead of carrying it through.
 - Over-engineered dataviz (treemap/sunburst when a table would be clearer).
 - Declaring it done without ever rendering and *looking* at it.
 - A wall of uniform text/cards with no visual variety or hierarchy.
