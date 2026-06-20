@@ -58,21 +58,9 @@ filling in blanks. The things that matter most:
     providers (OpenAI / Anthropic / Gemini) and whether there's a server key or it's
     BYOK-only. If the user is unsure, default to **no chat for v1, designed so it can be
     added later** — and say so.
-  - **Audio — narration / sound / music?** — *ask explicitly when the topic or vibe could
-    benefit (walkthroughs, immersive/playful styles); fine to default off otherwise.* Options:
-    spoken **narration** per section, subtle **UI/interaction sound effects**, and/or
-    **background music/ambience**. Providers: **ElevenLabs** (best-in-class voices + a
-    text→**sound-effects** API + music) and **OpenAI** (cheap, steerable TTS via
-    `gpt-4o-mini-tts`; no native music). Key fact that drives architecture: **you can't put
-    these API keys in the browser.** For *fixed* page content, default to **pre-generating
-    the audio at build time** into files you ship next to the page (no server, no runtime
-    keys); only reach for a server route + BYOK when audio must be generated from *dynamic*
-    input at runtime. Default **off** unless asked; if yes, see the audio guide. Always:
-    mute control, no autoplay without a user gesture, and keep the on-page text as the
-    transcript.
   - **Output target** (self-contained HTML file / framework app / **Notion page** — see
-    the output-targets guide). Often *determined* by the chat/audio answers (server-side
-    chat or runtime audio → framework), so ask those first. Notion trades away inline
+    the output-targets guide). Often *determined* by the chat answer (server-side chat →
+    framework), so ask that first. Notion trades away inline
     interactivity — flag that if they pick it.
   - **Format / reading shape** — *ask this; it changes the whole IA.* **Scrolling page**
     (default — best for skim, reference, and depth-on-demand) vs **slide deck / horizontal
@@ -206,6 +194,20 @@ After building each slice, **do not declare it done from the code.** Run the loo
   in a host's `public/` dir; a framework app deploys (e.g. Vercel). If the page must be a
   URL someone can send, make sure it's actually served (a file in the repo root is **not**
   a URL) and confirm it returns 200.
+- **Deploy is a thin slice, not a pipeline — match the effort to the build:**
+  - **Static single-file (the default):** there's no build step, so deploying is ~2 commands
+    or a drag-drop. Rename the file to `index.html` (serves at `/`), then either run it
+    yourself if a host CLI is authed (`vercel --prod --yes`, or `netlify deploy --prod --dir=.`)
+    or hand the user the exact copy-paste — including the zero-CLI path (**Netlify Drop**:
+    drag the folder onto `app.netlify.com/drop`). No `vercel.json` / `netlify.toml` needed.
+    **Offer it and do the trivial path** — the URL is the payoff that makes the build useful;
+    don't assume the user will figure out which command, but don't write a deploy tutorial either.
+  - **Framework app (chat / runtime features):** *this* is where deploy earns real guidance —
+    env vars for provider keys, a build step, server routes, and optionally git-connected
+    auto-deploy. Reserve CI/CD and env-var setup for this path; the static default never needs it.
+  - Stay host-neutral — for a static file Vercel / Netlify / Cloudflare Pages / GitHub Pages
+    are equivalent; use whatever account the user already has, and fall back to the local
+    file if no CLI is authed.
 
 ## Phase 6 — Revise (the first delivery is a draft, not the end)
 
@@ -276,47 +278,10 @@ not a styling one — decide it before sequencing.
 Keep the chosen shape in **one place** (a layout wrapper + a couple of tokens/flags) so
 switching scroll ⇄ deck later is a contained change, not a rewrite (Phase 6).
 
-## Audio: narration, sound & music (optional — chosen in Phase 0)
-
-Audio can lift a walkthrough or a playful piece, but it's an enhancement, not a crutch:
-the page must fully work **muted** (the on-page text is the transcript). Default **off**.
-
-**The architecture-deciding fact:** ElevenLabs and OpenAI keys **cannot live in the
-browser.** That forces one of two delivery models:
-
-- **Pre-generated at build time (default, and right for fixed content).** Walk your
-  structured content data, call the TTS / SFX API once per item in a small build script,
-  and save the results as audio files you ship next to the page; the page just plays
-  `<audio>`. No server, no runtime keys, works from a self-contained bundle, costs pennies
-  once. Keep a **manifest** mapping `sectionId → audio file` (same "data separate from
-  presentation" discipline as the rest of the skill). Re-run the script only when copy
-  changes.
-- **Runtime generation (only when content is dynamic).** Needed if you must narrate the
-  reader's *own* input or a live chat answer. Requires a **framework app + server route**;
-  the key stays server-side, or **BYOK** (in memory only, per-request header over HTTPS,
-  never stored or logged) — same rules as the chat pattern.
-
-**Providers (offer as options; the user has keys for both):**
-- **ElevenLabs** — best-in-class **voices** (narration), plus a text→**sound-effects** API
-  and **music/ambience** generation. Reach for it when voice quality or generated SFX/music
-  matters. Endpoints: text-to-speech and sound-generation.
-- **OpenAI** — cheap, steerable **TTS** (`gpt-4o-mini-tts` — you can direct tone/pace;
-  `tts-1`/`tts-1-hd`). No native music. Also offers STT (`whisper`/`gpt-4o-transcribe`) if
-  you want *voice input* into a demo.
-
-**Three uses, ranked by value for an explainer:**
-1. **Section narration** — a per-section "▶ Listen" toggle + a global play/pause; highlight
-   the paragraph being read if cheap. Pre-generate. Highest value.
-2. **Interaction sound effects** — tiny, subtle cues on demo events (a click, a correct quiz
-   answer, an outbreak spreading). Keep them quiet, debounced, and behind the mute. Short
-   pre-generated clips, or the Web Audio API for simple synth blips (no key needed).
-3. **Background music/ambience** — **off by default**, behind an explicit toggle, low
-   volume, loopable. Easy to overdo; use sparingly.
-
-**Non-negotiables:** a visible **mute/volume** control; **no autoplay** without a user
-gesture (browsers block it anyway); respect `prefers-reduced-motion` as a hint to keep
-things calm; never block comprehension on audio. Captions/transcript come free — it's the
-page text.
+> **Audio (narration / sound / music) is deferred — not part of v1.** It's a separate
+> pipeline (key handling, build-time pre-generation, playback UX) that needs its own
+> refinement before being offered by default. The full guidance is preserved in
+> `audio-guide.md` next to this file; fold it back in when audio becomes a priority.
 
 ## Interactivity patterns (reach for the simplest that fits)
 
@@ -372,10 +337,9 @@ page text.
   bands use the horizontal space (prose stays ~60–70ch; the page does not).
 - Citations/claims with no traceable source.
 - Shipping a file that isn't actually reachable as a URL when the user wants to share it.
-- Putting an ElevenLabs/OpenAI (or any provider) **key in client code** → leaked key.
-  Pre-generate audio at build time, or proxy through a server route.
-- **Autoplaying** narration/music, or shipping audio with no mute → hostile; also blocked
-  by browsers without a user gesture.
+- Putting an LLM/provider **key in client code** (e.g. a chat feature calling the provider
+  directly from the browser) → leaked key. Keep keys server-side, or use BYOK held in memory
+  only.
 - A slide deck that **traps the keyboard**, can't be deep-linked, or hides all sense of
   progress — a deck must be at least as navigable as the scroll it replaced.
 - A quiz placed *before* its teaching, or one that scores without explaining *why*.
@@ -388,6 +352,5 @@ decorative gradients/rainbow color, no generic bento-card grid) · **horizontal 
 well** (composed and proportioned, not a narrow column in empty margins) · every interactive
 state looks good on desktop and mobile (verified by screenshot) · sources cited ·
 reachable/shareable.
-Format-specific: if a **deck**, keyboard + swipe + deep-link + progress all work; if
-**audio**, it plays only on a gesture, has a mute, and the page is complete in silence;
+Format-specific: if a **deck**, keyboard + swipe + deep-link + progress all work;
 if a **quiz**, it gives instant feedback with a one-line *why* and lets the reader retry.
