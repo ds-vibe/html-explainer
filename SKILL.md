@@ -83,8 +83,10 @@ filling in blanks. The things that matter most:
   - **Output target** — self-contained HTML file (default) / framework app / Notion page.
     Usually *determined* by the chat answer (server-side chat → framework). Notion trades
     away inline interactivity — flag it if picked. See the output-targets guide.
-  - **Deploy** — Vercel / Netlify / Cloudflare Pages / GitHub Pages / none. Assumes an
-    account; fall back to the local file if no CLI is authed. See Phase 5.
+  - **Delivery / deploy** — the default is simply **the file itself**: hand over the `.html`
+    to open and download — assume nothing more. Only deploy to a host (Vercel / Netlify /
+    Cloudflare Pages / GitHub Pages) if the user actually wants a **shareable URL**, and only
+    when a host CLI is authed or they can drag-drop. Don't assume deployment. See Phase 5.
 
   **Exception — programmatic harness only:** if this skill is driven by a *wrapper app that
   already collected these answers up front through its own form/inputs* (e.g. Explainer
@@ -239,18 +241,19 @@ Then run the look-and-fix loop:
   resolves to the right place.
 - **Trust surface:** include source links/attribution and, where relevant, a short
   disclaimer; distinguish settled facts from uncertain/forecasted ones in the UI.
-- **Ship it somewhere shareable.** A self-contained HTML can be opened directly or dropped
-  in a host's `public/` dir; a framework app deploys (e.g. Vercel). If the page must be a
-  URL someone can send, make sure it's actually served (a file in the repo root is **not**
-  a URL) and confirm it returns 200.
-- **Deploy is a thin slice, not a pipeline — match the effort to the build:**
-  - **Static single-file (the default):** there's no build step, so deploying is ~2 commands
-    or a drag-drop. Rename the file to `index.html` (serves at `/`), then either run it
-    yourself if a host CLI is authed (`vercel --prod --yes`, or `netlify deploy --prod --dir=.`)
-    or hand the user the exact copy-paste — including the zero-CLI path (**Netlify Drop**:
-    drag the folder onto `app.netlify.com/drop`). No `vercel.json` / `netlify.toml` needed.
-    **Offer it and do the trivial path** — the URL is the payoff that makes the build useful;
-    don't assume the user will figure out which command, but don't write a deploy tutorial either.
+- **Deliver the file first — deployment is opt-in, not assumed.** For the default
+  single-file build, the deliverable is the **`.html` file itself**: the user opens it
+  locally or downloads it, and most people want exactly that. Do **not** deploy by default
+  and do **not** push a host on them. Just hand over the file (plus the *Review & edit* link
+  if you included the overlay).
+- **Offer a shareable URL only when it's useful — and only deploy if asked or clearly
+  wanted.** If the user does want a link they can send, deploying a static file is a thin
+  slice: rename it to `index.html`, then either run it for them *if a host CLI is already
+  authed* (`vercel --prod --yes`, or `netlify deploy --prod --dir=.`), or point them at the
+  zero-CLI path (**Netlify Drop**: drag the folder onto `app.netlify.com/drop`). No
+  `vercel.json` / `netlify.toml` needed. If no CLI is authed (e.g. the Claude app), the file
+  is the deliverable — don't pretend to deploy. If the page *must* be a real URL, confirm
+  it's actually served and returns 200 (a file in a repo root is not a URL).
   - **Framework app (chat / runtime features):** *this* is where deploy earns real guidance —
     env vars for provider keys, a build step, server routes, and optionally git-connected
     auto-deploy. Reserve CI/CD and env-var setup for this path; the static default never needs it.
