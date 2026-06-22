@@ -52,7 +52,6 @@ scripts/shoot.mjs            Playwright screenshot helper for the quality loop
 scripts/review-mode.js       drop-in "Review & edit" overlay (paste before </body>)
 scripts/chat-dock.js         drop-in BYOK "ask the page" chat widget
 reference/                   visual reference image for the design bar
-audio-guide.md               deferred audio feature, parked for later
 examples/                    explainers built with the skill (served via GitHub Pages)
 index.html                   the examples gallery landing page
 ```
@@ -67,9 +66,8 @@ git clone https://github.com/ds-vibe/html-explainer ~/.claude/skills/html-explai
 
 It loads automatically when a request matches (e.g. "make an interactive explainer about X").
 
-**Claude desktop / web app** — zip the skill files (`SKILL.md`, `scripts/`, `reference/`,
-`audio-guide.md`) and upload them under **Settings → Capabilities → Skills**, then start a
-fresh chat.
+**Claude desktop / web app** — zip the skill files (`SKILL.md`, `scripts/`, `reference/`) and
+upload them under **Settings → Capabilities → Skills**, then start a fresh chat.
 
 **Screenshot helper** (optional, for the quality loop):
 

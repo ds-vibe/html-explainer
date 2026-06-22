@@ -372,11 +372,6 @@ not a styling one — decide it before sequencing.
 Keep the chosen shape in **one place** (a layout wrapper + a couple of tokens/flags) so
 switching scroll ⇄ deck later is a contained change, not a rewrite (Phase 6).
 
-> **Audio (narration / sound / music) is deferred — not part of v1.** It's a separate
-> pipeline (key handling, build-time pre-generation, playback UX) that needs its own
-> refinement before being offered by default. The full guidance is preserved in
-> `audio-guide.md` next to this file; fold it back in when audio becomes a priority.
-
 ## Review & edit mode (`scripts/review-mode.js`) — let people suggest changes in-place
 
 A drop-in overlay that turns any explainer into something reviewers can edit or annotate
