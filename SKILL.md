@@ -382,9 +382,11 @@ any explainer the user may want feedback on.
 
 - **What the reader gets:** a toolbar with three modes — **Preview** (normal; demos and nav
   work), **Edit text** (prose becomes `contenteditable`; **Download edits** exports an edited
-  copy), and **Add note** (click any passage to leave a comment). **Copy notes for LLM**
-  emits a structured revision brief (location + quoted text + requested change) to paste back
-  to the LLM, which edits the *source*. Notes persist via `localStorage` (best-effort).
+  copy — with any reviewer notes appended into the file as an HTML comment, so one download
+  carries both the inline edits and the comments), and **Add note** (click any passage to
+  leave a comment). **Copy notes for LLM** emits the same structured revision brief (location
+  + quoted text + requested change) to the clipboard to paste back to the LLM, which edits the
+  *source*. Notes persist via `localStorage` (best-effort).
 - **Integrate in two steps:** (1) paste the script before `</body>`; (2) if the page has a
   keyboard handler (e.g. a deck), add `|| e.target.isContentEditable` to its "am I typing?"
   guard so editing doesn't trigger navigation. The script injects its own styles (using the

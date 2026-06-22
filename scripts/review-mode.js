@@ -275,14 +275,19 @@
     });
   }
 
-  function copyBrief() {
-    if (!notes.length) { toast("No notes yet"); return; }
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
     var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
     notes.forEach(function (n, i) {
       out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
     });
     out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
-    copy(out);
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
   }
 
   function downloadEdits() {
@@ -295,11 +300,21 @@
     Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
     var b = clone.querySelector("body");
     if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
     var a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob(["<!DOCTYPE html>\n" + clone.outerHTML], { type: "text/html" }));
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
     a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
     a.click();
-    setMode(was); toast("Downloaded edited copy");
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
   }
 
   // ---- location label: nearest section heading, deck-agnostic ----
