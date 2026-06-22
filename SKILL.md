@@ -36,11 +36,21 @@ filling in blanks. The things that matter most:
 
 - **Get the facts first. Do not plan or write content from memory** if the topic has
   load-bearing facts (dates, numbers, current state, anything past your training cutoff).
-  Web-search / fetch primary sources and verify. A confident-but-wrong fact destroys an
-  explainer's whole reason to exist.
+  Ground in the user's provided material and/or web-search / fetch primary sources and
+  verify. A confident-but-wrong fact destroys an explainer's whole reason to exist.
 - **Ask 4–6 sharp scoping questions** before building — only the ones that change the
   architecture. Cover these axes; each has a sensible default, so *ask* the ones that
   genuinely fork the build and just state-and-default the rest:
+  - **Source material / grounding** — *always ask this first, explicitly; don't assume.*
+    It decides where the facts come from. Does the user have **material they want this
+    grounded in** (a doc, PDF, dataset,
+    notes, transcript, a URL, an existing page), should you **research it from scratch**, or
+    **both** (their material as the spine, plus research to verify and fill gaps)? If they
+    have material, get it up front and treat it as the **primary source of truth** — draw
+    specifics from it, cite within it, and don't invent beyond it. Default: ground in
+    whatever they provide; otherwise research from primary sources. (When this skill is
+    driven by an app or harness, this axis is typically pre-collected from the user's
+    inputs — any provided material arrives with the brief; don't re-ask.)
   - **Audience & depth** (newcomer / practitioner / both-layered) — drives sequencing.
   - **Scope** (what's in vs out for v1).
   - **Interactivity** (static page? filters? timeline? interactive diagrams?).
@@ -159,6 +169,15 @@ filling in blanks. The things that matter most:
 
 ## Phase 3 — Build
 
+- **The deliverable is an actual file, never pasted into the chat.** A single-file
+  explainer must be **written to a real `.html` file** (e.g. `eu-ai-act.html`) that the
+  user can open, download, and iterate on — *not* dumped inline as a code block or prose in
+  your reply. Wherever you can create files (Claude Code, the desktop/web app's file or
+  artifact tools, cowork, a framework repo), create the file and hand over its path/link.
+  Only if you genuinely have no file-creation capability may you fall back to a single
+  fenced code block the user can save themselves — and say that's what you're doing and why.
+  This is also what makes Phase 4 (render & screenshot) and the review overlay possible:
+  you can't screenshot or open a page that only exists as chat text.
 - Pick the delivery target (decision guide below) and build the centerpiece first, then
   the supporting sections, then polish.
 - **Accessibility & responsive are not optional:** semantic HTML, keyboard-operable
@@ -208,6 +227,15 @@ After building each slice, **do not declare it done from the code.** Run the loo
   - Stay host-neutral — for a static file Vercel / Netlify / Cloudflare Pages / GitHub Pages
     are equivalent; use whatever account the user already has, and fall back to the local
     file if no CLI is authed.
+- **Hand off for revision — don't make the reviewer guess a URL.** If you included the
+  review overlay (see *Review & edit mode* below), deliver the page as **two labelled
+  links**: a **View (read-only)** link and a **Review & edit** link (the same URL +
+  `?edit`), with a one-line note on what the edit link does (edit text inline → download, or
+  annotate → copy a revision brief for the LLM). For a **local file** (no second URL to give
+  out) ship `<body data-review-toggle>` so a discreet in-page "Review" button turns it on.
+  The edit link/toggle is safe to share — all edits and notes are client-side and can't
+  change what View-link readers see. Surfacing the affordance as a labelled link (or visible
+  button) is the point: `?edit` alone is invisible and guessable.
 
 ## Phase 6 — Revise (the first delivery is a draft, not the end)
 
@@ -222,6 +250,10 @@ After building each slice, **do not declare it done from the code.** Run the loo
 - **Other common revisions:** re-scope (add/cut a section), add or remove interactivity
   (e.g. promote a paragraph to a playable micro-demo), change the output target, refresh a
   fact. Re-run the relevant earlier phase for each rather than patching blindly.
+- **Let non-technical reviewers feed this loop directly.** The review overlay (next section)
+  is the front end of Phase 6: a reviewer edits text in-place or leaves notes on the rendered
+  page, and you apply the resulting revision brief to the *source* (keeping structured data +
+  tokens intact) and re-run the quality loop.
 - **Re-run the quality loop after any visual change.** A token swap can break contrast,
   rhythm, or a chart's legibility — re-screenshot (desktop *and* mobile, every interactive
   state) and *look*, exactly as in Phase 4. Don't declare a restyle done from the diff.
@@ -233,7 +265,8 @@ After building each slice, **do not declare it done from the code.** Run the loo
 - **Single self-contained `.html`** (inline CSS, minimal/no JS, or vanilla JS): default for
   static or lightly-interactive explainers (accordions via `<details>`, tabs, filters,
   scroll-reveal, **playable micro-demos**). Maximally portable, opens offline, trivial to
-  share. Prefer this unless you need a server.
+  share. Prefer this unless you need a server. **Deliver it as a real `.html` file** the
+  user can open/download (see Phase 3) — never as an inline code block in the chat.
 - **Framework app (Next.js on Vercel):** when you need a server — most commonly a **chatbot**
   (to keep an API key off the client), server-side data, or auth. Use the AI SDK for chat.
 - **Notion page** (via the Notion API / Notion MCP): when the user lives in Notion or wants
@@ -282,6 +315,35 @@ switching scroll ⇄ deck later is a contained change, not a rewrite (Phase 6).
 > pipeline (key handling, build-time pre-generation, playback UX) that needs its own
 > refinement before being offered by default. The full guidance is preserved in
 > `audio-guide.md` next to this file; fold it back in when audio becomes a priority.
+
+## Review & edit mode (`scripts/review-mode.js`) — let people suggest changes in-place
+
+A drop-in overlay that turns any explainer into something reviewers can edit or annotate
+without touching code — the front end of the Phase 6 revise loop. Pure client-side, no
+server; works deployed or from a local file. It is **code, not data** — a self-contained
+JS+CSS snippet — so it gets pasted inline into the built HTML (a single-file explainer can't
+load an external `<script src>` and stay portable). The canonical copy lives at
+`scripts/review-mode.js`; the file's header documents usage. *Default to including it* for
+any explainer the user may want feedback on.
+
+- **What the reader gets:** a toolbar with three modes — **Preview** (normal; demos and nav
+  work), **Edit text** (prose becomes `contenteditable`; **Download edits** exports an edited
+  copy), and **Add note** (click any passage to leave a comment). **Copy notes for LLM**
+  emits a structured revision brief (location + quoted text + requested change) to paste back
+  to the LLM, which edits the *source*. Notes persist via `localStorage` (best-effort).
+- **Integrate in two steps:** (1) paste the script before `</body>`; (2) if the page has a
+  keyboard handler (e.g. a deck), add `|| e.target.isContentEditable` to its "am I typing?"
+  guard so editing doesn't trigger navigation. The script injects its own styles (using the
+  page's design tokens *with fallbacks*) and builds its own UI — nothing else to wire.
+- **Activation:** `?edit` in the URL (deployed → hand over a labelled link, per Phase 5), or
+  `<body data-review-toggle>` for a discreet in-page button (local files, where clipboard may
+  be blocked — the script falls back to a copyable textarea). Decks can set
+  `window.reviewGoto(note)` so "jump to annotation" navigates slides; scrolling pages get
+  `scrollIntoView` for free.
+- **Honest limits (state them in the hand-off):** edits/notes are per-browser — no shared
+  live document, no server persistence. `contenteditable` edits the rendered markup, **not**
+  JS-rendered content (quiz/demo data arrays) — route those changes through the *note* path.
+  Multi-user co-editing is where a real app earns its place.
 
 ## Interactivity patterns (reach for the simplest that fits)
 
