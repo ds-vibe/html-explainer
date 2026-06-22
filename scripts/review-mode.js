@@ -54,8 +54,8 @@
     ".rv-act:hover{background:#4a463d}",
     "#rv-bar .rv-spacer{flex:1}",
     "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
-    "#rv-launch{position:fixed;top:50%;right:0;transform:translateY(-50%);z-index:81;background:#b9772a;color:#fff;border:none;border-radius:24px 0 0 24px;padding:11px 16px 11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
-    "#rv-launch:hover{background:#a3641f;padding-right:21px}",
+    "#rv-launch{position:fixed;top:12px;right:14px;z-index:82;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
     "#rv-launch svg{display:block}",
     "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
     "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
@@ -102,7 +102,7 @@
     launch.id = "rv-launch";
     launch.setAttribute("aria-label", "Review & edit this page");
     launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
-    launch.onclick = function () { launch.remove(); activate(); };
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
     document.body.appendChild(launch);
   } else {
     activate();
@@ -111,6 +111,7 @@
   function activate() {
     document.body.classList.add("rv-on");
     if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
     if (built) return;
     built = true;
     markEditable();
@@ -173,7 +174,7 @@
     $("rv-download").onclick = downloadEdits;
     $("rv-exit").onclick = function () {
       if (viaQuery) location.href = location.pathname; // drop ?edit
-      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note"); setMode("interact"); $("rv-bar").style.display = "none"; }
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
     };
   }
 
