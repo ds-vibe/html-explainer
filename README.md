@@ -36,9 +36,11 @@ Built with this skill, hosted on GitHub Pages — each is a self-contained `.htm
 
 | Explainer | Format | Live |
 |---|---|---|
-| The EU AI Act | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ai-act.html) |
 | How RAG works | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/rag.html) |
 | How special relativity works | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/special-relativity.html) |
+| The EU AI Act | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ai-act.html) |
+| The CCPA | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ccpa.html) |
+| How encryption works | scrolling page + BYOK chatbot | [open](https://ds-vibe.github.io/html-explainer/examples/encryption.html) |
 
 Source lives in [`examples/`](./examples).
 
@@ -48,6 +50,7 @@ Source lives in [`examples/`](./examples).
 SKILL.md                     the process (this is the skill)
 scripts/shoot.mjs            Playwright screenshot helper for the quality loop
 scripts/review-mode.js       drop-in "Review & edit" overlay (paste before </body>)
+scripts/chat-dock.js         drop-in BYOK "ask the page" chat widget
 reference/                   visual reference image for the design bar
 audio-guide.md               deferred audio feature, parked for later
 examples/                    explainers built with the skill (served via GitHub Pages)

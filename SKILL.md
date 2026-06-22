@@ -89,10 +89,17 @@ filling in blanks. The things that matter most:
     **yes, a small end-of-section or end-of-page quiz** unless the user declines or it's
     reference-style.
   - **AI chat / Q&A interface?** — don't assume no. A built-in "ask a question" chatbot
-    grounded in the content is a major fork: **yes → framework app + server route + the BYOK
-    key pattern** (never call a provider from the browser). If yes, ask which providers and
-    server-key vs BYOK. If unsure, default **no chat for v1, designed so it can be added
-    later** — and say so.
+    grounded in the content is a fork with **two ways to build it**, so ask which fits:
+    - **Single-file, bring-your-own-key (no server):** drop in `scripts/chat-dock.js` — a
+      floating "Ask the page" widget where the *reader* supplies their own API key (held in
+      memory, sent straight to the provider). Keeps the explainer one portable `.html`. Best
+      when there's no backend and you just want the feature on a static page. See the
+      *Ask-the-page chat dock* section below.
+    - **Server-route framework app (managed key):** when you want a shared, always-on bot
+      with a key *you* control, you need a framework app + a server route (never put your own
+      provider key in the browser). This forks the output target to a framework build.
+    If yes, ask which providers (Claude / OpenAI / Gemini) and which of the two paths. If
+    unsure, default **no chat for v1, but designed so it can be added later** — and say so.
 
   **Default unless the topic or their answers make it relevant (state your default; only ask if it matters):**
   - **Scope** — what's in vs out for v1.
@@ -401,6 +408,33 @@ any explainer the user may want feedback on.
   JS-rendered content (quiz/demo data arrays) — route those changes through the *note* path.
   Multi-user co-editing is where a real app earns its place.
 
+## Ask-the-page chat dock (`scripts/chat-dock.js`) — a built-in Q&A bot, no server
+
+A drop-in floating chat widget that answers questions **grounded in the current page**, using
+the reader's **own API key** (BYOK). It's the single-file way to satisfy the Phase 0 "AI chat"
+axis without a backend — paste it inline and a polished "Ask" launcher + chat panel appear.
+Like the review overlay, it's **code, not data**: a self-contained JS+CSS snippet pasted before
+`</body>`, and it injects its own styles using the page's design tokens *with fallbacks*, so it
+adapts to light **or** dark themes automatically.
+
+- **What the reader gets:** a launcher button (bottom-right) opens a compact chat **stream** —
+  key field (collapses once set), suggested prompts, message bubbles, and an input. It grabs
+  the page's own text as grounding and instructs the model to answer from it.
+- **Integrate in two steps:** (1) optionally set config *before* the script:
+  `<script>window.CHAT_DOCK={provider:"anthropic",title:"Ask the page",placeholder:"…",suggestions:["…"]}<\/script>`
+  (all fields optional; `provider` is `"anthropic"` default or `"openai"`); (2) paste the whole
+  `chat-dock.js` inside a `<script>` before `</body>`. Any element with `data-chat-open` also
+  opens it (e.g. a nav link). Nothing else to wire.
+- **Keys & safety:** the reader's key is held **in memory only**, sent straight to the provider
+  over HTTPS, never stored or logged. Anthropic browser calls use the
+  `anthropic-dangerous-direct-browser-access` header; this is acceptable *only because the key
+  is the reader's own* — never embed **your** key this way (that's the server-route path).
+- **Honest limits (state in the hand-off):** depends on the reader having a key and on the
+  provider allowing browser calls; it's per-browser, not a shared/managed bot. For that, use a
+  server route (framework build).
+- **When inlining, escape any literal `</` + `script>` inside the file** (the bundled copy
+  already does in its header comment) — a raw one would close the tag early.
+
 ## Interactivity patterns (reach for the simplest that fits)
 
 - **★ Playable micro-demos (learn-by-doing) — reach for these first.** The highest-impact
@@ -430,10 +464,12 @@ any explainer the user may want feedback on.
   Keep questions about understanding, not trivia recall; show a friendly final tally;
   let the reader retry. Keep the questions in **structured data** (array of
   `{q, options, answer, why}`) so they're easy to edit and re-order.
-- **Chat (optional, advanced):** ground it in your curated content (inject the corpus or
-  retrieve over it); render citations. If users bring their own key (**BYOK**), keep the key
-  **in memory only** (no localStorage/cookies), send it as a per-request header over HTTPS,
-  use it transiently, and **never log or store it server-side**.
+- **Chat / "ask the page" (optional):** for the single-file, no-server case use the bundled
+  **`scripts/chat-dock.js`** (see its section above) — a grounded BYOK chat dock. For a
+  shared, managed-key bot, use a server route (framework build) and ground it in your curated
+  content (inject the corpus or retrieve over it); render citations. With **BYOK**, keep the
+  key **in memory only** (no localStorage/cookies), send it as a per-request header over
+  HTTPS, use it transiently, and **never log or store it server-side**.
 
 ## Anti-patterns (the mistakes this skill exists to prevent)
 
