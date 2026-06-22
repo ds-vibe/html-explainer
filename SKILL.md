@@ -187,13 +187,41 @@ filling in blanks. The things that matter most:
 
 ## Phase 4 — The quality loop (this is where quality actually comes from)
 
-After building each slice, **do not declare it done from the code.** Run the loop:
+**This phase is not optional and is not "if you have time."** A draft you have not
+critiqued is a draft, not a deliverable. The single most common failure of this skill is
+declaring it done straight from the generated code — that is exactly how slop ships (emoji
+icons, a lonely column, a widget with a JS error nobody ran). Do not skip it, even for a
+"quick" page, even on a weak model, even when no browser is available.
+
+**Step 0 — Static pre-flight (MANDATORY, runs even with no browser).** Before any
+screenshot, re-read your own output and fix every one of these — each is a blocker, not a
+nitpick. Do not deliver until all pass:
+- [ ] **No emoji used as icons/UI** anywhere (headers, cards, buttons, lists). If you want
+      icons, use a cohesive SVG/icon-font set you *actually render*, simple CSS shapes,
+      numerals, or nothing. (Loading an icon font and then using emoji is an automatic fail.)
+- [ ] **A real type pairing** — a display/serif face + a clean sans via a web font, with
+      design tokens at `:root`. Not the bare system-font stack, not Inter-on-white only.
+- [ ] **Horizontal space is used** — the page is composed and proportioned, with a wide
+      centerpiece and/or full-bleed section bands; prose stays ~60–70ch but the *page* is not
+      a single ~720–800px column stranded in empty margins.
+- [ ] **No other AI-slop tells** — no decorative/iridescent gradients, no rainbow text/rows,
+      no 2×2 bento grid of identical soft-shadow cards, no drop-shadow-on-everything.
+- [ ] **The JS actually runs** — no syntax errors (watch unescaped quotes/apostrophes in JS
+      strings), no undefined references; every interactive widget works, not just renders.
+- [ ] **Visual variety & a learnable semantic language** — sections don't all look identical;
+      color carries meaning consistently.
+- [ ] **Accessible & responsive** — semantic HTML, keyboard-operable, sufficient contrast,
+      a real mobile layout.
+
+Then run the look-and-fix loop:
 
 1. **Render it for real** and **look at it.** Use a headless browser to screenshot the
    page — desktop *and* mobile — including **every interactive state** (expanded items,
    filters applied, drawers/modals open, nav scrolled). A bundled helper is at
    `scripts/shoot.mjs` (Playwright): `node scripts/shoot.mjs <url> <outDir>`.
-   Then **Read the screenshots** and judge them visually.
+   Then **Read the screenshots** and judge them visually. **If you have no way to render**
+   (no browser/tooling in this environment), say so explicitly in the hand-off — and treat
+   the Step-0 pre-flight as your floor, having re-read every interactive code path by hand.
 2. **Critique like a human seeing it cold:** What's confusing? What looks merely "fine"
    instead of great? What's barren, cramped, misaligned, or low-contrast? Is the *order*
    right? Would a newcomer follow it? If the piece leans on a mental model, does it land —
