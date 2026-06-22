@@ -38,57 +38,59 @@ filling in blanks. The things that matter most:
   load-bearing facts (dates, numbers, current state, anything past your training cutoff).
   Ground in the user's provided material and/or web-search / fetch primary sources and
   verify. A confident-but-wrong fact destroys an explainer's whole reason to exist.
-- **Ask 4–6 sharp scoping questions** before building — only the ones that change the
-  architecture. Cover these axes; each has a sensible default, so *ask* the ones that
-  genuinely fork the build and just state-and-default the rest:
-  - **Source material / grounding** — *always ask this first, explicitly; don't assume.*
-    It decides where the facts come from. Does the user have **material they want this
-    grounded in** (a doc, PDF, dataset,
-    notes, transcript, a URL, an existing page), should you **research it from scratch**, or
-    **both** (their material as the spine, plus research to verify and fill gaps)? If they
-    have material, get it up front and treat it as the **primary source of truth** — draw
-    specifics from it, cite within it, and don't invent beyond it. Default: ground in
-    whatever they provide; otherwise research from primary sources. (When this skill is
-    driven by an app or harness, this axis is typically pre-collected from the user's
-    inputs — any provided material arrives with the brief; don't re-ask.)
-  - **Audience & depth** (newcomer / practitioner / both-layered) — drives sequencing.
-  - **Scope** (what's in vs out for v1).
-  - **Interactivity** (static page? filters? timeline? interactive diagrams?).
-  - **Quiz / knowledge check?** — *always ask explicitly; don't assume no.* A short "test
-    yourself" — multiple-choice or fill-in with instant right/wrong feedback and a brief
-    "why" — is a high-value, low-cost addition that makes an explainer stickier (people love
-    checking what they retained). Works in a pure self-contained file (no server). Place it
-    *after* the relevant teaching, not before. Default **yes, a small end-of-section or
-    end-of-page quiz** unless the user declines or the topic is reference-style. See the
-    quiz pattern under Interactivity.
-  - **AI chat / Q&A interface?** — *always ask this explicitly; don't assume no.* Does the
-    user want a built-in "ask a question" chatbot grounded in the content? This is a major
-    fork: **yes → you need a framework app + a server route + the BYOK key pattern** (you
-    cannot safely call an LLM provider directly from the browser). If yes, also ask which
-    providers (OpenAI / Anthropic / Gemini) and whether there's a server key or it's
-    BYOK-only. If the user is unsure, default to **no chat for v1, designed so it can be
-    added later** — and say so.
-  - **Output target** (self-contained HTML file / framework app / **Notion page** — see
-    the output-targets guide). Often *determined* by the chat answer (server-side chat →
-    framework), so ask that first. Notion trades away inline
-    interactivity — flag that if they pick it.
-  - **Format / reading shape** — *ask this; it changes the whole IA.* **Scrolling page**
-    (default — best for skim, reference, and depth-on-demand) vs **slide deck / horizontal
-    click-through** (a "PowerPoint-shaped" lateral experience you advance with arrows/clicks
-    — great for linear narrative, talks, and guided walkthroughs) vs a **hybrid** (scroll
-    within, snap between chapters). The micro-demos and quiz live happily inside either.
-    Default **scrolling page**; offer the deck when the content is naturally linear or the
-    user wants something presentation-like. See the format guide for the deck mechanics.
-  - **Visual style / vibe** — *always ask; it's the most personal axis and the cheapest to
-    get wrong.* Offer presets and a recommended default, e.g. **minimal-editorial**
-    (clean, Stripe-docs feel — good default) / **bold-playful** (color, big type, fun) /
-    **technical-dark** (dev-docs, dark UI) / **brand-matched** (give me colors/font/a URL to
-    match). Keep all style decisions in centralized tokens so it's cheap to change later
-    (see Phase 6).
-  - **Deploy** — where should it end up? (see Phase 5). Options: **Vercel / Netlify /
-    Cloudflare Pages / GitHub Pages / none (just the local file)**. Assumes the user has an
-    account on the chosen host; if CLI isn't authed, guide them or fall back to the file.
-  Recommend a default for each; don't make the user design it.
+- **Run a tight scoping interview before building — and present it as ONE consolidated
+  message, not a drip of one-at-a-time questions.** There are two tiers: a **must-ask set**
+  you cover on *every* build, and a **default-unless-relevant set** you only raise when the
+  topic calls for it. Recommend a sensible default for each so the user can one-click it;
+  never make them design it. **Do NOT collapse the must-ask set down to one or two
+  questions** — quietly defaulting these (especially grounding, format, and style) is the
+  single most common way the result comes out wrong. Asking ~5–6 in one message is correct,
+  not excessive.
+
+  **Always ask (every build — do not skip, do not collapse):**
+  - **Source material / grounding** — *ask first; it decides where the facts come from.*
+    Does the user have **material to ground this in** (a doc, PDF, dataset, notes,
+    transcript, a URL, an existing page), should you **research it from scratch**, or
+    **both** (their material as the spine + research to verify and fill gaps)? If they have
+    material, get it up front and treat it as the **primary source of truth** — draw
+    specifics from it, cite within it, don't invent beyond it. Default: ground in whatever
+    they provide; otherwise research from primary sources.
+  - **Audience & depth** — newcomer / practitioner / both-layered, and how deep to go.
+    Drives sequencing.
+  - **Format / reading shape** — **scrolling page** (default — skim, reference,
+    depth-on-demand) vs **slide deck / horizontal click-through** (linear narrative, talks,
+    guided walkthroughs) vs **hybrid** (scroll within, snap between chapters). Changes the
+    whole IA. See the format guide for deck mechanics.
+  - **Visual style / vibe** — the most personal axis and the cheapest to get wrong. Offer
+    presets + a recommended default: **minimal-editorial** (clean, Stripe-docs — good
+    default) / **bold-playful** (color, big type) / **technical-dark** (dev-docs, dark UI) /
+    **brand-matched** (they supply colors/font/a URL). Keep all style in centralized tokens.
+  - **Quiz / knowledge check?** — don't assume no. A short "test yourself" (multiple-choice
+    or fill-in with instant right/wrong feedback + a one-line *why*) makes an explainer
+    stickier and works in a pure self-contained file. Place it *after* the teaching. Default
+    **yes, a small end-of-section or end-of-page quiz** unless the user declines or it's
+    reference-style.
+  - **AI chat / Q&A interface?** — don't assume no. A built-in "ask a question" chatbot
+    grounded in the content is a major fork: **yes → framework app + server route + the BYOK
+    key pattern** (never call a provider from the browser). If yes, ask which providers and
+    server-key vs BYOK. If unsure, default **no chat for v1, designed so it can be added
+    later** — and say so.
+
+  **Default unless the topic or their answers make it relevant (state your default; only ask if it matters):**
+  - **Scope** — what's in vs out for v1.
+  - **Interactivity depth** — beyond the quiz: filters, timelines, interactive diagrams,
+    multiple micro-demos.
+  - **Output target** — self-contained HTML file (default) / framework app / Notion page.
+    Usually *determined* by the chat answer (server-side chat → framework). Notion trades
+    away inline interactivity — flag it if picked. See the output-targets guide.
+  - **Deploy** — Vercel / Netlify / Cloudflare Pages / GitHub Pages / none. Assumes an
+    account; fall back to the local file if no CLI is authed. See Phase 5.
+
+  **Exception — programmatic harness only:** if this skill is driven by a *wrapper app that
+  already collected these answers up front through its own form/inputs* (e.g. Explainer
+  Studio), the answers arrive **with the brief** — honor them and don't re-interview. A
+  normal chat with a person — including in the Claude app — is **NOT** this case: ask the
+  must-ask set.
 - Collect a **source list** as you go. Every non-obvious claim should be traceable.
 
 ## Phase 1 — Architecture for learning (sequence before you style)
