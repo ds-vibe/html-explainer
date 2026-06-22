@@ -32,6 +32,24 @@ filling in blanks. The things that matter most:
 
 ---
 
+> **STOP — do Phase 0 before writing any HTML or running any research.** Your FIRST response
+> to a build request must be a short scoping interview, asked as ONE message, covering **all
+> six** must-ask questions below — not one or two of your own invention, and not a jump
+> straight to building or web-searching. Quietly defaulting these (especially grounding,
+> format, and style) is the #1 reason the result comes out wrong.
+>
+> 1. **Grounding** — does the user have their own material to ground in, should you research
+>    it from scratch, or both?
+> 2. **Audience & depth** — newcomer / practitioner / both-layered, and how deep?
+> 3. **Format** — scrolling page / slide deck / hybrid?
+> 4. **Visual style** — minimal-editorial / bold-playful / technical-dark / brand-matched?
+> 5. **Quiz** — include a knowledge check?
+> 6. **AI chat** — a built-in Q&A bot, or not for v1?
+>
+> Recommend a sensible default for each so the user can one-click. Only after they answer do
+> you research and build — and the deliverable is a real **`.html` file**, never pasted
+> inline. Full detail for each question is in Phase 0 just below.
+
 ## Phase 0 — Research & sharpen (do this before any HTML)
 
 - **Get the facts first. Do not plan or write content from memory** if the topic has
