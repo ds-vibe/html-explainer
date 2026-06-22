@@ -145,10 +145,13 @@ filling in blanks. The things that matter most:
 ## Phase 2 — Visual design system (the 10x bar)
 
 - **Editorial, not corporate-template.** Aim for the polish of a great explainer
-  (Vox / FT / Stripe-docs / The Pudding feel), not a slide deck, a compliance PDF, or an
-  AI-generated SaaS landing page. Reference bar: the EU AI Act explainer at
-  **https://ai-act-seven.vercel.app** — editorial type, a restrained palette where color
-  carries meaning, no emoji. That's the target.
+  (Vox / FT / Stripe-docs / The Pudding feel), not a compliance PDF or an AI-generated SaaS
+  landing page. The target: confident editorial typography (a real display + text pairing),
+  a restrained palette where color is mostly *semantic* (carries meaning, not decoration),
+  generous whitespace, and no emoji. A **reference screenshot ships with this skill** at
+  `reference/ai-act-explainer.jpg` — open and study it for *type, palette, and restraint
+  only*. It is **not** a layout or format template: it happens to be a scrolling page, so
+  don't let it bias you toward scroll — a slide deck can hit the exact same bar.
 - **Actively avoid the "AI slop" look — it's the fastest way to lose trust.** The tells that
   scream "a robot made this," all to design *out*:
   - **Emoji as icons or UI.** Emoji in section headers, feature cards, step labels, or
