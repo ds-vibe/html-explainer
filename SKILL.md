@@ -139,8 +139,16 @@ filling in blanks. The things that matter most:
     scrutiny is *worse* than none, because it quietly misleads. If a model only half-fits,
     say where it breaks or drop it. Lock one in when it genuinely makes the topic click;
     otherwise let clean structure carry the weight. One good model beats three half-models.
+- **Lead with clarity, not cleverness — keep the model out of the headline.** The `<h1>` must
+  **plainly name the topic** ("How compound interest works") — a metaphor may ride alongside but
+  never *replace* it, and the small nav/brand label doesn't count as the title. Keep title and
+  intro **editorial**, not slogan-y; introduce the model **once, in its own section** — don't
+  stack 2–3 metaphors or let it become a slogan/joke/precious copy ("the off-switch", "changes
+  outfits", "a wanted poster"). The model is a teaching tool, not a tagline.
 - **Progressive complexity:** each section assumes only what earlier sections taught.
-  Number or signpost the path ("Start here · 1 of 3") when it helps.
+  Number or signpost the path ("Start here · 1 of 3") when it helps. Map the **concept
+  dependencies** first — what must the reader grasp before X? — and order sections to honor them.
+- **Optional: a "common misconception" callout** — name a classic wrong belief and correct it; only where one truly exists, never forced.
 - **Layered depth (3 layers):** (1) plain-language always visible, (2) "go deeper"
   expanders for detail, (3) the raw source/data one click away (drawer/modal/link).
 - **One clear centerpiece** — the section that delivers the core payoff (often a clean,
@@ -184,6 +192,11 @@ filling in blanks. The things that matter most:
 - **Typography & space:** strong hierarchy, comfortable measure (~60–70ch for prose),
   generous whitespace, balanced headings. A real type pairing (e.g. a serif display + a clean
   sans) beats system-Inter-everywhere.
+- **Spacing on a scale, not by feel.** Spacing tokens (4/8px scale) used everywhere → consistent
+  rhythm: even section padding, hero elements separated, equal gaps in repeated groups.
+- **Contrast is per-surface.** A color legible on the page background won't be on a dark band,
+  colored chip, or inverted hero — give each surface its own ink (≥4.5:1 body); never a
+  near-background tint as text. Light **and** dark → define and verify both.
 - **Use the horizontal space — proportioned, not a lonely column.** A ~720px column marooned
   in a sea of side-margin is its own slop tell. Let the *page* use the width while *prose*
   keeps its readable measure: give the **centerpiece** room (wide tables/matrices, timelines,
@@ -193,6 +206,8 @@ filling in blanks. The things that matter most:
   visual, side-by-side compare) where they help. Cap the outer container generously
   (~1100–1280px) with balanced gutters — wide and composed, never edge-to-edge sprawl.
 - **Motion with purpose:** scroll-reveal and smooth transitions add life; never gratuitous.
+  Make reveals **self-healing** (a failsafe timer that forces everything visible if the observer
+  doesn't fire) — content must never stay stuck at `opacity:0` (also why such pages screenshot blank).
 - **Don't over-engineer the dataviz.** A clean, legible conventional chart/table beats an
   exotic treemap/sunburst almost every time. Fancy ≠ clear. Reach for advanced viz only
   when the data genuinely needs it.
@@ -242,8 +257,22 @@ nitpick. Do not deliver until all pass:
       strings), no undefined references; every interactive widget works, not just renders.
 - [ ] **Visual variety & a learnable semantic language** — sections don't all look identical;
       color carries meaning consistently.
-- [ ] **Accessible & responsive** — semantic HTML, keyboard-operable, sufficient contrast,
-      a real mobile layout.
+- [ ] **Contrast — computed, not eyeballed.** Estimate the WCAG ratio for each text/background
+      pair (≥4.5:1 body, ≥3:1 large). Catch the classic fail: a highlight reused on the wrong
+      surface (white-on-light, dark-on-dark). Re-derive ink per surface (bands, chips, inverted
+      hero); if light **and** dark, both must pass.
+- [ ] **Spacing on a scale, not cramped.** Even section padding; hero eyebrow→title→subtitle→meta
+      clearly separated; equal gaps in repeated groups; nothing touching edges. Uneven spacing is
+      the fastest "unfinished" tell.
+- [ ] **Title & voice.** The `<h1>` plainly names the topic (not a bare metaphor; the nav brand
+      doesn't count); title/intro read editorial, not slogan-y or jokey; the model appears once
+      in the body, not stacked across title + lede + first heading.
+- [ ] **Visuals match the words.** Every diagram/chart/demo/metaphor must *depict the claim* —
+      direction, order, magnitude, and legend all agree with the sentence next to it (e.g. don't
+      draw an up-sloping hill under "rolling downhill"; arrows, axes, sizes, and color keys match
+      the text). A visual that contradicts its caption misleads even when each is fine alone.
+- [ ] **Accessible & responsive** — semantic HTML, keyboard-operable controls, alt text, and a
+      real mobile layout (stacks cleanly, no horizontal overflow, tap targets ≥40px).
 
 Then run the look-and-fix loop:
 
@@ -251,9 +280,10 @@ Then run the look-and-fix loop:
    page — desktop *and* mobile — including **every interactive state** (expanded items,
    filters applied, drawers/modals open, nav scrolled). A bundled helper is at
    `scripts/shoot.mjs` (Playwright): `node scripts/shoot.mjs <url> <outDir>`.
-   Then **Read the screenshots** and judge them visually. **If you have no way to render**
-   (no browser/tooling in this environment), say so explicitly in the hand-off — and treat
-   the Step-0 pre-flight as your floor, having re-read every interactive code path by hand.
+   Then **Read the screenshots** and judge them. **No browser (e.g. the Claude app)?** Run Step 0
+   rigorously, **computing contrast from your own tokens** (where washed-out text is caught);
+   then — since the user sees what you can't — ask them to look or paste a screenshot, and say
+   the visual pass didn't run. If any code execution exists, render there first.
 2. **Critique like a human seeing it cold:** What's confusing? What looks merely "fine"
    instead of great? What's barren, cramped, misaligned, or low-contrast? Is the *order*
    right? Would a newcomer follow it? If the piece leans on a mental model, does it land —
@@ -372,63 +402,22 @@ not a styling one — decide it before sequencing.
 Keep the chosen shape in **one place** (a layout wrapper + a couple of tokens/flags) so
 switching scroll ⇄ deck later is a contained change, not a rewrite (Phase 6).
 
-## Review & edit mode (`scripts/review-mode.js`) — let people suggest changes in-place
+## Drop-in widgets (`scripts/` — paste inline before `</body>`; full usage in each file's header)
 
-A drop-in overlay that turns any explainer into something reviewers can edit or annotate
-without touching code — the front end of the Phase 6 revise loop. Pure client-side, no
-server; works deployed or from a local file. It is **code, not data** — a self-contained
-JS+CSS snippet — so it gets pasted inline into the built HTML (a single-file explainer can't
-load an external `<script src>` and stay portable). The canonical copy lives at
-`scripts/review-mode.js`; the file's header documents usage. *Default to including it* for
-any explainer the user may want feedback on.
+Both are self-contained JS+CSS (single-file pages can't use `<script src>` and stay portable),
+inject their own themed UI, and adapt to light/dark. When inlining, escape any literal
+`</`+`script>` in the file (the bundled copies already do).
 
-- **What the reader gets:** a toolbar with three modes — **Preview** (normal; demos and nav
-  work), **Edit text** (prose becomes `contenteditable`; **Download edits** exports an edited
-  copy — with any reviewer notes appended into the file as an HTML comment, so one download
-  carries both the inline edits and the comments), and **Add note** (click any passage to
-  leave a comment). **Copy notes for LLM** emits the same structured revision brief (location
-  + quoted text + requested change) to the clipboard to paste back to the LLM, which edits the
-  *source*. Notes persist via `localStorage` (best-effort).
-- **Integrate in two steps:** (1) paste the script before `</body>`; (2) if the page has a
-  keyboard handler (e.g. a deck), add `|| e.target.isContentEditable` to its "am I typing?"
-  guard so editing doesn't trigger navigation. The script injects its own styles (using the
-  page's design tokens *with fallbacks*) and builds its own UI — nothing else to wire.
-- **Activation:** `?edit` in the URL (deployed → hand over a labelled link, per Phase 5), or
-  `<body data-review-toggle>` for a discreet in-page button (local files, where clipboard may
-  be blocked — the script falls back to a copyable textarea). Decks can set
-  `window.reviewGoto(note)` so "jump to annotation" navigates slides; scrolling pages get
-  `scrollIntoView` for free.
-- **Honest limits (state them in the hand-off):** edits/notes are per-browser — no shared
-  live document, no server persistence. `contenteditable` edits the rendered markup, **not**
-  JS-rendered content (quiz/demo data arrays) — route those changes through the *note* path.
-  Multi-user co-editing is where a real app earns its place.
-
-## Ask-the-page chat dock (`scripts/chat-dock.js`) — a built-in Q&A bot, no server
-
-A drop-in floating chat widget that answers questions **grounded in the current page**, using
-the reader's **own API key** (BYOK). It's the single-file way to satisfy the Phase 0 "AI chat"
-axis without a backend — paste it inline and a polished "Ask" launcher + chat panel appear.
-Like the review overlay, it's **code, not data**: a self-contained JS+CSS snippet pasted before
-`</body>`, and it injects its own styles using the page's design tokens *with fallbacks*, so it
-adapts to light **or** dark themes automatically.
-
-- **What the reader gets:** a launcher button (bottom-right) opens a compact chat **stream** —
-  key field (collapses once set), suggested prompts, message bubbles, and an input. It grabs
-  the page's own text as grounding and instructs the model to answer from it.
-- **Integrate in two steps:** (1) optionally set config *before* the script:
-  `<script>window.CHAT_DOCK={provider:"anthropic",title:"Ask the page",placeholder:"…",suggestions:["…"]}<\/script>`
-  (all fields optional; `provider` is `"anthropic"` default or `"openai"`); (2) paste the whole
-  `chat-dock.js` inside a `<script>` before `</body>`. Any element with `data-chat-open` also
-  opens it (e.g. a nav link). Nothing else to wire.
-- **Keys & safety:** the reader's key is held **in memory only**, sent straight to the provider
-  over HTTPS, never stored or logged. Anthropic browser calls use the
-  `anthropic-dangerous-direct-browser-access` header; this is acceptable *only because the key
-  is the reader's own* — never embed **your** key this way (that's the server-route path).
-- **Honest limits (state in the hand-off):** depends on the reader having a key and on the
-  provider allowing browser calls; it's per-browser, not a shared/managed bot. For that, use a
-  server route (framework build).
-- **When inlining, escape any literal `</` + `script>` inside the file** (the bundled copy
-  already does in its header comment) — a raw one would close the tag early.
+- **`review-mode.js` — Review & edit overlay.** Front end of the Phase 6 revise loop; *default
+  to including it.* Gives reviewers Preview / Edit text / Add note; **Download edits** exports a
+  copy with notes appended as an HTML comment; **Copy notes for LLM** yields a revision brief.
+  Activate via `?edit` or `<body data-review-toggle>`. Limits: per-browser, no server;
+  `contenteditable` doesn't reach JS-rendered data (use the note path).
+- **`chat-dock.js` — "Ask the page" BYOK chat.** The single-file way to do the Phase 0 "AI chat"
+  axis with no backend: grounded in the page, using the *reader's own* key. Optionally set
+  `window.CHAT_DOCK={provider,title,placeholder,suggestions}` first (`provider`: `anthropic`
+  default | `openai`); `[data-chat-open]` opens it. Key stays in memory only — fine *because
+  it's the reader's*; never ship **your** key this way (that's the server route).
 
 ## Interactivity patterns (reach for the simplest that fits)
 
@@ -484,6 +473,10 @@ adapts to light **or** dark themes automatically.
   palette, and varied layouts instead.
 - **A narrow ~720px column stranded in wide empty margins** — let the centerpiece and section
   bands use the horizontal space (prose stays ~60–70ch; the page does not).
+- **Washed-out / illegible text** — a highlight or accent color reused on a surface it doesn't
+  contrast with (white-on-light, dark-on-dark), or a dark-mode color left on a light surface.
+- **Cramped or inconsistent spacing** — magic-number padding, a hero whose title/subtitle
+  crowd each other, uneven gaps. Drive spacing from a scale.
 - Citations/claims with no traceable source.
 - Shipping a file that isn't actually reachable as a URL when the user wants to share it.
 - Putting an LLM/provider **key in client code** (e.g. a chat feature calling the provider
@@ -498,8 +491,10 @@ adapts to light **or** dark themes automatically.
 Researched & fact-checked · sequenced for a newcomer with an expert fast-path · visually
 polished with a consistent learnable language · **no AI-slop tells** (no emoji icons, no
 decorative gradients/rainbow color, no generic bento-card grid) · **horizontal space used
-well** (composed and proportioned, not a narrow column in empty margins) · every interactive
-state looks good on desktop and mobile (verified by screenshot) · sources cited ·
-reachable/shareable.
+well** (composed and proportioned, not a narrow column in empty margins) · **legible on every
+surface** (contrast ≥4.5:1 checked per surface and in both modes — no washed-out text) ·
+**spacing on a consistent scale** (no cramped/uneven rhythm) · every interactive state looks
+good on desktop and mobile (verified by screenshot, or by computed audit + a human look when no
+browser is available) · sources cited · reachable/shareable.
 Format-specific: if a **deck**, keyboard + swipe + deep-link + progress all work;
 if a **quiz**, it gives instant feedback with a one-line *why* and lets the reader retry.

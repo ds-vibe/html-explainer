@@ -76,6 +76,11 @@
     ".cd-msg.u{align-self:flex-end;background:var(--accent-soft,rgba(127,127,127,.14));color:var(--ink,#181818)}",
     ".cd-msg.a{align-self:flex-start;background:var(--panel-2,var(--paper-2,rgba(127,127,127,.09)));border:1px solid var(--line,#e3e3e3)}",
     ".cd-msg.sys{align-self:center;font-size:11.5px;color:var(--ink-faint,#8a8a8a);font-family:var(--mono,monospace);text-align:center;max-width:100%}",
+    ".cd-msg.a strong{font-weight:700;color:var(--ink,#111)}.cd-msg.a code{font-family:var(--mono,monospace);font-size:.9em;background:var(--bg,rgba(127,127,127,.14));padding:1px 5px;border-radius:5px}",
+    ".cd-msg.a p{margin:0 0 8px}.cd-msg.a p:last-child{margin:0}.cd-msg.a ul,.cd-msg.a ol{margin:6px 0;padding-left:20px}.cd-msg.a li{margin:3px 0}",
+    ".cd-dots{display:inline-flex;gap:4px;padding:3px 0}.cd-dots span{width:6px;height:6px;border-radius:50%;background:var(--ink-faint,#8a8a8a);animation:cdb 1s infinite}",
+    ".cd-dots span:nth-child(2){animation-delay:.15s}.cd-dots span:nth-child(3){animation-delay:.3s}",
+    "@keyframes cdb{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}",
     ".cd-suggest{display:flex;flex-direction:column;gap:6px;padding:0 14px 10px}.cd-suggest[hidden]{display:none}",
     ".cd-suggest button{font-family:var(--sans,system-ui,sans-serif);font-size:12.5px;text-align:left;color:var(--ink-soft,#555);background:var(--bg,var(--paper,rgba(127,127,127,.04)));border:1px solid var(--line,#e3e3e3);border-radius:8px;padding:8px 11px;cursor:pointer}",
     ".cd-suggest button:hover{border-color:" + ACCENT + ";color:" + ACCENT + "}",
@@ -117,6 +122,20 @@
 
   var history = [], busy = false;
   function add(role, text){ var d=document.createElement("div"); d.className="cd-msg "+role; d.textContent=text; log.appendChild(d); log.scrollTop=log.scrollHeight; return d; }
+  // minimal, safe markdown: escape first, then **bold**, `code`, bullet/numbered lists, paragraphs
+  function md(s){
+    var lines = esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").split(/\n/);
+    var out=[], i=0, bullet=/^\s*([-•*]|\d+[.)])\s+/;
+    while(i<lines.length){
+      if(bullet.test(lines[i])){
+        var ordered=/^\s*\d+[.)]\s+/.test(lines[i]), tag=ordered?"ol":"ul", items=[];
+        while(i<lines.length && bullet.test(lines[i])){ items.push("<li>"+lines[i].replace(bullet,"")+"</li>"); i++; }
+        out.push("<"+tag+">"+items.join("")+"</"+tag+">");
+      } else if(lines[i].trim()===""){ i++; }
+      else { var para=[]; while(i<lines.length && lines[i].trim()!=="" && !bullet.test(lines[i])){ para.push(lines[i]); i++; } out.push("<p>"+para.join("<br>")+"</p>"); }
+    }
+    return out.join("");
+  }
 
   function ask(q){
     if (busy || !q) return;
@@ -125,7 +144,7 @@
     if (sug) sug.hidden = true;
     if (keyRow) keyRow.hidden = true; // collapse once we have a key → feels like a chat stream
     add("u", q); inEl.value = ""; busy = true;
-    var thinking = add("a", "…");
+    var thinking = add("a", ""); thinking.innerHTML = '<span class="cd-dots"><span></span><span></span><span></span></span>';
     history.push({ role: "user", content: q });
     var sys = "You are a friendly assistant embedded in this web page. Answer the user's questions grounded in the page content below. Be concise and clear. If a question goes beyond the page, you may answer briefly from general knowledge but say so. Never invent specifics.\n\n=== PAGE CONTENT ===\n" + GROUND;
     var req = PROVIDER === "openai" ? {
@@ -144,7 +163,7 @@
       .then(function(data){
         var text = req.pick(data);
         if (!text){ var em = data && data.error && data.error.message ? data.error.message : "No response — check the key and try again."; thinking.className="cd-msg sys"; thinking.textContent="Error: "+em; busy=false; return; }
-        thinking.textContent = text; history.push({ role:"assistant", content:text }); busy=false;
+        thinking.innerHTML = md(text); history.push({ role:"assistant", content:text }); busy=false;
       })
       .catch(function(err){ thinking.className="cd-msg sys"; thinking.textContent="Request failed: "+err.message+" (some networks block direct API calls)."; busy=false; });
   }

@@ -1008,169 +1008,6 @@ fromHash();
 </script>
 
 <script>
-/* ===================== REVIEW MODE (append ?edit to the URL) =====================
-   Self-contained: injects its own styles + UI only when ?edit is present, so normal
-   viewers never see it. Three modes — Interact (demos work), Edit text (contenteditable),
-   Add note (click any text to annotate). Export an edited HTML copy, or a revision brief
-   to paste to an LLM. Liftable as a reusable pattern. */
-(function(){
-  if(!new URLSearchParams(location.search).has('edit'))return;
-  document.body.classList.add('rv-on');
-
-  const css=`
-  body.rv-on #topbar{top:46px}
-  #rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:80;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap;}
-  #rv-bar .rv-tag{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px;}
-  #rv-bar .rv-tag::before{content:"";width:7px;height:7px;border-radius:50%;background:#e6b566;}
-  .rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden;}
-  .rv-seg button{background:none;border:none;color:#cfc9bb;font-family:var(--sans);font-size:12px;padding:6px 11px;cursor:pointer;}
-  .rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600;}
-  .rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:var(--sans);font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer;}
-  .rv-act:hover{background:#4a463d;}
-  #rv-bar .rv-spacer{flex:1;}
-  #rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;}
-  body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text;}
-  body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06);}
-  body.rv-mode-note .slide-inner *:hover{cursor:crosshair;}
-  .rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09);}
-  #rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:79;background:#fffdf8;border-left:1px solid var(--line-strong);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;}
-  #rv-notes.open{transform:none;}
-  #rv-notes h4{font-family:var(--display);font-size:16px;margin:0;padding:16px 18px 10px;}
-  #rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px;}
-  #rv-notes .rv-empty{color:var(--ink-faint);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5;}
-  .rv-note{border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card);}
-  .rv-note .rv-loc{font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment);cursor:pointer;}
-  .rv-note .rv-ex{font-size:12px;color:var(--ink-faint);margin:4px 0;line-height:1.4;}
-  .rv-note .rv-txt{font-size:13.5px;color:var(--ink);line-height:1.45;}
-  .rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint);cursor:pointer;font-size:15px;line-height:1;}
-  #rv-pop{position:fixed;z-index:90;width:280px;background:#fffdf8;border:1px solid var(--line-strong);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none;}
-  #rv-pop.open{display:block;}
-  #rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden;}
-  #rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans);font-size:13px;border:1px solid var(--line-strong);border-radius:8px;padding:8px;box-sizing:border-box;}
-  #rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
-  #rv-pop button{font-family:var(--sans);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong);background:var(--card);}
-  #rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a;}
-  .rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:95;opacity:0;transition:opacity .25s;pointer-events:none;}
-  .rv-toast.show{opacity:1;}`;
-  const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
-
-  const EDIT_SEL='.slide h1,.slide h2,.slide h3,.slide h4,.slide p,.slide .lead,.slide .sub,.exam-col .q,.exam-col .a,.recap-item>span:last-child';
-  const editEls=Array.from(document.querySelectorAll(EDIT_SEL)).filter(el=>!el.closest('#rv-bar,#rv-notes,#rv-pop'));
-  editEls.forEach(el=>el.setAttribute('data-rv-edit',''));
-
-  const bar=document.createElement('div');bar.id='rv-bar';
-  bar.innerHTML='<span class="rv-tag">Review mode</span>'+
-    '<div class="rv-seg" id="rv-seg"><button data-mode="interact" class="on">Preview</button><button data-mode="edit">Edit text</button><button data-mode="note">Add note</button></div>'+
-    '<span class="rv-spacer"></span>'+
-    '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>'+
-    '<button class="rv-act" id="rv-copy">Copy notes for Claude</button>'+
-    '<button class="rv-act" id="rv-download">Download edits</button>'+
-    '<a class="rv-exit" href="'+location.pathname+'">Exit</a>';
-  document.body.appendChild(bar);
-
-  const panel=document.createElement('div');panel.id='rv-notes';
-  panel.innerHTML='<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
-  document.body.appendChild(panel);
-
-  const pop=document.createElement('div');pop.id='rv-pop';
-  pop.innerHTML='<div class="rv-ex" id="rv-pop-ex"></div><textarea id="rv-pop-ta" placeholder="What should change here?"></textarea><div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button><button class="rv-save" id="rv-pop-save">Save note</button></div>';
-  document.body.appendChild(pop);
-
-  let mode='interact', pendingEl=null;
-  const notes=load();
-  const $=id=>document.getElementById(id);
-  function slideIndex(el){return Array.from(document.querySelectorAll('.slide')).indexOf(el.closest('.slide'));}
-  function slideTitle(i){try{return titles[i]||('Slide '+(i+1));}catch(e){return 'Slide '+(i+1);}}
-  function gotoSlide(i){try{go(i);}catch(e){}}
-
-  function setMode(m){
-    mode=m;
-    document.body.classList.toggle('rv-mode-edit',m==='edit');
-    document.body.classList.toggle('rv-mode-note',m==='note');
-    editEls.forEach(el=>el.contentEditable=(m==='edit'?'true':'false'));
-    bar.querySelectorAll('#rv-seg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
-    if(m!=='note')closePop();
-  }
-  bar.querySelectorAll('#rv-seg button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-
-  document.addEventListener('click',e=>{
-    if(mode!=='note')return;
-    if(e.target.closest('#rv-bar,#rv-notes,#rv-pop'))return;
-    const el=e.target.closest('.slide-inner *');
-    if(!el)return;
-    e.preventDefault();e.stopPropagation();
-    pendingEl=el;
-    const ex=(el.innerText||'').trim().replace(/\s+/g,' ').slice(0,140);
-    $('rv-pop-ex').textContent='“'+ex+'”';
-    $('rv-pop-ta').value='';
-    openPop(e.clientX,e.clientY);
-    setTimeout(()=>$('rv-pop-ta').focus(),30);
-  },true);
-
-  function openPop(x,y){
-    pop.classList.add('open');
-    const w=280,h=pop.offsetHeight||190;
-    pop.style.left=Math.max(12,Math.min(x,window.innerWidth-w-12))+'px';
-    pop.style.top=Math.max(54,Math.min(y,window.innerHeight-h-12))+'px';
-  }
-  function closePop(){pop.classList.remove('open');pendingEl=null;}
-  $('rv-pop-cancel').onclick=closePop;
-  $('rv-pop-save').onclick=()=>{
-    const txt=$('rv-pop-ta').value.trim();
-    if(!txt||!pendingEl){closePop();return;}
-    const i=slideIndex(pendingEl);
-    const ex=(pendingEl.innerText||'').trim().replace(/\s+/g,' ').slice(0,140);
-    pendingEl.classList.add('rv-annotated');
-    notes.push({slideIdx:i,title:slideTitle(i),excerpt:ex,note:txt});
-    closePop();save();renderNotes();panel.classList.add('open');toast('Note added');
-  };
-
-  const listEl=$('rv-list');
-  function renderNotes(){
-    $('rv-toggle-notes').textContent='Notes ('+notes.length+')';
-    if(!notes.length){listEl.innerHTML='<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text on the page to leave a comment for the LLM.</div>';return;}
-    listEl.innerHTML='';
-    notes.forEach((n,i)=>{
-      const d=document.createElement('div');d.className='rv-note';
-      d.innerHTML='<button class="rv-del" title="Delete">×</button><div class="rv-loc">Slide '+(n.slideIdx+1)+' · '+esc(n.title)+'</div><div class="rv-ex">“'+esc(n.excerpt)+'”</div><div class="rv-txt">'+esc(n.note)+'</div>';
-      d.querySelector('.rv-loc').onclick=()=>gotoSlide(n.slideIdx);
-      d.querySelector('.rv-del').onclick=()=>{notes.splice(i,1);save();renderNotes();};
-      listEl.appendChild(d);
-    });
-  }
-  $('rv-toggle-notes').onclick=()=>panel.classList.toggle('open');
-
-  $('rv-copy').onclick=()=>{
-    if(!notes.length){toast('No notes yet');return;}
-    let out='# Revision requests — RAG explainer\n('+notes.length+' annotation'+(notes.length>1?'s':'')+' from a reviewer)\n\n';
-    notes.forEach((n,i)=>{out+=(i+1)+'. Slide '+(n.slideIdx+1)+' — "'+n.title+'"\n   Text: "'+n.excerpt+'"\n   Change: '+n.note+'\n\n';});
-    out+='Please apply these to rag-explainer.html, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.';
-    copy(out);toast('Revision brief copied — paste it to Claude');
-  };
-
-  $('rv-download').onclick=()=>{
-    const was=mode;setMode('interact');
-    const clone=document.documentElement.cloneNode(true);
-    clone.querySelectorAll('#rv-bar,#rv-notes,#rv-pop,.rv-toast').forEach(n=>n.remove());
-    clone.querySelectorAll('[data-rv-edit]').forEach(n=>{n.removeAttribute('data-rv-edit');n.removeAttribute('contenteditable');});
-    clone.querySelectorAll('.rv-annotated').forEach(n=>n.classList.remove('rv-annotated'));
-    const b=clone.querySelector('body');if(b)b.classList.remove('rv-on','rv-mode-edit','rv-mode-note');
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob(['<!DOCTYPE html>\n'+clone.outerHTML],{type:'text/html'}));
-    a.download='rag-explainer-edited.html';a.click();
-    setMode(was);toast('Downloaded edited copy');
-  };
-
-  function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
-  function save(){try{localStorage.setItem('rv-notes',JSON.stringify(notes));}catch(e){}}
-  function load(){try{return JSON.parse(localStorage.getItem('rv-notes')||'[]');}catch(e){return [];}}
-  function copy(t){try{navigator.clipboard.writeText(t);}catch(e){}}
-  let tt;function toast(m){let el=document.querySelector('.rv-toast');if(!el){el=document.createElement('div');el.className='rv-toast';document.body.appendChild(el);}el.textContent=m;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),1900);}
-
-  renderNotes();
-})();
-</script>
-<script>
 /* =====================================================================
    review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
 
@@ -1299,14 +1136,14 @@ fromHash();
   function markEditable() {
     // Skip the overlay's own UI, interactive controls, and anything already
     // covered by an editable ancestor (so we don't double-mark nested text).
-    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,button,a,input,textarea,select,label,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
     function mark(el) {
       if (el.closest(skip)) return;
       el.setAttribute("data-rv-edit", "");
     }
     // 1) Known text-bearing elements (broadened well past the old p/h/li set:
     //    table cells, summaries, definition lists, captions all hold prose too).
-    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,[data-rv-edit-include]";
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
     Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
     // 2) Generic containers (div/section/etc.) that hold their OWN text directly
     //    rather than via a block child — extremely common in AI-generated markup,
@@ -1406,6 +1243,16 @@ fromHash();
     $("rv-pop-ta").value = "";
     openPop(e.clientX, e.clientY);
     setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
   }, true);
 
   function saveNote() {
@@ -1521,8 +1368,10 @@ fromHash();
   function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
   function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
   function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
-  function save() { try { localStorage.setItem("rv-notes", JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
-  function load() { try { return JSON.parse(localStorage.getItem("rv-notes") || "[]"); } catch (e) { return []; } }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
   function copy(t) {
     var ok = false;
     try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}

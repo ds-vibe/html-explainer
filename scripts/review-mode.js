@@ -126,14 +126,14 @@
   function markEditable() {
     // Skip the overlay's own UI, interactive controls, and anything already
     // covered by an editable ancestor (so we don't double-mark nested text).
-    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,button,a,input,textarea,select,label,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
     function mark(el) {
       if (el.closest(skip)) return;
       el.setAttribute("data-rv-edit", "");
     }
     // 1) Known text-bearing elements (broadened well past the old p/h/li set:
     //    table cells, summaries, definition lists, captions all hold prose too).
-    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,[data-rv-edit-include]";
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
     Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
     // 2) Generic containers (div/section/etc.) that hold their OWN text directly
     //    rather than via a block child — extremely common in AI-generated markup,
@@ -233,6 +233,16 @@
     $("rv-pop-ta").value = "";
     openPop(e.clientX, e.clientY);
     setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
   }, true);
 
   function saveNote() {
@@ -348,8 +358,10 @@
   function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
   function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
   function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
-  function save() { try { localStorage.setItem("rv-notes", JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
-  function load() { try { return JSON.parse(localStorage.getItem("rv-notes") || "[]"); } catch (e) { return []; } }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
   function copy(t) {
     var ok = false;
     try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
