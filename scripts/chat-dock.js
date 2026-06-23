@@ -122,7 +122,9 @@
 
   var history = [], busy = false;
   function add(role, text){ var d=document.createElement("div"); d.className="cd-msg "+role; d.textContent=text; log.appendChild(d); log.scrollTop=log.scrollHeight; return d; }
-  // minimal, safe markdown: escape first, then **bold**, `code`, bullet/numbered lists, paragraphs
+  // minimal, safe markdown: escape FIRST, then **bold**, `code`, bullet/numbered lists, paragraphs.
+  // SECURITY: never extend this to emit raw HTML, links, or images — escaping-first is what stops a
+  // hostile/poisoned model reply from injecting script or exfiltrating via an auto-loaded URL.
   function md(s){
     var lines = esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").split(/\n/);
     var out=[], i=0, bullet=/^\s*([-•*]|\d+[.)])\s+/;
@@ -153,6 +155,8 @@
       body: { model: MODEL, max_tokens: 700, messages: [{role:"system",content:sys}].concat(history) },
       pick: function(d){ return d && d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content; }
     } : {
+      // SECURITY: the "dangerous-direct-browser-access" header is safe ONLY because `key` is the
+      // reader's OWN BYOK key (held in memory, theirs to spend). NEVER ship your own key this way.
       url: "https://api.anthropic.com/v1/messages",
       headers: { "content-type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
       body: { model: MODEL, max_tokens: 700, system: sys, messages: history },

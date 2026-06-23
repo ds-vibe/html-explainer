@@ -32,11 +32,15 @@ filling in blanks. The things that matter most:
 
 ---
 
-> **STOP — do Phase 0 before writing any HTML or running any research.** Your FIRST response
-> to a build request must be a short scoping interview, asked as ONE message, covering **all
-> six** must-ask questions below — not one or two of your own invention, and not a jump
-> straight to building or web-searching. Quietly defaulting these (especially grounding,
-> format, and style) is the #1 reason the result comes out wrong.
+> **STOP — do Phase 0 before writing any HTML or running any research.** Your FIRST response to
+> a build request must be a short scoping interview covering **all six** must-ask questions below.
+> **Use the environment's richest input UI:** where you have clickable choices / multiple-choice
+> cards (cowork, the Claude app), present each axis as its own **option menu** with the recommended
+> default pre-selectable (batch as many per round as the tool allows — don't stop at two); in
+> plain-text chat (e.g. Claude Code), ask all six in **one consolidated message**. Either way:
+> cover all six, don't substitute one or two of your own, and don't jump straight to building or
+> web-searching. Quietly defaulting these (especially grounding, format, style) is the #1 reason
+> the result comes out wrong.
 >
 > 1. **Grounding** — does the user have their own material to ground in, should you research
 >    it from scratch, or both?
@@ -56,14 +60,14 @@ filling in blanks. The things that matter most:
   load-bearing facts (dates, numbers, current state, anything past your training cutoff).
   Ground in the user's provided material and/or web-search / fetch primary sources and
   verify. A confident-but-wrong fact destroys an explainer's whole reason to exist.
-- **Run a tight scoping interview before building — and present it as ONE consolidated
-  message, not a drip of one-at-a-time questions.** There are two tiers: a **must-ask set**
-  you cover on *every* build, and a **default-unless-relevant set** you only raise when the
-  topic calls for it. Recommend a sensible default for each so the user can one-click it;
-  never make them design it. **Do NOT collapse the must-ask set down to one or two
-  questions** — quietly defaulting these (especially grounding, format, and style) is the
-  single most common way the result comes out wrong. Asking ~5–6 in one message is correct,
-  not excessive.
+- **Run a tight scoping interview before building.** Present the axes using the environment's
+  richest input UI — **clickable option menus** (one per axis, default pre-selectable) where they
+  exist (cowork, the Claude app); otherwise one consolidated text message (not a drip of
+  one-at-a-time questions). Two tiers: a **must-ask set** covered on *every* build, and a
+  **default-unless-relevant set** raised only when the topic calls for it. Recommend a default for
+  each (one click); never make them design it. **Do NOT collapse the must-ask set to one or two
+  questions** — quietly defaulting these (especially grounding, format, and style) is the single
+  most common way the result comes out wrong.
 
   **Always ask (every build — do not skip, do not collapse):**
   - **Source material / grounding** — *ask first; it decides where the facts come from.*
@@ -144,10 +148,15 @@ filling in blanks. The things that matter most:
   never *replace* it, and the small nav/brand label doesn't count as the title. Keep title and
   intro **editorial**, not slogan-y; introduce the model **once, in its own section** — don't
   stack 2–3 metaphors or let it become a slogan/joke/precious copy ("the off-switch", "changes
-  outfits", "a wanted poster"). The model is a teaching tool, not a tagline.
+  outfits", "a wanted poster"). The model is a teaching tool, not a tagline. **State it once, then
+  drop it** — don't dress the whole page in its costume (themed "RECIPE:" cards, badges repeating
+  the metaphor, cutesy step labels like "throw the card away"); after the intro, use normal,
+  professional section treatments.
 - **Progressive complexity:** each section assumes only what earlier sections taught.
   Number or signpost the path ("Start here · 1 of 3") when it helps. Map the **concept
   dependencies** first — what must the reader grasp before X? — and order sections to honor them.
+  Dependencies guide section *order* only — **never print "depends on:" labels** on the page;
+  that exposes the scaffolding.
 - **Optional: a "common misconception" callout** — name a classic wrong belief and correct it; only where one truly exists, never forced.
 - **Layered depth (3 layers):** (1) plain-language always visible, (2) "go deeper"
   expanders for detail, (3) the raw source/data one click away (drawer/modal/link).
@@ -255,8 +264,17 @@ nitpick. Do not deliver until all pass:
       no 2×2 bento grid of identical soft-shadow cards, no drop-shadow-on-everything.
 - [ ] **The JS actually runs** — no syntax errors (watch unescaped quotes/apostrophes in JS
       strings), no undefined references; every interactive widget works, not just renders.
-- [ ] **Visual variety & a learnable semantic language** — sections don't all look identical;
-      color carries meaning consistently.
+- [ ] **Visual variety & a learnable semantic language** — sections don't all look identical
+      (vary the treatment — not every section a full-width band of cards); color carries meaning
+      consistently.
+- [ ] **Containment, unique IDs & rendered widgets** *(critical with no browser — trace each by
+      hand)*. Interactive content (quiz options, cards, rows) sits **inset within the content
+      column** — verify its left/right edges are within the page gutter, not merely that there's no
+      horizontal scroll (full-width spill causes no scroll but still looks broken). Every widget
+      actually renders content (no empty cards / blank quiz). **Never reuse an `id`** on a wrapper
+      and its inner content — `getElementById` returns the first, so the widget renders into the
+      wrong (often full-width) element → blank or edge-bleeding. This single bug causes both
+      failures.
 - [ ] **Contrast — computed, not eyeballed.** Estimate the WCAG ratio for each text/background
       pair (≥4.5:1 body, ≥3:1 large). Catch the classic fail: a highlight reused on the wrong
       surface (white-on-light, dark-on-dark). Re-derive ink per surface (bands, chips, inverted
@@ -423,8 +441,10 @@ inject their own themed UI, and adapt to light/dark. When inlining, escape any l
 
 - **★ Playable micro-demos (learn-by-doing) — reach for these first.** The highest-impact
   pattern: a small, focused widget that lets the reader *manipulate something and watch the
-  result update live*. They turn passive reading into "oh, I get it." Build one per key
-  concept where feasible. Forms that work well:
+  result update live*. They turn passive reading into "oh, I get it." **Aim for at least 2
+  distinct playable micro-demos** (separate from the quiz) where the topic supports it — roughly
+  one per key concept; ship a single demo only when the topic genuinely can't support more, and
+  say why. Forms that work well:
   - **Fill-in / pick-the-answer:** "what comes next?" with selectable options that react.
   - **Live input → live output:** a text box or value the reader edits, output recomputes
     instantly (e.g. type a sentence → see it transform).
@@ -448,12 +468,8 @@ inject their own themed UI, and adapt to light/dark. When inlining, escape any l
   Keep questions about understanding, not trivia recall; show a friendly final tally;
   let the reader retry. Keep the questions in **structured data** (array of
   `{q, options, answer, why}`) so they're easy to edit and re-order.
-- **Chat / "ask the page" (optional):** for the single-file, no-server case use the bundled
-  **`scripts/chat-dock.js`** (see its section above) — a grounded BYOK chat dock. For a
-  shared, managed-key bot, use a server route (framework build) and ground it in your curated
-  content (inject the corpus or retrieve over it); render citations. With **BYOK**, keep the
-  key **in memory only** (no localStorage/cookies), send it as a per-request header over
-  HTTPS, use it transiently, and **never log or store it server-side**.
+- **Chat / "ask the page" (optional):** single-file → inline `scripts/chat-dock.js` (grounded BYOK);
+  shared/managed-key → a server route (framework build). See *Drop-in widgets*.
 
 ## Anti-patterns (the mistakes this skill exists to prevent)
 
@@ -465,36 +481,22 @@ inject their own themed UI, and adapt to light/dark. When inlining, escape any l
   introducing a framing in the intro, then abandoning it instead of carrying it through.
 - Over-engineered dataviz (treemap/sunburst when a table would be clearer).
 - Declaring it done without ever rendering and *looking* at it.
-- A wall of uniform text/cards with no visual variety or hierarchy.
-- **"AI slop" visual tells** (treat as blockers — they destroy trust on sight): **emoji used
-  as icons/UI**; decorative **pastel/iridescent gradients** or rainbow-colored text/rows;
-  the default **2×2 bento grid of identical soft-shadow cards**; a drop shadow on every box;
-  "✨ AI-powered" flourishes. Use a cohesive SVG icon set (or none), an intentional semantic
-  palette, and varied layouts instead.
-- **A narrow ~720px column stranded in wide empty margins** — let the centerpiece and section
-  bands use the horizontal space (prose stays ~60–70ch; the page does not).
-- **Washed-out / illegible text** — a highlight or accent color reused on a surface it doesn't
-  contrast with (white-on-light, dark-on-dark), or a dark-mode color left on a light surface.
-- **Cramped or inconsistent spacing** — magic-number padding, a hero whose title/subtitle
-  crowd each other, uneven gaps. Drive spacing from a scale.
+- **The visual-slop & layout sins** — emoji-as-icons, decorative gradients/rainbow color, the
+  generic 2×2 bento grid, drop-shadow-on-everything, washed-out text, cramped/uneven spacing, a
+  lonely ~720px column, edge-bleeding widgets: all are **blockers in the Phase-4 pre-flight** (see
+  there for the specifics) — don't ship them.
 - Citations/claims with no traceable source.
 - Shipping a file that isn't actually reachable as a URL when the user wants to share it.
-- Putting an LLM/provider **key in client code** (e.g. a chat feature calling the provider
-  directly from the browser) → leaked key. Keep keys server-side, or use BYOK held in memory
-  only.
-- A slide deck that **traps the keyboard**, can't be deep-linked, or hides all sense of
-  progress — a deck must be at least as navigable as the scroll it replaced.
+- Putting an LLM/provider **key in client code** → leaked key. Keep keys server-side, or BYOK in
+  memory only.
+- A slide deck that **traps the keyboard**, can't be deep-linked, or hides progress.
 - A quiz placed *before* its teaching, or one that scores without explaining *why*.
 
 ## Definition of done
 
-Researched & fact-checked · sequenced for a newcomer with an expert fast-path · visually
-polished with a consistent learnable language · **no AI-slop tells** (no emoji icons, no
-decorative gradients/rainbow color, no generic bento-card grid) · **horizontal space used
-well** (composed and proportioned, not a narrow column in empty margins) · **legible on every
-surface** (contrast ≥4.5:1 checked per surface and in both modes — no washed-out text) ·
-**spacing on a consistent scale** (no cramped/uneven rhythm) · every interactive state looks
-good on desktop and mobile (verified by screenshot, or by computed audit + a human look when no
-browser is available) · sources cited · reachable/shareable.
-Format-specific: if a **deck**, keyboard + swipe + deep-link + progress all work;
-if a **quiz**, it gives instant feedback with a one-line *why* and lets the reader retry.
+Ship only when **every Phase-4 Step-0 pre-flight box passes**, plus: researched & fact-checked,
+sources cited; sequenced for a newcomer with an expert fast-path; **≥2 playable demos** where the
+topic supports it; every interactive state verified by screenshot (or computed audit + a human
+look when no browser); and the file is delivered (reachable/shareable if a URL was wanted).
+Format-specific: a **deck** has working keyboard + swipe + deep-link + progress; a **quiz** gives
+instant feedback with a *why* and allows retry.
