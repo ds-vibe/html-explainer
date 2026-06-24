@@ -56,11 +56,10 @@ blanks. What matters most:
   menu** where the environment offers one (cowork, the app); otherwise list them in one message.
   Recommend a default for each (one click); cover all six, never collapse to one or two:
   - **Grounding** — does the user have their own material (doc, PDF, notes, URL) to ground in?
-    If they do, treat it as the **primary source of truth**. If the topic is **settled**, the
-    default answer is already known — "No, draw from training data" — so ask only "Do you have
-    your own material to ground in?" with that as the recommended default. Do **not** offer
-    "Research from scratch" as an option for settled topics; research is already off the table.
-    Only offer the research option when the topic is dynamic.
+    If they do, treat it as the **primary source of truth**. Ask this as: **"Do you have your own
+    material to ground in?"** with options "No" (recommended default) and "Yes — I'll provide it".
+    Do **not** mention research as an option here — the research decision is already handled by the
+    settled/dynamic gate above and is invisible to the user.
   - **Audience & depth** — newcomer / practitioner / both-layered, and how deep. Drives sequencing.
   - **Format / reading shape** — scrolling page (default) / slide deck / hybrid. Changes the whole
     IA. See *Format & reading shape*. **Must be its own question — never combine with style.**
