@@ -8,8 +8,7 @@ It's a **process, not a template**: the quality comes from an iterative loop (re
 architect for learning → 10× the visual design → render-and-actually-look → revise), not
 from filling in blanks.
 
-➡️ **See it in action: [live examples gallery](https://ds-vibe.github.io/html-explainer/)**
-&nbsp;·&nbsp; source in [`examples/`](./examples)
+**See it in action: [live examples gallery](https://ds-vibe.github.io/html-explainer/)**
 
 ## What it does
 
@@ -70,7 +69,7 @@ git clone https://github.com/ds-vibe/html-explainer ~/.claude/skills/html-explai
 It loads automatically when a request matches (e.g. "make an interactive explainer about X").
 
 > **Heads up — a build takes a few minutes.** It's doing real work: generating the page, then
-> rendering it in a headless browser for the quality loop. The **first** run is slower still — a
+> rendering it in a headless browser for the quality loop. The **first** run is slowest — a
 > one-time Playwright + Chromium install (~100–200 MB), fully automatic. *(Speeding up generation is
 > something we're actively working on.)* The Claude **app** has no render step, so it skips the
 > browser install.
