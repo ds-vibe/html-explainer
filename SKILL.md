@@ -85,7 +85,7 @@ blanks. What matters most:
   A normal chat with a person (including the Claude app) is **NOT** this case: ask the must-ask set.
 - Collect a **source list** as you go; every non-obvious claim should be traceable.
 
-> **Once the interview is answered: think, then immediately write the file. Do NOT output your architecture plan, section order, design token choices, or any "Phase 1/2 thinking" as chat text. All planning happens silently. The next thing after the interview response must be a Write call.**
+> **Once the interview is answered: think, then immediately write the file. Do NOT output your architecture plan, section order, design token choices, or any "Phase 1/2 thinking" as chat text. All planning happens silently. You may output ONE scope line first — `Scope: [N sections, centerpiece: X, ~N lines]` — nothing more. The next output after that must be a Write call. If your plan would produce a raw file over 700 lines, cut scope before writing.**
 
 ## Phase 1 — Architecture for learning (sequence before you style)
 
@@ -202,6 +202,9 @@ not deliver until all pass:
       bento grid of identical soft-shadow cards, no drop-shadow-on-everything.
 - [ ] **The JS actually runs** — no syntax errors (watch unescaped quotes/apostrophes in JS
       strings), no undefined refs; every interactive widget works, not just renders.
+- [ ] **Canvas/WebGL demos auto-initialize on load.** Any `<canvas>` must render its first frame on
+      `DOMContentLoaded` or `window.onload` — never require a click/hover to show the first frame.
+      Check: does `getContext()` and the first draw call happen inside a load-time listener?
 - [ ] **Visual variety & a learnable semantic language** — sections don't all look identical (vary
       the treatment — not every section a full-width band); color carries meaning consistently.
 - [ ] **Containment, unique IDs & rendered widgets** *(critical with no browser)*. Interactive
@@ -222,6 +225,8 @@ not deliver until all pass:
       (stacks cleanly, no horizontal overflow, tap targets ≥40px).
 - [ ] **Review & edit overlay inlined** — `review-mode.js` is in the page by default (with `<body
       data-review-toggle>`) unless the user opted out; the "Review & edit" launcher should appear.
+
+> **STOP — you must take a screenshot before declaring done.** In Claude Code: `node scripts/shoot.mjs file://<absolute-path-to-assembled.html> <outDir>` then Read every image. Specifically look for: blank sections, empty canvas elements, clipped text, zero-height containers. If any are found, fix and re-screenshot. Do NOT hand over the file until you have seen the screenshots and found no major visual bugs. Skipping this is the #1 reason builds ship broken.
 
 Then run the look-and-fix loop:
 1. **Render it for real and look.** Headless-browser screenshot — desktop *and* mobile — including
