@@ -104,16 +104,25 @@
     launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
     launch.onclick = function () { launch.style.display = "none"; activate(); };
     document.body.appendChild(launch);
-    // Position just below any fixed/sticky top nav so it never collides
+    // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
+    // Scrolling pages: position just below any fixed/sticky top nav instead.
     requestAnimationFrame(function () {
-      var navBottom = 0;
-      document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
-        var s = getComputedStyle(el);
-        if (s.position === "fixed" || s.position === "sticky") {
-          navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
-        }
-      });
-      if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
+      if (isDeck) {
+        launch.style.top = "auto";
+        launch.style.right = "auto";
+        launch.style.bottom = "16px";
+        launch.style.left = "14px";
+      } else {
+        var navBottom = 0;
+        document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+          var s = getComputedStyle(el);
+          if (s.position === "fixed" || s.position === "sticky") {
+            navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+          }
+        });
+        if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      }
     });
   } else {
     activate();
