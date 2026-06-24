@@ -201,6 +201,12 @@ not deliver until all pass:
       (white-on-light, dark-on-dark). Re-derive ink per surface; if light **and** dark, both pass.
 - [ ] **Spacing on a scale, not cramped.** Even section padding; hero eyebrow→title→subtitle→meta
       clearly separated; equal gaps in repeated groups; nothing touching edges.
+- [ ] **No run-together text (catchable with no browser).** Any inline label directly followed by
+      another inline piece — a bold name + its value, name+duration, number+unit — needs a separating
+      space **or** a margin/gap, in *both* the source and the CSS. Scan every `<span>`/`<b>`/`<strong>`
+      immediately followed by another inline element: if there's no whitespace text node between the
+      tags and no `margin`/`gap` on either, they render touching (the "Egg3–5 days" bug). Add a space
+      or a gap.
 - [ ] **Title & voice.** `<h1>` plainly names the topic (not a bare metaphor; nav brand doesn't
       count); title/intro editorial not slogan-y; the model appears once in the body, not stacked.
 - [ ] **Visuals match the words.** Every diagram/chart/demo/metaphor depicts the claim — direction,
@@ -214,7 +220,15 @@ Then run the look-and-fix loop:
 1. **Render it for real and look.** Headless-browser screenshot — desktop *and* mobile — including
    **every interactive state** (expanded, filtered, drawers/modals open, nav scrolled). Helper:
    `node scripts/shoot.mjs <url> <outDir>` (Playwright). Then **Read the screenshots** and judge.
-   **No browser (e.g. the Claude app)?** Run Step 0 rigorously, **computing contrast from your own
+   **First, a cheap capability check — never download a browser you can't run.** Before installing
+   anything, check (≈1 s, no download): is a browser already present (`which chromium google-chrome
+   chromium-browser`)? If not, could one even run here — is `sudo` available and are core libs present
+   (e.g. `ldconfig -p | grep -q libnss3`)? **If there's no browser and it can't run (no sudo / missing
+   libs — typical of cowork / sandboxed app sessions), SKIP the ~190 MB Playwright download entirely**
+   and go straight to the static path below. **Never loop/retry the install** — a browser that can't
+   launch won't become launchable, and the retries burn minutes for nothing. Only run
+   `npx playwright install chromium` when the cheap check says it could actually work (e.g. Claude Code).
+   **No browser available?** Run Step 0 rigorously, **computing contrast from your own
    tokens**; then — since the user sees what you can't — ask them to look or paste a screenshot, and
    say the visual pass didn't run. If any code execution exists, render there first.
 2. **Critique like a human seeing it cold:** What's confusing, barren, cramped, misaligned,
