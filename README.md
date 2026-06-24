@@ -69,11 +69,11 @@ git clone https://github.com/ds-vibe/html-explainer ~/.claude/skills/html-explai
 
 It loads automatically when a request matches (e.g. "make an interactive explainer about X").
 
-> **Heads up — the first build takes a few minutes.** For the quality loop, Claude Code renders
-> the page in a headless browser, so on the *first* run it installs Playwright + Chromium (a
-> one-time ~100–200 MB download). It's fully automatic — nothing to set up — but that first run is
-> slow while it downloads; every run after is fast. (The Claude **app** skips all of this — it has
-> no render step.)
+> **Heads up — a build takes a few minutes.** It's doing real work: generating the page, then
+> rendering it in a headless browser for the quality loop. The **first** run is slower still — a
+> one-time Playwright + Chromium install (~100–200 MB), fully automatic. *(Speeding up generation is
+> something we're actively working on.)* The Claude **app** has no render step, so it skips the
+> browser install.
 
 **Claude desktop / web app** — download the prebuilt
 [`html-explainer-skill.zip`](https://github.com/ds-vibe/html-explainer/releases/latest) and upload
