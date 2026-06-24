@@ -55,16 +55,20 @@ blanks. What matters most:
 - **The six must-ask axes (from the gate above), in detail.** Present each as a **clickable option
   menu** where the environment offers one (cowork, the app); otherwise list them in one message.
   Recommend a default for each (one click); cover all six, never collapse to one or two:
-  - **Grounding** — material to ground in (doc, PDF, dataset, notes, URL, existing page), research
-    from scratch, or both? If they have material, treat it as the **primary source of truth** —
-    draw specifics from it, cite within it, don't invent beyond it. Default: ground in what they
-    give, else research from primary sources.
+  - **Grounding** — does the user have their own material (doc, PDF, notes, URL) to ground in?
+    If they do, treat it as the **primary source of truth**. If the topic is **settled**, the
+    default answer is already known — "No, draw from training data" — so ask only "Do you have
+    your own material to ground in?" with that as the recommended default. Do **not** offer
+    "Research from scratch" as an option for settled topics; research is already off the table.
+    Only offer the research option when the topic is dynamic.
   - **Audience & depth** — newcomer / practitioner / both-layered, and how deep. Drives sequencing.
   - **Format / reading shape** — scrolling page (default) / slide deck / hybrid. Changes the whole
-    IA. See *Format & reading shape*.
+    IA. See *Format & reading shape*. **Must be its own question — never combine with style.**
   - **Visual style / vibe** — the most personal axis. Offer presets + a default: minimal-editorial
     (clean, Stripe-docs — good default) / bold-playful / technical-dark / brand-matched (they supply
-    colors/font/URL). All style in centralized tokens.
+    colors/font/URL). All style in centralized tokens. **Must be its own question — never combine
+    with format.** Each axis has 4 options; collapsing them into format+style combos cuts half the
+    choices and removes the user's ability to mix (e.g. slide deck + technical-dark).
   - **Quiz / knowledge check?** — don't assume no. A short test-yourself (MC or fill-in, instant
     right/wrong + a one-line *why*) makes it stickier and works in a pure file. Default **yes, small
     end-of-section or end-of-page** unless declined or it's reference-style.
