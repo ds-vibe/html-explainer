@@ -14,7 +14,7 @@
         <script>
           window.CHAT_DOCK = {
             provider: "anthropic",          // "anthropic" (default) | "openai"
-            title: "Ask the page",
+            title: "Ask",
             placeholder: "Ask a question…",
             suggestions: ["…","…"],         // quick-start prompts
             // model, accent, grounding, groundChars all optional
@@ -43,7 +43,7 @@
 
   var PROVIDER = (cfg.provider || "anthropic").toLowerCase();
   var MODEL = cfg.model || (PROVIDER === "openai" ? "gpt-5.4" : "claude-sonnet-4-6");
-  var TITLE = cfg.title || "Ask the page";
+  var TITLE = cfg.title || "Ask";
   var PLACEHOLDER = cfg.placeholder || "Ask a question…";
   var SUGGEST = cfg.suggestions || [];
   var ACCENT = cfg.accent || "var(--accent,#3b82f6)";
