@@ -253,7 +253,7 @@ input[type=range]{width:100%; accent-color:var(--ox); height:26px}
   padding:14px clamp(18px,4vw,40px); pointer-events:none}
 .brand{font-family:var(--sans); font-weight:600; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint)}
 .brand b{color:var(--ox)}
-.counter{font-family:var(--sans); font-size:.78rem; letter-spacing:.06em; color:var(--ink-faint)}
+.counter{position:fixed; bottom:20px; left:18px; z-index:20; font-family:var(--sans); font-size:.78rem; letter-spacing:.06em; color:var(--ink-faint); pointer-events:none}
 .counter b{color:var(--ink); font-weight:600}
 body.on-dark-slide .brand{color:var(--on-dark-soft)}
 body.on-dark-slide .brand b{color:var(--gold-bright)}
@@ -279,7 +279,7 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
 
 .progress{position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--ox),var(--gold)); z-index:21; transition:width .4s ease}
 
-.hint{position:fixed; bottom:64px; left:50%; transform:translateX(-50%); z-index:19; font-family:var(--sans); font-size:.76rem; color:var(--ink-faint); display:flex; gap:8px; align-items:center; transition:opacity .5s}
+.hint{position:fixed; bottom:112px; left:50%; transform:translateX(-50%); z-index:19; font-family:var(--sans); font-size:.76rem; color:var(--ink-faint); display:flex; gap:8px; align-items:center; transition:opacity .5s}
 .kbd{font-family:var(--sans); font-size:.72rem; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:1px 6px; color:var(--ink-soft); background:var(--paper)}
 
 /* ---------- responsive ---------- */
@@ -309,8 +309,8 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
 <div class="progress" id="progress"></div>
 <div class="topbar">
   <div class="brand"><b>◆</b> <span class="full">The Gutenberg Press &nbsp;·&nbsp;</span> An Interactive Field Guide</div>
-  <div class="counter"><b id="cNow">1</b> / <span id="cTot">13</span></div>
 </div>
+<div class="counter"><b id="cNow">1</b> / <span id="cTot">13</span></div>
 
 <div class="deck">
 <div class="track" id="track">
@@ -1479,5 +1479,9 @@ window.CHAT_DOCK={
 
 </script>
 
+<style>
+/* This deck's nav is bottom-center, so top-right is clear — keep review button there */
+#rv-launch{top:8px!important;right:14px!important;bottom:auto!important;left:auto!important}
+</style>
 </body>
 </html>
