@@ -241,9 +241,16 @@ Then run the look-and-fix loop:
 1. **Render it for real and look.** Headless-browser screenshot — desktop *and* mobile — including
    **every interactive state** (expanded, filtered, drawers/modals open, nav scrolled). Helper:
    `node scripts/shoot.mjs <url> <outDir>` (Playwright). Then **Read the screenshots** and judge.
-   **No browser (e.g. the Claude app)?** Run Step 0 rigorously, **computing contrast from your own
-   tokens**; then — since the user sees what you can't — ask them to look or paste a screenshot, and
-   say the visual pass didn't run. If any code execution exists, render there first.
+   **Cheap capability check first — do this before any install attempt:** run
+   `which chromium google-chrome chromium-browser 2>/dev/null | head -1` (≈1s, no download).
+   If nothing is found, **do not attempt to install Playwright or download Chromium** — bail
+   immediately to the no-browser path below. Cowork and sandboxed environments cannot run a
+   browser; the download will fail or time out every time, and retrying wastes 6–10 minutes for
+   nothing. **One failure = bail. Never retry.**
+   Only run `npx playwright install chromium` when the cheap check confirms a browser *could*
+   work (e.g. Claude Code on a real machine).
+   **No browser?** Run Step 0 rigorously, computing contrast from your own tokens; then tell the
+   user the visual pass didn't run and ask them to open the file and confirm demos render.
 2. **Critique like a human seeing it cold:** What's confusing, barren, cramped, misaligned,
    low-contrast? Is the *order* right? Would a newcomer follow it? Does the mental model land and hold?
 3. **10x the weak spots** — then re-screenshot. Repeat until you'd ship it proudly unprompted.
