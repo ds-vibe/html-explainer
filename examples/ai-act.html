@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How the EU AI Act Works — A Practical Breakdown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* spacing scale (4/8) */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px; --s9:96px; --s10:128px;
+  /* surfaces & ink */
+  --paper:#FBF8F2;
+  --paper-2:#F3EEE3;
+  --ink:#221F1A;
+  --ink-2:#4A453C;
+  --ink-3:#736C5E;
+  --line:#E2DACB;
+  --line-2:#D2C8B4;
+  --card:#FFFFFF;
+  /* semantic risk palette */
+  --red:#B42318; --red-bg:#FBEAE8; --red-line:#F0C2BC;
+  --amber:#9A5B0B; --amber-bg:#FBF0E0; --amber-line:#EFD3A8;
+  --blue:#1F5C99; --blue-bg:#E7F0F8; --blue-line:#BFD7EC;
+  --green:#2E6B43; --green-bg:#E6F1E9; --green-line:#BEDCC6;
+  --violet:#6B3FA0; --violet-bg:#F0E9F7; --violet-line:#D8C8EC;
+  /* type */
+  --serif:"Fraunces",Georgia,serif;
+  --sans:"Inter",system-ui,sans-serif;
+  --maxw:1180px; --measure:66ch;
+  --shadow:0 1px 2px rgba(34,31,26,.04),0 8px 28px rgba(34,31,26,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:17px;overflow-x:hidden}
+@media (max-width:640px){body{font-size:16px}}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.12;letter-spacing:-.01em}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s5)}
+.measure{max-width:var(--measure)}
+.eyebrow{font-family:var(--sans);font-weight:600;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ---------- nav ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(251,248,242,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:var(--s5);height:54px}
+.nav .brand{font-family:var(--serif);font-weight:600;font-size:1rem;letter-spacing:-.01em;white-space:nowrap}
+.nav .links{display:flex;gap:var(--s5);margin-left:auto;overflow-x:auto}
+.nav .links a{color:var(--ink-2);font-size:.84rem;font-weight:500;white-space:nowrap}
+.nav .links a:hover{color:var(--ink);text-decoration:none}
+@media (max-width:880px){.nav .links{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:var(--s9) 0 var(--s8);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero .wrap{position:relative;z-index:2}
+.hero h1{font-size:clamp(2.5rem,6vw,4.4rem);font-weight:600;max-width:16ch}
+.hero .lede{font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--ink-2);margin-top:var(--s5);max-width:54ch;line-height:1.45}
+.hero .meta{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);margin-top:var(--s6)}
+.hero .meta .m{display:flex;flex-direction:column;gap:2px;padding-right:var(--s5);border-right:1px solid var(--line-2)}
+.hero .meta .m:last-child{border-right:none}
+.hero .meta .k{font-size:1.5rem;font-family:var(--serif);font-weight:600;line-height:1}
+.hero .meta .l{font-size:.78rem;color:var(--ink-3);letter-spacing:.02em}
+.hero-bands{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;opacity:.5}
+.hero-bands span{flex:1}
+.hero-bands span:nth-child(1){background:linear-gradient(90deg,transparent 60%,var(--red-bg))}
+.hero-bands span:nth-child(2){background:linear-gradient(90deg,transparent 66%,var(--amber-bg))}
+.hero-bands span:nth-child(3){background:linear-gradient(90deg,transparent 72%,var(--blue-bg))}
+.hero-bands span:nth-child(4){background:linear-gradient(90deg,transparent 78%,var(--green-bg))}
+
+/* ---------- sections ---------- */
+section{padding:var(--s9) 0}
+.band{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.band-ink{background:var(--ink);color:var(--paper)}
+.band-ink h2{color:#fff}
+.band-ink .ink-2{color:#C9C2B4}
+.sec-head{margin-bottom:var(--s7)}
+.sec-head h2{font-size:clamp(1.8rem,3.6vw,2.7rem);max-width:18ch}
+.sec-head p{color:var(--ink-2);margin-top:var(--s4);max-width:var(--measure);font-size:1.06rem}
+.num{font-family:var(--sans);font-weight:700;font-size:.8rem;color:var(--ink-3);letter-spacing:.1em}
+
+/* big idea callout */
+.bigidea{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s8);align-items:center}
+.bigidea>div{min-width:0}
+@media (max-width:860px){.bigidea{grid-template-columns:1fr;gap:var(--s6)}}
+.bigidea .pull{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.25;font-weight:500}
+.bigidea .pull em{font-style:normal;background:linear-gradient(transparent 62%,var(--amber-line) 62%);padding:0 2px}
+.bigidea p{color:var(--ink-2);margin-top:var(--s5)}
+.flip{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6);box-shadow:var(--shadow)}
+.flip .row{display:flex;align-items:center;flex-wrap:wrap;gap:var(--s2) var(--s4);padding:var(--s3) 0;border-bottom:1px dashed var(--line)}
+.flip .arrow{flex:1;min-width:0;font-size:.9rem}
+.flip .row:last-child{border-bottom:none}
+.flip .tool{font-weight:600;flex:0 0 38%}
+.flip .arrow{color:var(--ink-3)}
+.flip .tier{margin-left:auto;font-size:.8rem;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap}
+
+/* ---------- risk pyramid ---------- */
+.pyramid{display:flex;flex-direction:column;gap:var(--s3);max-width:760px;margin:0 auto}
+.tier-row{border-radius:12px;border:1px solid;overflow:hidden;transition:transform .15s ease}
+.tier-row button.tier-head{width:100%;display:flex;align-items:center;gap:var(--s4);padding:var(--s5) var(--s5);background:transparent;border:none;cursor:pointer;text-align:left;font-family:inherit}
+.tier-row .tag{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:#fff;white-space:nowrap}
+.tier-row .tname{font-family:var(--serif);font-size:1.22rem;font-weight:600}
+.tier-row .tsub{font-size:.86rem;color:var(--ink-2);margin-top:2px}
+.tier-row .chev{margin-left:auto;color:var(--ink-3);transition:transform .2s;flex:0 0 auto}
+.tier-row[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.tier-row .body{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 var(--s5)}
+.tier-row[aria-expanded="true"] .body{max-height:640px;padding-bottom:var(--s5)}
+.tier-row .body ul{margin:0 0 0 var(--s4);color:var(--ink-2);font-size:.95rem}
+.tier-row .body li{margin:var(--s2) 0}
+.tier-row .body .note{font-size:.82rem;color:var(--ink-3);margin-top:var(--s3);font-style:italic}
+/* widths to evoke a pyramid */
+.tw1{width:62%} .tw2{width:78%} .tw3{width:90%} .tw4{width:100%}
+@media (max-width:680px){.tw1,.tw2,.tw3,.tw4{width:100%}}
+.t-prohibited{background:var(--red-bg);border-color:var(--red-line)}
+.t-prohibited .tag{background:var(--red)} .t-prohibited .tname{color:var(--red)}
+.t-high{background:var(--amber-bg);border-color:var(--amber-line)}
+.t-high .tag{background:var(--amber)} .t-high .tname{color:var(--amber)}
+.t-limited{background:var(--blue-bg);border-color:var(--blue-line)}
+.t-limited .tag{background:var(--blue)} .t-limited .tname{color:var(--blue)}
+.t-minimal{background:var(--green-bg);border-color:var(--green-line)}
+.t-minimal .tag{background:var(--green)} .t-minimal .tname{color:var(--green)}
+.pyr-axis{display:flex;justify-content:space-between;max-width:760px;margin:var(--s4) auto 0;font-size:.76rem;color:var(--ink-3);letter-spacing:.04em}
+
+/* ---------- classifier demo ---------- */
+.demo{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.demo-top{padding:var(--s6) var(--s6) var(--s5);border-bottom:1px solid var(--line)}
+.demo-top .eyebrow{color:var(--violet)}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media (max-width:760px){.demo-grid{grid-template-columns:1fr}}
+.demo-cases{padding:var(--s5) var(--s6);display:flex;flex-direction:column;gap:var(--s2);border-right:1px solid var(--line)}
+@media (max-width:760px){.demo-cases{border-right:none;border-bottom:1px solid var(--line)}}
+.demo-cases button{text-align:left;font-family:inherit;font-size:.92rem;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:var(--s3) var(--s4);cursor:pointer;transition:all .14s;line-height:1.35}
+.demo-cases button:hover{border-color:var(--line-2);background:#fff}
+.demo-cases button[aria-pressed="true"]{border-color:var(--ink);background:#fff;box-shadow:0 0 0 1px var(--ink)}
+.demo-result{padding:var(--s6);display:flex;flex-direction:column;justify-content:center;min-height:280px}
+.demo-result .placeholder{color:var(--ink-3);font-size:.95rem}
+.verdict-tag{display:inline-flex;align-items:center;gap:8px;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px;color:#fff;align-self:flex-start}
+.verdict h3{font-size:1.5rem;margin:var(--s4) 0 var(--s2)}
+.verdict p{color:var(--ink-2);font-size:.97rem}
+.verdict .why{margin-top:var(--s4);padding:var(--s4);border-radius:10px;font-size:.9rem;border:1px solid}
+
+/* ---------- generic cards / lists ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--s4)}
+.banlist{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+@media (max-width:760px){.banlist{grid-template-columns:1fr}}
+.ban{display:flex;gap:var(--s4);padding:var(--s4) var(--s5);background:var(--red-bg);border:1px solid var(--red-line);border-radius:12px}
+.ban .ix{font-family:var(--serif);font-weight:600;color:var(--red);font-size:1.1rem;flex:0 0 auto;width:26px}
+.ban .bt{font-weight:600;font-size:.96rem;color:var(--ink)}
+.ban .bd{font-size:.86rem;color:var(--ink-2);margin-top:2px}
+
+/* high-risk filter table */
+.hr-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.hr-domains{display:flex;flex-wrap:wrap;gap:var(--s2);padding:var(--s5) var(--s6);border-bottom:1px solid var(--line);background:var(--paper)}
+.hr-domains button{font-family:inherit;font-size:.84rem;font-weight:500;padding:7px 13px;border-radius:999px;border:1px solid var(--line-2);background:#fff;color:var(--ink-2);cursor:pointer;transition:all .14s}
+.hr-domains button:hover{border-color:var(--amber);color:var(--amber)}
+.hr-domains button[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:#fff}
+.hr-body{padding:var(--s6)}
+.hr-item{padding:var(--s4) 0;border-bottom:1px solid var(--line)}
+.hr-item:last-child{border-bottom:none}
+.hr-item h4{font-size:1.05rem;color:var(--amber);display:flex;align-items:center;gap:var(--s3)}
+.hr-item p{color:var(--ink-2);font-size:.93rem;margin-top:var(--s2)}
+.hr-reqs{margin-top:var(--s6);padding-top:var(--s6);border-top:2px solid var(--line)}
+.reqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--s3);margin-top:var(--s4)}
+.req{padding:var(--s4);border:1px solid var(--amber-line);background:var(--amber-bg);border-radius:10px}
+.req .rt{font-weight:600;font-size:.92rem;color:var(--ink)}
+.req .rd{font-size:.82rem;color:var(--ink-2);margin-top:2px}
+
+/* GPAI */
+.gpai-cols{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+@media (max-width:760px){.gpai-cols{grid-template-columns:1fr}}
+.gpai-card{border:1px solid var(--violet-line);background:var(--violet-bg);border-radius:14px;padding:var(--s6)}
+.gpai-card.sys{background:var(--card);border-color:var(--line)}
+.gpai-card h3{color:var(--violet);font-size:1.25rem;display:flex;align-items:center;gap:var(--s3)}
+.gpai-card ul{margin:var(--s4) 0 0 var(--s4);color:var(--ink-2);font-size:.93rem}
+.gpai-card li{margin:var(--s2) 0}
+.gpai-card .badge{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--violet);padding:3px 9px;border-radius:999px}
+.flops{margin-top:var(--s5);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6);box-shadow:var(--shadow)}
+.flops .read{display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;margin:var(--s4) 0}
+.flops .read .big{font-family:var(--serif);font-size:2rem;font-weight:600}
+.flops input[type=range]{width:100%;accent-color:var(--violet);height:6px}
+.flops .scale{display:flex;justify-content:space-between;font-size:.72rem;color:var(--ink-3);margin-top:var(--s2)}
+.flops .out{margin-top:var(--s4);padding:var(--s4);border-radius:10px;font-size:.92rem;font-weight:500;border:1px solid;transition:all .2s}
+.out-no{background:var(--violet-bg);border-color:var(--violet-line);color:var(--violet)}
+.out-yes{background:var(--red-bg);border-color:var(--red-line);color:var(--red)}
+
+/* who's on the hook */
+.who{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+@media (max-width:760px){.who{grid-template-columns:1fr}}
+.who-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6);box-shadow:var(--shadow)}
+.who-card .role{font-family:var(--serif);font-size:1.3rem;font-weight:600}
+.who-card .tagrole{font-size:.78rem;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em}
+.who-card p{color:var(--ink-2);font-size:.93rem;margin-top:var(--s3)}
+.reach{margin-top:var(--s5);background:var(--ink);color:var(--paper);border-radius:14px;padding:var(--s6)}
+.reach h3{color:#fff;font-size:1.2rem}
+.reach p{color:#C9C2B4;margin-top:var(--s3);font-size:.95rem}
+
+/* penalties */
+.pen-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4)}
+@media (max-width:760px){.pen-tiers{grid-template-columns:1fr}}
+.pen{border-radius:14px;padding:var(--s6);border:1px solid;color:var(--paper)}
+.pen .amt{font-family:var(--serif);font-size:2.1rem;font-weight:600;line-height:1}
+.pen .pct{font-size:.95rem;opacity:.92;margin-top:var(--s2)}
+.pen .pl{font-weight:600;margin-top:var(--s4);font-size:.98rem}
+.pen .pd{font-size:.85rem;opacity:.9;margin-top:var(--s2)}
+.pen1{background:#8E1B12;border-color:#6e150e}
+.pen2{background:#7A4709;border-color:#5e3707}
+.pen3{background:#3D3A33;border-color:#2c2a25}
+.calc{margin-top:var(--s5);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6);box-shadow:var(--shadow)}
+.calc label{font-size:.85rem;font-weight:600;color:var(--ink-2)}
+.calc .inrow{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s3);flex-wrap:wrap}
+.calc input[type=number]{font-family:var(--sans);font-size:1rem;padding:10px 12px;border:1px solid var(--line-2);border-radius:8px;width:180px;background:var(--paper)}
+.calc select{font-family:var(--sans);font-size:.95rem;padding:10px 12px;border:1px solid var(--line-2);border-radius:8px;background:var(--paper)}
+.calc .result{margin-top:var(--s5);display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+@media (max-width:600px){.calc .result{grid-template-columns:1fr}}
+.calc .rc{padding:var(--s4);border-radius:10px;border:1px solid var(--line)}
+.calc .rc .rl{font-size:.78rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.calc .rc .rv{font-family:var(--serif);font-size:1.5rem;font-weight:600;margin-top:4px}
+.calc .rc.win{border-color:var(--red-line);background:var(--red-bg)}
+.calc .rc.win .rv{color:var(--red)}
+
+/* timeline */
+.tl{position:relative;margin-top:var(--s6);padding-left:var(--s6)}
+.tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line-2)}
+.tl-item{position:relative;padding:0 0 var(--s7) var(--s6)}
+.tl-item::before{content:"";position:absolute;left:-2px;top:4px;width:22px;height:22px;border-radius:50%;background:var(--card);border:3px solid var(--ink-3)}
+.tl-item.done::before{background:var(--green);border-color:var(--green)}
+.tl-item.now::before{background:var(--amber);border-color:var(--amber);box-shadow:0 0 0 5px var(--amber-bg)}
+.tl-item.future::before{background:var(--card);border-color:var(--line-2)}
+.tl-date{font-family:var(--serif);font-size:1.15rem;font-weight:600}
+.tl-status{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin-left:var(--s3);vertical-align:middle}
+.st-done{background:var(--green-bg);color:var(--green)}
+.st-now{background:var(--amber-bg);color:var(--amber)}
+.st-future{background:var(--paper-2);color:var(--ink-3)}
+.tl-item p{color:var(--ink-2);font-size:.95rem;margin-top:var(--s2);max-width:60ch}
+.tl-item .defer{margin-top:var(--s3);font-size:.85rem;background:var(--blue-bg);border:1px solid var(--blue-line);border-radius:8px;padding:var(--s3) var(--s4);color:var(--ink-2)}
+.tl-item .defer b{color:var(--blue)}
+
+/* quiz */
+.quiz{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:var(--s7) var(--s6)}
+.q{margin-bottom:var(--s7)}
+.q:last-of-type{margin-bottom:var(--s5)}
+.q .qq{font-family:var(--serif);font-size:1.2rem;font-weight:600;display:flex;gap:var(--s3)}
+.q .qq .qn{color:var(--violet)}
+.q .opts{margin-top:var(--s4);display:flex;flex-direction:column;gap:var(--s2)}
+.q .opts button{text-align:left;font-family:inherit;font-size:.95rem;padding:var(--s3) var(--s4);border:1px solid var(--line-2);border-radius:10px;background:var(--paper);cursor:pointer;transition:all .12s;color:var(--ink)}
+.q .opts button:hover:not(:disabled){border-color:var(--ink-3)}
+.q .opts button:disabled{cursor:default}
+.q .opts button.correct{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
+.q .opts button.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.q .exp{margin-top:var(--s3);font-size:.9rem;color:var(--ink-2);padding:var(--s3) var(--s4);background:var(--paper-2);border-radius:8px;border-left:3px solid var(--violet);display:none}
+.q .exp.show{display:block}
+.score{font-family:var(--serif);font-size:1.3rem;font-weight:600;text-align:center;padding:var(--s5);border-radius:12px;background:var(--paper-2);display:none}
+.score.show{display:block}
+
+/* sources / footer */
+.src{font-size:.9rem;color:var(--ink-2)}
+.src li{margin:var(--s2) 0;list-style:none}
+.foot{padding:var(--s7) 0;border-top:1px solid var(--line);color:var(--ink-3);font-size:.85rem}
+.disclaimer{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:var(--s5);font-size:.9rem;color:var(--ink-2);margin-top:var(--s6)}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+.callout{background:var(--blue-bg);border:1px solid var(--blue-line);border-left:4px solid var(--blue);border-radius:10px;padding:var(--s5);margin-top:var(--s6)}
+.callout .ct{font-weight:600;color:var(--blue);font-size:.9rem;text-transform:uppercase;letter-spacing:.05em}
+.callout p{font-size:.95rem;color:var(--ink-2);margin-top:var(--s2)}
+</style>
+</head>
+<body data-review-toggle>
+
+<nav class="nav">
+  <div class="wrap">
+    <span class="brand">EU AI Act · Explained</span>
+    <div class="links">
+      <a href="#idea">The big idea</a>
+      <a href="#pyramid">Risk tiers</a>
+      <a href="#classify">Classify it</a>
+      <a href="#banned">Banned uses</a>
+      <a href="#highrisk">High-risk</a>
+      <a href="#gpai">General-purpose AI</a>
+      <a href="#penalties">Penalties</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#quiz">Quiz</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-bands" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="wrap">
+    <p class="eyebrow">A practical breakdown</p>
+    <h1>How the EU AI Act works</h1>
+    <p class="lede">The world's first comprehensive law for artificial intelligence. The trick to understanding it: it doesn't regulate the technology — it regulates what you <em>do</em> with it, and the rules scale with the risk.</p>
+    <div class="meta">
+      <div class="m"><span class="k">2024</span><span class="l">In force since 1 Aug</span></div>
+      <div class="m"><span class="k">4</span><span class="l">Risk tiers</span></div>
+      <div class="m"><span class="k">€35M</span><span class="l">Top fine, or 7% of turnover</span></div>
+      <div class="m"><span class="k">2025–28</span><span class="l">Phasing in</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- BIG IDEA -->
+<section id="idea">
+  <div class="wrap">
+    <div class="bigidea reveal">
+      <div>
+        <p class="num">THE MENTAL MODEL</p>
+        <p class="pull">The Act is a <em>sorting machine</em>. Every AI system gets dropped in by its risk, and the weight of the rules matches the tier it lands in.</p>
+        <p>Most people expect a law that says "here are the rules for AI." The EU AI Act is built differently. It asks one question about each system — <strong>how much risk does this particular use create for people's rights and safety?</strong> — and sorts it into one of four tiers. Unacceptable uses are banned outright. High-risk uses carry heavy obligations. Limited-risk uses just need to be transparent. Everything else is free.</p>
+        <p>This is why the <em>same</em> piece of technology can sit in totally different tiers. A face-matching model is minimal-risk when it unlocks your phone, high-risk when it screens job applicants, and outright banned when it scrapes the open web to build a surveillance database.</p>
+      </div>
+      <div class="flip" aria-label="Same technology, different risk tiers depending on use">
+        <p class="eyebrow" style="margin-bottom:var(--s3)">Same tech · different use · different tier</p>
+        <div class="row"><span class="tool">Face recognition</span><span class="arrow">unlocking your phone</span><span class="tier" style="background:var(--green-bg);color:var(--green)">Minimal</span></div>
+        <div class="row"><span class="tool">Face recognition</span><span class="arrow">screening job applicants</span><span class="tier" style="background:var(--amber-bg);color:var(--amber)">High-risk</span></div>
+        <div class="row"><span class="tool">Face recognition</span><span class="arrow">scraping the web for a DB</span><span class="tier" style="background:var(--red-bg);color:var(--red)">Banned</span></div>
+        <div class="row"><span class="tool">A chatbot</span><span class="arrow">answering FAQs</span><span class="tier" style="background:var(--blue-bg);color:var(--blue)">Limited</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PYRAMID -->
+<section id="pyramid" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">01 — THE FOUR TIERS</p>
+      <h2>The risk pyramid</h2>
+      <p>The fewer the systems in a tier, the heavier its rules. A tiny number of uses are banned at the top; the vast majority of everyday AI sits unregulated at the bottom. Click any tier to open it.</p>
+    </div>
+    <div class="pyramid reveal" id="pyr"></div>
+    <div class="pyr-axis reveal"><span>↑ Fewer systems · heavier rules</span><span>More systems · lighter rules ↓</span></div>
+    <div class="callout reveal">
+      <p class="ct">One more track, running alongside</p>
+      <p>General-purpose AI models — the large models like GPT, Gemini or Llama that power many products — are governed by their <strong>own separate set of rules</strong>, not the pyramid. We cover those <a href="#gpai">further down</a>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CLASSIFY DEMO -->
+<section id="classify">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">02 — TRY IT YOURSELF</p>
+      <h2>Which tier does it land in?</h2>
+      <p>The whole Act turns on classification. Pick a real-world AI use below and see where the sorting machine drops it — and why.</p>
+    </div>
+    <div class="demo reveal">
+      <div class="demo-top">
+        <p class="eyebrow">Interactive · the classifier</p>
+      </div>
+      <div class="demo-grid">
+        <div class="demo-cases" id="caseList" role="group" aria-label="Choose an AI use case"></div>
+        <div class="demo-result" id="caseResult">
+          <p class="placeholder">← Pick a use case to classify it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BANNED -->
+<section id="banned" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">03 — UNACCEPTABLE RISK</p>
+      <h2>The eight banned uses</h2>
+      <p>At the top of the pyramid, a short list of practices is prohibited outright across the EU — no compliance path, no exceptions for most. These are uses seen as a clear threat to people's rights. (Article 5.)</p>
+    </div>
+    <div class="banlist reveal" id="banList"></div>
+    <div class="callout reveal">
+      <p class="ct">The narrow exception</p>
+      <p>Real-time facial recognition in public by police is banned <em>by default</em>, but narrowly allowed for things like searching for a missing child or preventing an imminent terror attack — and only with a fundamental-rights assessment and judicial sign-off.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HIGH RISK -->
+<section id="highrisk">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">04 — HIGH RISK</p>
+      <h2>High-risk: where most of the law lives</h2>
+      <p>These systems are allowed, but heavily regulated — the bulk of the Act is about them. A use is high-risk if it's a safety component of a regulated product, or if it falls into one of eight sensitive areas (Annex III). Filter the areas, then see what providers must actually do.</p>
+    </div>
+    <div class="hr-wrap reveal">
+      <div class="hr-domains" id="hrDomains" role="group" aria-label="Filter high-risk areas"></div>
+      <div class="hr-body">
+        <div id="hrList"></div>
+        <div class="hr-reqs">
+          <p class="num" style="color:var(--amber)">IF IT'S HIGH-RISK, THE PROVIDER MUST…</p>
+          <div class="reqgrid" id="hrReqs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GPAI -->
+<section id="gpai" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">05 — GENERAL-PURPOSE AI</p>
+      <h2>The parallel track: general-purpose models</h2>
+      <p>The big foundation models don't fit the use-based pyramid — one model can be put to a thousand uses. So they get their own rules, in two layers: a baseline for <em>every</em> GPAI model, plus extra duties for the most powerful ones that pose "systemic risk."</p>
+    </div>
+    <div class="gpai-cols reveal">
+      <div class="gpai-card">
+        <h3>Every GPAI model</h3>
+        <ul>
+          <li>Keep <strong>technical documentation</strong> of how the model was built, trained and tested.</li>
+          <li>Give downstream developers the <strong>info they need</strong> to build on it compliantly.</li>
+          <li>Have a policy to <strong>respect EU copyright</strong> law.</li>
+          <li>Publish a <strong>summary of the training data</strong> used.</li>
+        </ul>
+        <p style="font-size:.84rem;color:var(--ink-3);margin-top:var(--s4)">Free & open-licence models only owe the last two — unless they hit systemic risk.</p>
+      </div>
+      <div class="gpai-card sys">
+        <h3><span class="badge">+ systemic risk</span></h3>
+        <ul>
+          <li>Run <strong>model evaluations</strong> and <strong>adversarial testing</strong> (red-teaming).</li>
+          <li>Assess and <strong>mitigate systemic risks</strong> at their source.</li>
+          <li><strong>Track and report serious incidents</strong> to the EU AI Office.</li>
+          <li>Ensure strong <strong>cybersecurity</strong> for the model and its weights.</li>
+        </ul>
+        <p style="font-size:.84rem;color:var(--ink-3);margin-top:var(--s4)">These stack on top of the baseline — systemic-risk models owe both sets.</p>
+      </div>
+    </div>
+    <div class="flops reveal">
+      <p class="num" style="color:var(--violet)">WHAT COUNTS AS "SYSTEMIC RISK"? — DRAG TO EXPLORE</p>
+      <p style="font-size:.92rem;color:var(--ink-2);margin-top:var(--s3)">The headline trigger is raw training compute. A model is presumed to pose systemic risk once the compute used to train it crosses <strong>10<sup>25</sup> floating-point operations (FLOP)</strong>.</p>
+      <div class="read"><span class="big" id="flopVal">10²⁵</span><span style="color:var(--ink-3)">FLOP of training compute</span></div>
+      <input type="range" id="flopSlider" min="22" max="27" step="0.1" value="25" aria-label="Training compute in powers of ten">
+      <div class="scale"><span>10²²</span><span>10²³</span><span>10²⁴</span><span>10²⁵</span><span>10²⁶</span><span>10²⁷</span></div>
+      <div class="out out-no" id="flopOut">Below the threshold — baseline GPAI rules apply, but not the systemic-risk duties.</div>
+      <p style="font-size:.8rem;color:var(--ink-3);margin-top:var(--s3)">The compute figure is the legal presumption; the Commission can also designate a model systemic on other grounds. Threshold illustrative of the rule, not a precise model ranking.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHO -->
+<section id="who">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">06 — WHO'S ON THE HOOK</p>
+      <h2>Providers, deployers — and why location barely matters</h2>
+      <p>The Act splits responsibility by role. Most of the weight falls on whoever <em>builds</em> the system, but the organisation that <em>uses</em> it has duties too.</p>
+    </div>
+    <div class="who reveal">
+      <div class="who-card">
+        <p class="tagrole">Provider</p>
+        <p class="role">The one who builds it</p>
+        <p>Develops the AI system (or has it built) and puts it on the market under their name. Carries the <strong>bulk of the obligations</strong> — risk management, documentation, testing, conformity assessment, registration.</p>
+      </div>
+      <div class="who-card">
+        <p class="tagrole">Deployer</p>
+        <p class="role">The one who uses it</p>
+        <p>Uses an AI system in a professional capacity (a hospital, a bank, an HR team). Lighter duties: use it as instructed, keep <strong>human oversight</strong>, monitor it, and — for some uses — inform the people affected.</p>
+      </div>
+    </div>
+    <div class="reach reveal">
+      <h3>It reaches beyond Europe's borders</h3>
+      <p>Like the GDPR, the Act applies extraterritorially. If your AI system's <strong>output is used in the EU</strong> — even if your company sits in the US or anywhere else — you're in scope. That's why a law passed in Brussels shapes how AI is built worldwide.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PENALTIES -->
+<section id="penalties" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">07 — PENALTIES</p>
+      <h2>What it costs to get it wrong</h2>
+      <p>Fines are tiered to match the severity of the breach, and — crucially — calculated as the <strong>higher</strong> of a fixed sum or a percentage of global annual turnover. For large companies, the percentage is what bites.</p>
+    </div>
+    <div class="pen-tiers reveal">
+      <div class="pen pen1">
+        <div class="amt">€35M</div><div class="pct">or 7% of worldwide turnover</div>
+        <div class="pl">Using a banned practice</div>
+        <div class="pd">The most serious breach — deploying one of the prohibited AI uses.</div>
+      </div>
+      <div class="pen pen2">
+        <div class="amt">€15M</div><div class="pct">or 3% of worldwide turnover</div>
+        <div class="pl">Breaking high-risk rules</div>
+        <div class="pd">Most other obligation breaches — by providers or deployers of high-risk systems.</div>
+      </div>
+      <div class="pen pen3">
+        <div class="amt">€7.5M</div><div class="pct">or 1% of worldwide turnover</div>
+        <div class="pl">Giving false information</div>
+        <div class="pd">Supplying incorrect or misleading information to authorities.</div>
+      </div>
+    </div>
+    <div class="calc reveal">
+      <p class="num">DO THE MATH — THE "WHICHEVER IS HIGHER" CATCH</p>
+      <div class="inrow" style="margin-top:var(--s4)">
+        <label for="turnover">Company global turnover (€):</label>
+        <input type="number" id="turnover" value="900000000" min="0" step="1000000">
+        <label for="breach">Breach:</label>
+        <select id="breach">
+          <option value="0.07-35000000">Banned practice (7% / €35M)</option>
+          <option value="0.03-15000000">High-risk breach (3% / €15M)</option>
+          <option value="0.01-7500000">False info (1% / €7.5M)</option>
+        </select>
+      </div>
+      <div class="result" id="calcResult"></div>
+      <p style="font-size:.8rem;color:var(--ink-3);margin-top:var(--s4)">For SMEs and start-ups, the rule flips to whichever is <em>lower</em>, to keep fines proportionate. Figures are statutory caps, not automatic penalties.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">08 — THE ROLLOUT</p>
+      <h2>It arrives in waves, not all at once</h2>
+      <p>The Act entered into force in August 2024, but its rules switch on in stages over several years — banned uses first, the heaviest high-risk duties last.</p>
+    </div>
+    <div class="tl reveal" id="timeline-list"></div>
+    <div class="disclaimer reveal">
+      <strong>A moving target.</strong> In May 2026, EU institutions reached a provisional "Digital Omnibus" agreement to <em>postpone</em> the heaviest high-risk deadlines (Annex III high-risk to Dec 2027; product-embedded high-risk to Aug 2028) and simplify some rules. As of this writing it is agreed but not yet formally adopted, so dates below marked "proposed deferral" may still shift. Always check the official timeline before relying on a date.
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">09 — TEST YOURSELF</p>
+      <h2>Did it click?</h2>
+      <p>Five quick questions. You get instant feedback and the <em>why</em> behind each answer.</p>
+    </div>
+    <div class="quiz reveal" id="quizBox"></div>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section id="sources">
+  <div class="wrap measure">
+    <p class="num">SOURCES</p>
+    <h2 style="font-size:1.6rem;margin:var(--s3) 0 var(--s5)">Where this comes from</h2>
+    <ul class="src">
+      <li>· <a href="https://artificialintelligenceact.eu/high-level-summary/">High-level summary of the AI Act</a> — Future of Life Institute (risk tiers, prohibited list, Annex III, GPAI duties)</li>
+      <li>· <a href="https://artificialintelligenceact.eu/implementation-timeline/">Implementation Timeline</a> — artificialintelligenceact.eu</li>
+      <li>· <a href="https://artificialintelligenceact.eu/article/5/">Article 5 — Prohibited AI Practices</a> &amp; <a href="https://artificialintelligenceact.eu/article/99/">Article 99 — Penalties</a></li>
+      <li>· <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai">European Commission — AI Act regulatory framework</a></li>
+      <li>· <a href="https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/">Council of the EU — Digital Omnibus provisional agreement (7 May 2026)</a></li>
+    </ul>
+    <div class="disclaimer">
+      This is an educational explainer, not legal advice. The EU AI Act is long and evolving; specific obligations depend on facts and on guidance still being issued. Consult the official text and qualified counsel for compliance decisions.
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap measure">
+    Built as a plain-language guide to Regulation (EU) 2024/1689. Facts verified against EU and Future of Life Institute primary sources, June 2026.
+  </div>
+</footer>
+
+<script>
+/* ---------------- DATA ---------------- */
+const tiers=[
+ {cls:'t-prohibited',w:'tw1',tag:'Tier 1',name:'Unacceptable — Banned',sub:'A clear threat to rights. Prohibited outright.',
+  body:['Social scoring of people by behaviour or traits','Manipulative or exploitative systems that cause harm','Untargeted scraping of faces to build recognition databases','Emotion recognition at work or school','Most real-time facial recognition in public by police'],
+  note:'8 categories in total — see "The eight banned uses" below.'},
+ {cls:'t-high',w:'tw2',tag:'Tier 2',name:'High risk — Regulated',sub:'Allowed, but with heavy obligations. Most of the Act.',
+  body:['Used in hiring, credit, education, essential services, law enforcement, migration, justice…','…or as a safety part of a regulated product (medical devices, machinery, cars)','Provider must do risk management, data governance, documentation, human oversight, testing, registration'],
+  note:'Roughly 8 sensitive areas listed in Annex III.'},
+ {cls:'t-limited',w:'tw3',tag:'Tier 3',name:'Limited risk — Transparency',sub:'Just be honest that it’s AI.',
+  body:['Chatbots must tell users they’re talking to a machine','AI-generated images, audio and video (deepfakes) must be labelled','Synthetic content must be machine-readable as AI-generated'],
+  note:'Light-touch: disclosure, not heavy compliance.'},
+ {cls:'t-minimal',w:'tw4',tag:'Tier 4',name:'Minimal risk — Free',sub:'No special obligations. The vast majority of AI.',
+  body:['Spam filters, recommendation engines, AI in video games','Inventory and logistics optimisation','The bulk of AI products on the market today'],
+  note:'Providers may still voluntarily follow codes of conduct.'}
+];
+
+const cases=[
+ {t:'AI that screens and ranks job applicants',v:'high',title:'High risk',why:'Employment decisions are an Annex III area. Hiring tools shape people’s livelihoods, so they carry the full high-risk obligations.',c:'amber'},
+ {t:'A social-scoring system rating citizens by behaviour',v:'banned',title:'Banned',why:'General-purpose social scoring by public or private actors is a prohibited practice under Article 5 — no compliance path.',c:'red'},
+ {t:'A customer-service chatbot on a website',v:'limited',title:'Limited risk',why:'Allowed, but it must clearly tell users they are interacting with an AI, not a human. That’s the transparency tier.',c:'blue'},
+ {t:'A spam filter in your email',v:'minimal',title:'Minimal risk',why:'No special obligations. The overwhelming majority of AI — including spam filters — sits in the free, unregulated tier.',c:'green'},
+ {t:'AI judging creditworthiness for a loan',v:'high',title:'High risk',why:'Access to essential private services like credit is an Annex III area. (Fraud-detection is carved out, but scoring who gets a loan is in.)',c:'amber'},
+ {t:'Scraping the web to build a face database',v:'banned',title:'Banned',why:'Untargeted scraping of facial images from the internet or CCTV to build a recognition database is explicitly prohibited.',c:'red'},
+ {t:'An AI image generator (deepfake tool)',v:'limited',title:'Limited risk',why:'Permitted, but the output must be labelled as AI-generated and be machine-readable as synthetic content.',c:'blue'},
+ {t:'AI recommending songs in a music app',v:'minimal',title:'Minimal risk',why:'A recommendation engine creates little risk to rights or safety, so it falls in the minimal-risk tier with no special duties.',c:'green'}
+];
+
+const banned=[
+ ['1','Manipulation & deception','Subliminal or deceptive techniques that distort behaviour and cause harm.'],
+ ['2','Exploiting vulnerabilities','Targeting age, disability or hardship to distort behaviour and cause harm.'],
+ ['3','Social scoring','Rating people by social behaviour or traits, leading to unfair treatment.'],
+ ['4','Predictive policing of individuals','Predicting crime risk based solely on profiling or personality.'],
+ ['5','Face-database scraping','Building facial-recognition databases by untargeted scraping of web/CCTV images.'],
+ ['6','Emotion recognition at work/school','Inferring emotions in workplaces or schools (bar medical/safety reasons).'],
+ ['7','Sensitive biometric categorisation','Inferring race, politics, religion, sexual orientation, etc. from biometrics.'],
+ ['8','Live public face recognition by police','Real-time remote biometric ID in public — banned but for narrow exceptions.']
+];
+
+const hrAreas=[
+ {k:'Biometrics',t:'Biometrics (non-banned)',d:'Remote identification, emotion recognition, and biometric categorisation that aren’t outright prohibited.'},
+ {k:'Infrastructure',t:'Critical infrastructure',d:'Safety components running water, gas, electricity, heating, road traffic and digital infrastructure.'},
+ {k:'Education',t:'Education & training',d:'Deciding admissions, evaluating learning outcomes, or monitoring students during exams.'},
+ {k:'Employment',t:'Employment & workers',d:'Recruitment, filtering applications, promotion, termination, and performance monitoring.'},
+ {k:'Services',t:'Essential services',d:'Eligibility for benefits, creditworthiness, insurance pricing, and emergency-call triage.'},
+ {k:'Law',t:'Law enforcement',d:'Victim-risk assessment, polygraphs, evidence reliability, and profiling in investigations.'},
+ {k:'Migration',t:'Migration & borders',d:'Polygraphs, risk assessments, and examining visa or asylum applications.'},
+ {k:'Justice',t:'Justice & democracy',d:'Helping interpret and apply the law, or influencing elections and voting behaviour.'}
+];
+
+const hrReqs=[
+ ['Risk management','A system to find and reduce risks across the whole lifecycle.'],
+ ['Data governance','Training data that’s relevant, representative and as error-free as possible.'],
+ ['Technical documentation','Records that prove compliance to regulators.'],
+ ['Record-keeping','Automatic logging of events for traceability.'],
+ ['Instructions for use','Clear info so deployers can use it compliantly.'],
+ ['Human oversight','Designed so a person can intervene and override.'],
+ ['Accuracy & cybersecurity','Robust, accurate and secure by design.'],
+ ['Quality management','An organisational system to keep it all compliant.']
+];
+
+const quiz=[
+ {q:'What does the EU AI Act primarily regulate?',
+  opts:['The AI technology itself','How AI is used, by risk level','Only large language models','AI made by European companies'],
+  a:1,why:'The Act is risk- and use-based: the same technology can be minimal-risk or banned depending on what it’s used for.'},
+ {q:'A company uses AI to rank job applicants. Which tier?',
+  opts:['Minimal — no rules','Limited — just disclose','High risk — full obligations','Banned'],
+  a:2,why:'Employment is an Annex III area, so hiring tools are high-risk and carry the heaviest set of obligations.'},
+ {q:'Which of these is outright banned?',
+  opts:['A customer-service chatbot','General social scoring of citizens','A high-risk hiring tool','An AI spam filter'],
+  a:1,why:'Social scoring is one of the eight prohibited practices under Article 5 — there’s no compliance path for it.'},
+ {q:'What’s the maximum fine for using a banned practice?',
+  opts:['€7.5M or 1% of turnover','€15M or 3% of turnover','€35M or 7% of turnover','€100M flat'],
+  a:2,why:'Banned-practice breaches carry the top fine: €35M or 7% of global annual turnover, whichever is higher.'},
+ {q:'Your company is in the US. When does the Act apply to you?',
+  opts:['Never — it’s EU-only','When your system’s output is used in the EU','Only if you have an EU office','Only for GPAI models'],
+  a:1,why:'The Act applies extraterritorially: if your AI’s output is used in the EU, you’re in scope wherever you’re based.'}
+];
+
+const timeline=[
+ {d:'Aug 2024',s:'done',l:'In force',p:'The Act enters into force. Nothing applies yet — the clock starts on a staged rollout.'},
+ {d:'Feb 2025',s:'done',l:'Live',p:'The banned practices and AI-literacy duties become enforceable — the first rules with teeth.'},
+ {d:'Aug 2025',s:'done',l:'Live',p:'Rules for general-purpose AI models, the governance structure (the EU AI Office), and the penalty regime switch on.'},
+ {d:'Aug 2026',s:'now',l:'Now-ish',p:'Originally the date most high-risk obligations and Annex III rules applied.',defer:'Proposed deferral: under the May 2026 Digital Omnibus, Annex III high-risk duties move to <b>2 December 2027</b>.'},
+ {d:'Aug 2027',s:'future',l:'Upcoming',p:'High-risk AI embedded in regulated products (medical devices, machinery, vehicles) must fully comply.',defer:'Proposed deferral: product-embedded high-risk duties may move to <b>2 August 2028</b>.'},
+ {d:'2027–30',s:'future',l:'Later',p:'Remaining transition deadlines: pre-existing GPAI models, public-authority systems and large-scale EU IT systems are brought into full compliance.'}
+];
+
+/* ---------------- RENDER ---------------- */
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+// pyramid
+const pyr=document.getElementById('pyr');
+tiers.forEach((t,i)=>{
+ const row=el('div','tier-row '+t.cls+' '+t.w);row.setAttribute('aria-expanded','false');
+ const head=el('button','tier-head');head.setAttribute('aria-label','Toggle '+t.name);
+ head.innerHTML='<span class="tag">'+t.tag+'</span><span><span class="tname">'+t.name+'</span><div class="tsub">'+t.sub+'</div></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>';
+ const body=el('div','body','<ul>'+t.body.map(b=>'<li>'+b+'</li>').join('')+'</ul><div class="note">'+t.note+'</div>');
+ head.onclick=()=>{const open=row.getAttribute('aria-expanded')==='true';row.setAttribute('aria-expanded',open?'false':'true');};
+ row.appendChild(head);row.appendChild(body);pyr.appendChild(row);
+});
+
+// classifier
+const cmap={red:['var(--red)','var(--red-bg)','var(--red-line)'],amber:['var(--amber)','var(--amber-bg)','var(--amber-line)'],blue:['var(--blue)','var(--blue-bg)','var(--blue-line)'],green:['var(--green)','var(--green-bg)','var(--green-line)']};
+const caseList=document.getElementById('caseList');const caseResult=document.getElementById('caseResult');
+cases.forEach((c,i)=>{
+ const b=el('button',null,c.t);b.setAttribute('aria-pressed','false');
+ b.onclick=()=>{
+  caseList.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));
+  b.setAttribute('aria-pressed','true');
+  const col=cmap[c.c];
+  caseResult.innerHTML='<span class="verdict-tag" style="background:'+col[0]+'">'+c.title+'</span>'+
+   '<div class="verdict"><h3 style="color:'+col[0]+'">'+c.t+'</h3>'+
+   '<div class="why" style="background:'+col[1]+';border-color:'+col[2]+';color:var(--ink-2)"><strong style="color:'+col[0]+'">Why: </strong>'+c.why+'</div></div>';
+ };
+ caseList.appendChild(b);
+});
+
+// banned
+const banListEl=document.getElementById('banList');
+banned.forEach(b=>{banListEl.appendChild(el('div','ban','<div class="ix">'+b[0]+'</div><div><div class="bt">'+b[1]+'</div><div class="bd">'+b[2]+'</div></div>'));});
+
+// high-risk
+const hrDomains=document.getElementById('hrDomains');const hrList=document.getElementById('hrList');const hrReqsEl=document.getElementById('hrReqs');
+function renderHR(filter){
+ hrList.innerHTML='';
+ hrAreas.filter(a=>!filter||a.k===filter).forEach(a=>{
+  hrList.appendChild(el('div','hr-item','<h4><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l9 4v6c0 5-3.8 8.5-9 10-5.2-1.5-9-5-9-10V6z"/></svg>'+a.t+'</h4><p>'+a.d+'</p>'));
+ });
+}
+const allBtn=el('button',null,'All areas');allBtn.setAttribute('aria-pressed','true');
+allBtn.onclick=()=>{hrDomains.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));allBtn.setAttribute('aria-pressed','true');renderHR(null);};
+hrDomains.appendChild(allBtn);
+hrAreas.forEach(a=>{const b=el('button',null,a.k);b.setAttribute('aria-pressed','false');
+ b.onclick=()=>{hrDomains.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');renderHR(a.k);};
+ hrDomains.appendChild(b);});
+renderHR(null);
+hrReqs.forEach(r=>{hrReqsEl.appendChild(el('div','req','<div class="rt">'+r[0]+'</div><div class="rd">'+r[1]+'</div>'));});
+
+// flops slider
+const flopSlider=document.getElementById('flopSlider');const flopVal=document.getElementById('flopVal');const flopOut=document.getElementById('flopOut');
+const sup={'-':'⁻',0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'};
+function toSup(n){return String(n).split('').map(c=>sup[c]||c).join('');}
+function updFlop(){
+ const v=parseFloat(flopSlider.value);
+ const disp=v%1===0?String(v):v.toFixed(1);
+ flopVal.textContent='10'+toSup(disp);
+ if(v>=25){flopOut.className='out out-yes';flopOut.innerHTML='<strong>Systemic risk.</strong> At or above 10²⁵ FLOP, the model is presumed systemic — evaluations, red-teaming, incident reporting and cybersecurity duties all kick in.';}
+ else{flopOut.className='out out-no';flopOut.innerHTML='Below the threshold — baseline GPAI rules apply, but not the extra systemic-risk duties.';}
+}
+flopSlider.oninput=updFlop;updFlop();
+
+// penalty calc
+const turnover=document.getElementById('turnover');const breach=document.getElementById('breach');const calcResult=document.getElementById('calcResult');
+function fmt(n){if(n>=1e9)return '€'+(n/1e9).toFixed(2).replace(/\.00$/,'')+'B';if(n>=1e6)return '€'+(n/1e6).toFixed(1).replace(/\.0$/,'')+'M';return '€'+n.toLocaleString();}
+function calc(){
+ const [pct,fixed]=breach.value.split('-').map(Number);
+ const t=Math.max(0,Number(turnover.value)||0);
+ const pctVal=t*pct;const fixedVal=fixed;const win=Math.max(pctVal,fixedVal);
+ calcResult.innerHTML=
+  '<div class="rc'+(pctVal>=fixedVal?' win':'')+'"><div class="rl">'+(pct*100)+'% of turnover</div><div class="rv">'+fmt(pctVal)+'</div></div>'+
+  '<div class="rc'+(fixedVal>pctVal?' win':'')+'"><div class="rl">Fixed cap</div><div class="rv">'+fmt(fixedVal)+'</div></div>'+
+  '<div class="rc win" style="grid-column:1/-1"><div class="rl">Maximum fine — whichever is higher</div><div class="rv">'+fmt(win)+'</div></div>';
+}
+turnover.oninput=calc;breach.onchange=calc;calc();
+
+// timeline
+const tlEl=document.getElementById('timeline-list');
+timeline.forEach(t=>{
+ const item=el('div','tl-item '+t.s);
+ item.innerHTML='<span class="tl-date">'+t.d+'</span><span class="tl-status st-'+t.s+'">'+t.l+'</span><p>'+t.p+'</p>'+(t.defer?'<div class="defer">'+t.defer+'</div>':'');
+ tlEl.appendChild(item);
+});
+
+// quiz
+const quizEl=document.getElementById('quizBox');let answered=0,correct=0;
+quiz.forEach((q,qi)=>{
+ const block=el('div','q');
+ block.innerHTML='<div class="qq"><span class="qn">'+(qi+1)+'.</span><span>'+q.q+'</span></div>';
+ const opts=el('div','opts');
+ q.opts.forEach((o,oi)=>{
+  const b=el('button',null,o);
+  b.onclick=()=>{
+   if(block.dataset.done)return;block.dataset.done='1';answered++;
+   opts.querySelectorAll('button').forEach((x,xi)=>{x.disabled=true;if(xi===q.a)x.classList.add('correct');});
+   if(oi===q.a)correct++;else b.classList.add('wrong');
+   exp.classList.add('show');
+   if(answered===quiz.length){scoreEl.classList.add('show');scoreEl.textContent='You got '+correct+' of '+quiz.length+' right. '+(correct===quiz.length?'Nailed it — you understand how the Act sorts and scales.':(correct>=3?'Solid grasp of the risk-tier model.':'Worth another scroll up — the pyramid is the key idea.'));}
+  };
+  opts.appendChild(b);
+ });
+ const exp=el('div','exp','<strong>Why:</strong> '+q.why);
+ block.appendChild(opts);block.appendChild(exp);quizEl.appendChild(block);
+});
+const scoreEl=el('div','score');quizEl.appendChild(scoreEl);
+
+// reveal
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
+setTimeout(()=>document.querySelectorAll('.reveal').forEach(e=>e.classList.add('in')),2500);
+</script>
+
+<!-- ============================================================
+     Review \u0026 edit overlay — review-mode.js (inlined for gallery)
+     Activates via ?edit or <body data-review-toggle>.
+     ============================================================ -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:80;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:12px;right:14px;z-index:82;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:79;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:90;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:95;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:96;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>

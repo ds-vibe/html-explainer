@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Gutenberg's Printing Press Changed the World</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Ink & paper — the printer's palette */
+    --paper:#f6f2e9;          /* warm off-white, laid-paper cream */
+    --paper-deep:#efe9dc;     /* slightly deeper band */
+    --ink:#1a1814;            /* warm near-black, ink on the page */
+    --ink-soft:#403a32;       /* secondary text */
+    --ink-faint:#6b6253;      /* captions, meta */
+    --rule:#d8cfbc;           /* hairlines */
+    --accent:#1f3a5f;         /* printer's deep navy — the one color */
+    --accent-soft:#33527a;
+    --accent-wash:#e7e3d6;
+    /* Type */
+    --serif:'Spectral',Georgia,'Times New Roman',serif;
+    --sans:'Inter',system-ui,-apple-system,sans-serif;
+    /* Spacing scale (8px base) */
+    --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:48px; --s6:64px; --s7:96px; --s8:128px;
+    --measure:64ch;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--serif);font-size:20px;line-height:1.72;
+    font-weight:400;-webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  ::selection{background:var(--accent);color:var(--paper);}
+
+  /* ---- Layout primitives ---- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s4);}
+  .prose{max-width:var(--measure);}
+  .prose p{margin:0 0 var(--s3);}
+  section{padding:var(--s7) 0;border-top:1px solid var(--rule);}
+  section.band{background:var(--paper-deep);}
+  .eyebrow{
+    font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--accent);margin:0 0 var(--s2);
+    display:flex;align-items:center;gap:var(--s2);
+  }
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--accent);display:inline-block;}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.12;letter-spacing:-.01em;margin:0;}
+  h2{font-size:clamp(30px,4.2vw,46px);margin:0 0 var(--s3);}
+  h3{font-size:24px;margin:0 0 var(--s2);font-weight:600;}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--rule);}
+  a:hover{border-color:var(--accent);}
+
+  /* ---- Top nav ---- */
+  .topnav{
+    position:sticky;top:0;z-index:50;background:rgba(246,242,233,.9);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);
+  }
+  .topnav .wrap{display:flex;align-items:center;justify-content:space-between;
+    height:56px;padding-top:0;padding-bottom:0;}
+  .brand{font-family:var(--serif);font-weight:600;font-size:18px;letter-spacing:.02em;
+    border:none;color:var(--ink);}
+  .brand b{color:var(--accent);}
+  .topnav nav{display:flex;gap:var(--s4);font-family:var(--sans);font-size:13px;font-weight:500;}
+  .topnav nav a{color:var(--ink-soft);border:none;letter-spacing:.02em;}
+  .topnav nav a:hover{color:var(--accent);}
+  @media(max-width:720px){.topnav nav{display:none;}}
+
+  /* ---- Hero ---- */
+  .hero{padding:var(--s8) 0 var(--s7);border-top:none;text-align:left;}
+  .hero .wrap{position:relative;}
+  .hero .kicker{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--ink-faint);margin:0 0 var(--s4);}
+  .hero h1{
+    font-size:clamp(44px,8vw,92px);font-weight:700;line-height:1.02;letter-spacing:-.025em;
+    max-width:16ch;margin:0 0 var(--s4);
+  }
+  .hero h1 em{font-style:italic;font-weight:500;color:var(--accent);}
+  .hero .standfirst{font-size:clamp(20px,2.4vw,25px);line-height:1.6;color:var(--ink-soft);
+    max-width:50ch;font-weight:400;margin:0 0 var(--s5);}
+  .hero .standfirst .drop{
+    float:left;font-size:84px;line-height:.78;font-weight:700;color:var(--accent);
+    margin:6px var(--s2) 0 0;font-family:var(--serif);
+  }
+  .hero-meta{font-family:var(--sans);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-faint);display:flex;gap:var(--s3);flex-wrap:wrap;
+    border-top:1px solid var(--rule);padding-top:var(--s3);max-width:50ch;}
+
+  /* ---- Pull quote ---- */
+  .pull{font-size:clamp(26px,3.6vw,38px);line-height:1.32;font-weight:500;font-style:italic;
+    color:var(--ink);max-width:24ch;margin:var(--s4) 0;}
+  .pull .src{display:block;font-size:14px;font-style:normal;font-weight:600;font-family:var(--sans);
+    letter-spacing:.06em;color:var(--ink-faint);margin-top:var(--s3);text-transform:uppercase;}
+
+  /* ---- Two-column ---- */
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s6);align-items:start;}
+  @media(max-width:860px){.cols2{grid-template-columns:1fr;gap:var(--s5);}}
+
+  /* ---- Before/after comparison ---- */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);
+    border:1px solid var(--rule);margin:var(--s4) 0;}
+  @media(max-width:720px){.compare{grid-template-columns:1fr;}}
+  .compare > div{background:var(--paper);padding:var(--s5) var(--s4);}
+  .compare .after{background:var(--accent);color:var(--paper);}
+  .compare .ctag{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-faint);margin-bottom:var(--s2);}
+  .compare .after .ctag{color:#b9c6d8;}
+  .compare .big{font-size:54px;line-height:1;font-weight:700;letter-spacing:-.02em;margin:var(--s1) 0;}
+  .compare .big small{font-size:20px;font-weight:500;color:var(--ink-faint);}
+  .compare .after .big small{color:#b9c6d8;}
+  .compare .desc{font-size:17px;line-height:1.55;color:var(--ink-soft);margin:var(--s2) 0 0;}
+  .compare .after .desc{color:#dfe4ec;}
+
+  /* ---- Compositor (centerpiece) ---- */
+  .composer{margin:var(--s4) 0 0;}
+  .composer-stage{
+    background:#171511;border:1px solid #2a261f;border-radius:4px;padding:var(--s4);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  .composer-label{font-family:var(--sans);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:#8a7f6a;margin-bottom:var(--s3);display:flex;justify-content:space-between;align-items:center;}
+  /* The composing stick — where set type appears */
+  .stick{
+    min-height:88px;background:#0d0c0a;border:1px solid #34302a;border-radius:3px;
+    padding:18px 20px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:0;
+    font-family:var(--serif);position:relative;
+  }
+  .stick:empty::after{content:"Click letters below to compose a line\2026";
+    color:#5a5346;font-size:15px;font-style:italic;font-family:var(--serif);}
+  .sort{
+    display:inline-flex;align-items:flex-end;justify-content:center;
+    background:linear-gradient(180deg,#d9c9a6,#b89c6f);color:#1a1510;
+    font-family:var(--serif);font-weight:600;font-size:30px;line-height:1;
+    padding:8px 5px 12px;margin:0 1px;border-radius:2px 2px 1px 1px;
+    box-shadow:0 2px 0 #6f5a36, 0 3px 4px rgba(0,0,0,.4);
+    border-top:1px solid #ecdcb6;min-width:14px;
+    animation:drop .18s ease-out;
+  }
+  .sort.spacer{background:linear-gradient(180deg,#3a352c,#2a261f);box-shadow:0 2px 0 #15130f;min-width:14px;}
+  @keyframes drop{from{transform:translateY(-10px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  /* Type case — the tray of letters */
+  .typecase{display:grid;grid-template-columns:repeat(13,1fr);gap:6px;margin-top:var(--s3);}
+  @media(max-width:720px){.typecase{grid-template-columns:repeat(9,1fr);}}
+  .glyph{
+    font-family:var(--serif);font-weight:600;font-size:19px;color:#e8dcc2;
+    background:#241f18;border:1px solid #3a3329;border-radius:3px;
+    padding:10px 0 8px;cursor:pointer;text-align:center;transition:all .12s;
+    user-select:none;
+  }
+  .glyph:hover,.glyph:focus-visible{background:var(--accent);color:#fff;border-color:var(--accent-soft);outline:none;transform:translateY(-2px);}
+  .glyph.wide{grid-column:span 2;}
+  .composer-controls{display:flex;gap:var(--s2);margin-top:var(--s3);flex-wrap:wrap;align-items:center;}
+  .btn{
+    font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.04em;
+    padding:9px 16px;border-radius:3px;cursor:pointer;border:1px solid var(--accent);
+    background:var(--accent);color:#fff;transition:all .15s;
+  }
+  .btn:hover{background:var(--accent-soft);}
+  .btn.ghost{background:transparent;color:var(--accent);}
+  .btn.ghost:hover{background:var(--accent-wash);}
+  .composer-note{font-family:var(--sans);font-size:13px;color:var(--ink-faint);margin-top:var(--s3);
+    line-height:1.5;}
+  .composer-note b{color:var(--ink-soft);font-weight:600;}
+
+  /* ---- Timeline (spread of printing) ---- */
+  .timeline{margin:var(--s4) 0 0;}
+  .tl-track{position:relative;border-left:2px solid var(--accent);margin-left:8px;padding-left:var(--s4);}
+  .tl-item{position:relative;padding-bottom:var(--s5);}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-item::before{content:"";position:absolute;left:calc(-1 * var(--s4) - 8px);top:6px;
+    width:13px;height:13px;border-radius:50%;background:var(--paper);border:2px solid var(--accent);}
+  .tl-item .yr{font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.1em;
+    color:var(--accent);text-transform:uppercase;}
+  .tl-item h3{font-size:21px;margin:var(--s1) 0 6px;}
+  .tl-item p{font-size:17px;color:var(--ink-soft);margin:0;line-height:1.55;max-width:52ch;}
+  .tl-count{font-family:var(--sans);font-size:12px;color:var(--ink-faint);margin-top:6px;font-weight:500;}
+
+  /* ---- Stat strip ---- */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5);margin:var(--s4) 0;}
+  @media(max-width:720px){.stats{grid-template-columns:1fr;gap:var(--s4);}}
+  .stat .n{font-size:52px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--accent);}
+  .stat .l{font-family:var(--sans);font-size:14px;color:var(--ink-soft);margin-top:var(--s2);
+    line-height:1.45;}
+
+  /* ---- Quiz ---- */
+  .quiz{max-width:62ch;}
+  .q{border-top:1px solid var(--rule);padding:var(--s4) 0;}
+  .q:first-of-type{border-top:none;}
+  .q .qn{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:var(--s2);}
+  .q .qt{font-size:22px;font-weight:500;margin:0 0 var(--s3);line-height:1.4;}
+  .opt{
+    display:block;width:100%;text-align:left;font-family:var(--serif);font-size:18px;
+    background:var(--paper);border:1px solid var(--rule);border-radius:3px;
+    padding:13px 18px;margin-bottom:10px;cursor:pointer;color:var(--ink);
+    transition:all .14s;line-height:1.4;
+  }
+  .opt:hover{border-color:var(--accent);background:var(--accent-wash);}
+  .opt:disabled{cursor:default;}
+  .opt.correct{border-color:#2f6b3f;background:#e3efe4;color:#1d4429;}
+  .opt.wrong{border-color:#9a3b34;background:#f3e1df;color:#6e241e;}
+  .why{font-size:16px;color:var(--ink-soft);line-height:1.55;margin-top:var(--s2);
+    padding:var(--s2) var(--s3);border-left:3px solid var(--accent);background:var(--paper-deep);
+    display:none;}
+  .why.show{display:block;}
+  .quiz-tally{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--accent);
+    margin-top:var(--s4);}
+
+  /* ---- Footer ---- */
+  footer{border-top:1px solid var(--rule);padding:var(--s6) 0;background:var(--paper-deep);}
+  footer .wrap{display:flex;justify-content:space-between;gap:var(--s4);flex-wrap:wrap;}
+  footer .colo{font-family:var(--serif);font-style:italic;color:var(--ink-faint);max-width:40ch;
+    font-size:17px;}
+  footer .srcs{font-family:var(--sans);font-size:13px;color:var(--ink-faint);max-width:34ch;line-height:1.7;}
+  footer .srcs b{display:block;text-transform:uppercase;letter-spacing:.12em;font-size:11px;
+    color:var(--ink-soft);margin-bottom:var(--s1);}
+
+  /* ---- Scroll reveal ---- */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;
+    transition:none;}html{scroll-behavior:auto;}}
+
+  .lead{font-size:23px;line-height:1.6;color:var(--ink-soft);}
+  .figcap{font-family:var(--sans);font-size:13px;color:var(--ink-faint);margin-top:var(--s2);
+    line-height:1.5;max-width:60ch;}
+</style>
+</head>
+<body data-review-toggle>
+
+<header class="topnav">
+  <div class="wrap">
+    <a href="#top" class="brand">Impressions <b>·</b> 1450</a>
+    <nav>
+      <a href="#before">Before</a>
+      <a href="#press">The Press</a>
+      <a href="#compose">Compose</a>
+      <a href="#spread">The Spread</a>
+      <a href="#legacy">Legacy</a>
+      <a href="#quiz">Quiz</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="kicker">A short history · Mainz, c. 1450</p>
+      <h1>How Gutenberg's Printing Press <em>Changed the World</em></h1>
+      <p class="standfirst"><span class="drop">F</span>or a thousand years, every book in Europe was copied by hand — slowly, expensively, one at a time. Then a goldsmith in Mainz combined a few ordinary technologies into a machine that could reproduce a page hundreds of times over. Within fifty years, the price of knowledge collapsed.</p>
+      <div class="hero-meta">
+        <span>~1450 · First press</span>
+        <span>1455 · The Bible</span>
+        <span>1500 · 20M+ books</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEFORE: the scribal world -->
+  <section id="before">
+    <div class="wrap">
+      <p class="eyebrow">Before the press</p>
+      <div class="cols2">
+        <div class="prose">
+          <h2>A world written by hand</h2>
+          <p>Imagine wanting to read. In 1440, a book was a luxury object. Each copy was produced by a <strong>scribe</strong> — a trained copyist who reproduced a manuscript letter by letter with a quill, often working in a monastery's writing room.</p>
+          <p>A single Bible could take a skilled scribe <strong>over a year</strong> to complete. The materials alone — parchment made from animal skin — might require the hides of an entire herd. Books were chained to library desks because each one represented a small fortune.</p>
+          <p>The result: literacy and learning were bottlenecked by the sheer labor of copying. Ideas travelled only as fast as a hand could write.</p>
+        </div>
+        <div>
+          <div class="compare">
+            <div>
+              <div class="ctag">By hand · the scribe</div>
+              <div class="big">~1<small> / year</small></div>
+              <div class="desc">A single trained scribe could produce roughly one large book — like a Bible — in a year of steady work.</div>
+            </div>
+            <div class="after">
+              <div class="ctag">By press · after 1450</div>
+              <div class="big">~3,600<small> / year</small></div>
+              <div class="desc">One press, well staffed, could turn out thousands of identical pages — building hundreds of complete books a year.</div>
+            </div>
+          </div>
+          <p class="figcap">Figures are illustrative order-of-magnitude estimates. The point is the leap: not a little faster, but a different category of speed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE PRESS: the mental model -->
+  <section id="press" class="band">
+    <div class="wrap">
+      <p class="eyebrow">The core idea</p>
+      <div class="cols2">
+        <div class="prose">
+          <h2>Gutenberg's real invention was the <em>letter</em></h2>
+          <p>People imagine the press itself as the breakthrough. But screw presses already existed — for crushing grapes and olives. The genius was smaller, and it fit in your palm.</p>
+          <p>Gutenberg's insight was <strong>movable type</strong>: cast each letter as a separate, reusable metal block — a <em>sort</em> — in vast quantities. To print a page, you arrange thousands of these letters into words and lines, ink them, press paper against them, then <strong>take them apart and reuse every single one</strong> for the next page.</p>
+          <p>A page becomes something you <em>assemble</em>, not something you draw. That is the whole revolution in one sentence.</p>
+        </div>
+        <div class="prose">
+          <p class="pull">"What Gutenberg industrialised was not writing, but the alphabet itself."
+            <span class="src">The throughline of this page</span></p>
+          <p>To make this work he had to solve several problems at once: a metal <strong>alloy</strong> soft enough to cast but hard enough to print thousands of times; a <strong>mould</strong> that produced letters of identical height but variable width; an oil-based <strong>ink</strong> that clung to metal; and a press adapted to lay down even pressure. Each existed in some form. Combining them was the leap.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CENTERPIECE: the compositor -->
+  <section id="compose">
+    <div class="wrap">
+      <p class="eyebrow">Try it · the compositor's bench</p>
+      <h2>Set a line of type</h2>
+      <p class="lead prose">This is what a compositor did all day: pick letters one at a time from the type case and place them in a composing stick to build a line. Click letters below — read right-side-up as you go — then print your line and reset the type, exactly as the workshop did.</p>
+
+      <div class="composer">
+        <div class="composer-stage">
+          <div class="composer-label"><span>The composing stick</span><span id="sortCount">0 sorts set</span></div>
+          <div class="stick" id="stick" aria-live="polite"></div>
+          <div class="composer-controls">
+            <button class="btn" id="printBtn" type="button">Ink &amp; print this line</button>
+            <button class="btn ghost" id="spaceBtn" type="button">Add space</button>
+            <button class="btn ghost" id="backBtn" type="button">Remove last</button>
+            <button class="btn ghost" id="resetBtn" type="button">Distribute (reset)</button>
+          </div>
+          <div class="typecase" id="typecase" role="group" aria-label="Type case — click a letter to set it"></div>
+        </div>
+        <p class="composer-note"><b>Why this mattered:</b> a scribe's letterform was unique each time; a <b>sort</b> is identical on every impression. Once a forme was set, the workshop could pull hundreds of perfectly consistent copies — then <b>distribute</b> the type back into the case and set the next page. <span id="printTally"></span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE SPREAD: timeline -->
+  <section id="spread" class="band">
+    <div class="wrap">
+      <p class="eyebrow">1450 – 1500 · the half-century explosion</p>
+      <h2>How printing swept across Europe</h2>
+      <p class="lead prose">The technology spread astonishingly fast. Printers — many trained in Mainz — carried the craft city to city. Books printed before 1501 are called <em>incunabula</em>, from the Latin for "cradle." By the cradle's end, there were millions.</p>
+
+      <div class="timeline">
+        <div class="tl-track">
+          <div class="tl-item">
+            <div class="yr">c. 1450 · Mainz</div>
+            <h3>The first press</h3>
+            <p>Johannes Gutenberg sets up his workshop. The technique is, for now, a closely guarded secret of a single German city.</p>
+            <div class="tl-count">Print shops in Europe: 1</div>
+          </div>
+          <div class="tl-item">
+            <div class="yr">1455 · Mainz</div>
+            <h3>The 42-line Bible</h3>
+            <p>Roughly 180 copies of the Gutenberg Bible are printed — a commercial object of startling quality that proves the method works at scale.</p>
+            <div class="tl-count">Print shops in Europe: ~1</div>
+          </div>
+          <div class="tl-item">
+            <div class="yr">1462 – 1470 · Outward</div>
+            <h3>The craft escapes Mainz</h3>
+            <p>After upheaval in Mainz, printers scatter. Presses reach Italy (Subiaco, then Venice), then France and the Low Countries.</p>
+            <div class="tl-count">Print shops in Europe: ~10 cities</div>
+          </div>
+          <div class="tl-item">
+            <div class="yr">1476 · England</div>
+            <h3>Caxton crosses the Channel</h3>
+            <p>William Caxton sets up England's first press at Westminster, printing in English and helping to standardise the language itself.</p>
+            <div class="tl-count">Print shops in Europe: ~40 cities</div>
+          </div>
+          <div class="tl-item">
+            <div class="yr">1500 · Everywhere</div>
+            <h3>An industry, not a secret</h3>
+            <p>Presses now operate in more than 250 European towns. An estimated <strong>20 million books</strong> have been printed — more than all of Europe's scribes had produced in the previous thousand years.</p>
+            <div class="tl-count">Print shops in Europe: 250+ towns</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEGACY -->
+  <section id="legacy">
+    <div class="wrap">
+      <p class="eyebrow">What it changed</p>
+      <div class="cols2">
+        <div class="prose">
+          <h2>When knowledge got cheap, everything moved</h2>
+          <p>A drop in the price of copying does not sound revolutionary. But once an idea could be reproduced cheaply and identically, it could no longer be quietly contained.</p>
+          <p>Martin Luther's <strong>95 Theses</strong> (1517) spread across Germany in weeks, turning a local dispute into the Reformation — the first mass-media event. The same machinery let scientists like <strong>Copernicus</strong> and later <strong>Galileo</strong> circulate findings precisely and check each other's numbers, fuelling the Scientific Revolution.</p>
+          <p>Standardised spelling and grammar followed the printed page. Vernacular languages — English, German, French — gained fixed, shared forms. Literacy rose because there was, at last, something affordable to read.</p>
+        </div>
+        <div>
+          <div class="stats">
+            <div class="stat reveal">
+              <div class="n">&lt;1%</div>
+              <div class="l">Share of the old hand-copied cost a printed book reached by 1500 — knowledge became affordable.</div>
+            </div>
+            <div class="stat reveal">
+              <div class="n">2 wks</div>
+              <div class="l">How fast Luther's 95 Theses reportedly spread across Germany — the first viral text.</div>
+            </div>
+            <div class="stat reveal">
+              <div class="n">20M+</div>
+              <div class="l">Books printed in Europe before 1501, dwarfing a millennium of scribal output.</div>
+            </div>
+          </div>
+          <p class="pull" style="max-width:30ch;">"He who first shortened the labor of copyists by the invention of movable types was abridging the difference between barbarism and civilization."
+            <span class="src">Thomas Carlyle</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="band">
+    <div class="wrap">
+      <p class="eyebrow">Check yourself</p>
+      <h2>What stuck?</h2>
+      <p class="lead prose" style="margin-bottom:var(--s5);">Four quick questions. Pick an answer for instant feedback and the reasoning behind it.</p>
+      <div class="quiz" id="quizList"></div>
+      <div class="quiz-tally" id="tally" aria-live="polite"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="colo">Set in Spectral. Ink-black on warm paper, in homage to the medium this page describes — the first technology of mass typography.</p>
+    <div class="srcs">
+      <b>Sources</b>
+      Britannica, "Printing" &amp; "Johannes Gutenberg" · British Library, Incunabula collections · Eisenstein, <em>The Printing Press as an Agent of Change</em>. Production figures are widely cited order-of-magnitude estimates.
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Scroll reveal (self-healing) ---------- */
+  var reveals = document.querySelectorAll('.reveal');
+  function showAll(){reveals.forEach(function(el){el.classList.add('in');});}
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+    },{threshold:.15});
+    reveals.forEach(function(el){io.observe(el);});
+    setTimeout(showAll,2500); // failsafe
+  } else { showAll(); }
+
+  /* ---------- Compositor centerpiece ---------- */
+  var LETTERS = "ETAOINSHRDLCUMWFGYPBVKJXQZ".split("");
+  var stick = document.getElementById('stick');
+  var typecase = document.getElementById('typecase');
+  var sortCount = document.getElementById('sortCount');
+  var printTally = document.getElementById('printTally');
+  var line = []; // array of {ch} ; ch===' ' for spacer
+  var printed = 0;
+
+  function build(ch){
+    var b=document.createElement('button');
+    b.className='glyph';
+    b.type='button';
+    b.textContent=ch;
+    b.setAttribute('aria-label','Set the letter '+ch);
+    b.addEventListener('click',function(){addSort(ch);});
+    return b;
+  }
+  LETTERS.forEach(function(ch){ typecase.appendChild(build(ch)); });
+
+  function render(){
+    stick.innerHTML='';
+    line.forEach(function(item){
+      var s=document.createElement('span');
+      if(item===' '){ s.className='sort spacer'; s.innerHTML='&nbsp;'; }
+      else { s.className='sort'; s.textContent=item; }
+      stick.appendChild(s);
+    });
+    var n=line.filter(function(x){return x!==' ';}).length;
+    sortCount.textContent = n + (n===1?' sort set':' sorts set');
+  }
+  function addSort(ch){ if(line.length>=42) return; line.push(ch); render(); }
+
+  document.getElementById('spaceBtn').addEventListener('click',function(){ if(line.length>=42) return; line.push(' '); render(); });
+  document.getElementById('backBtn').addEventListener('click',function(){ line.pop(); render(); });
+  document.getElementById('resetBtn').addEventListener('click',function(){ line=[]; render(); });
+  document.getElementById('printBtn').addEventListener('click',function(){
+    var n=line.filter(function(x){return x!==' ';}).length;
+    if(n===0){ printTally.textContent='Set at least one letter first.'; return; }
+    printed++;
+    printTally.innerHTML = '<b>Impressions pulled: '+printed+'.</b> The forme stayed set — every copy identical.';
+  });
+  render();
+
+  /* ---------- Quiz ---------- */
+  var QUESTIONS = [
+    {
+      q:"What was Gutenberg's key innovation?",
+      options:["Inventing paper","Reusable movable metal type","The screw press itself","The first written alphabet"],
+      answer:1,
+      why:"Screw presses and paper already existed. The breakthrough was casting each letter as a separate, reusable metal sort that could be arranged, printed, and reset thousands of times."
+    },
+    {
+      q:"Roughly how long might a scribe take to copy a single large Bible by hand?",
+      options:["A few hours","About a week","Over a year","A single day"],
+      answer:2,
+      why:"Hand-copying a large book like a Bible could take a skilled scribe more than a year — which is exactly why books were rare and enormously expensive before the press."
+    },
+    {
+      q:"What are books printed before 1501 called?",
+      options:["Folios","Incunabula","Codices","Quartos"],
+      answer:1,
+      why:"Incunabula — from the Latin for 'cradle' — are works printed in the earliest period of printing, before 1501. By then over 20 million had been produced."
+    },
+    {
+      q:"Which event is often called the first mass-media phenomenon, enabled by the press?",
+      options:["The fall of Rome","Luther's 95 Theses spreading across Germany","The signing of Magna Carta","Columbus reaching the Americas"],
+      answer:1,
+      why:"Luther's 95 Theses (1517) spread across Germany in about two weeks thanks to cheap printing, turning a local theological dispute into the Reformation."
+    }
+  ];
+  var quizEl=document.getElementById('quizList');
+  var tallyEl=document.getElementById('tally');
+  var answered=0, correct=0;
+
+  QUESTIONS.forEach(function(item,qi){
+    var q=document.createElement('div'); q.className='q';
+    var num=document.createElement('div'); num.className='qn'; num.textContent='Question '+(qi+1)+' of '+QUESTIONS.length; q.appendChild(num);
+    var t=document.createElement('div'); t.className='qt'; t.textContent=item.q; q.appendChild(t);
+    var locked=false;
+    item.options.forEach(function(opt,oi){
+      var b=document.createElement('button'); b.className='opt'; b.type='button'; b.textContent=opt;
+      b.addEventListener('click',function(){
+        if(locked) return; locked=true;
+        var all=q.querySelectorAll('.opt');
+        all.forEach(function(x){x.disabled=true;});
+        if(oi===item.answer){ b.classList.add('correct'); correct++; }
+        else { b.classList.add('wrong'); all[item.answer].classList.add('correct'); }
+        why.classList.add('show');
+        answered++;
+        tallyEl.textContent='Score: '+correct+' / '+answered+' answered'+(answered===QUESTIONS.length?' — all done.':'.');
+      });
+      q.appendChild(b);
+    });
+    var why=document.createElement('div'); why.className='why'; why.textContent=item.why; q.appendChild(why);
+    quizEl.appendChild(q);
+  });
+
+})();
+</script>
+
+
+<!-- Review & edit overlay — injected by assemble.mjs (invariant; do not hand-edit) -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:8px;right:14px;z-index:9002;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:9010;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:9010;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:9020;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+    // Position just below any fixed/sticky top nav so it never collides
+    requestAnimationFrame(function () {
+      var navBottom = 0;
+      document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+        var s = getComputedStyle(el);
+        if (s.position === "fixed" || s.position === "sticky") {
+          navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+        }
+      });
+      if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+    });
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>

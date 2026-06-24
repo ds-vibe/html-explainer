@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Special Relativity Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f7f4ee;
+  --paper-2:#efeae0;
+  --band:#1b2333;
+  --band-ink:#eef1f7;
+  --ink:#1c1b19;
+  --ink-soft:#4a4843;
+  --ink-faint:#7c7a72;
+  --rule:#ddd6c8;
+  --light:#2f5ce0;       /* the constant: light / spacetime */
+  --light-soft:#e6ebfb;
+  --energy:#c06a16;      /* mass-energy */
+  --energy-soft:#f6e6d3;
+  --good:#2f7d52;
+  --bad:#b5402f;
+  --maxw:1180px;
+  --prose:66ch;
+  --serif:"Fraunces",Georgia,serif;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:17px}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.12;letter-spacing:-0.01em}
+a{color:var(--light);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ---- layout ---- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+.prose{max-width:var(--prose)}
+section{padding:74px 0}
+.band{background:var(--band);color:var(--band-ink)}
+.band h2,.band h3{color:#fff}
+.band .eyebrow{color:#9fb3ef}
+.alt{background:var(--paper-2)}
+.eyebrow{font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:var(--light);margin-bottom:14px}
+.band .eyebrow{color:#93a8e8}
+h2.title{font-size:clamp(28px,4vw,42px);margin-bottom:18px;max-width:18ch}
+.lead{font-size:clamp(18px,2.2vw,21px);color:var(--ink-soft);max-width:60ch}
+.band .lead{color:#c3cad8}
+p{margin-bottom:18px;max-width:var(--prose)}
+.band p{color:#cfd5e2}
+section > .wrap > p, section > .wrap > .prose{margin-top:0}
+
+/* ---- nav ---- */
+header.nav{position:sticky;top:0;z-index:50;background:rgba(247,244,238,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.nav-inner{max-width:var(--maxw);margin:0 auto;padding:11px 28px;display:flex;align-items:center;gap:22px}
+.brand{font-family:var(--serif);font-weight:600;font-size:17px;white-space:nowrap}
+.brand .c{color:var(--light)}
+.nav-links{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;font-weight:500;margin-left:auto}
+.nav-links a{color:var(--ink-soft)}
+.nav-links a:hover{color:var(--light);text-decoration:none}
+@media(max-width:760px){
+  .nav-inner{flex-wrap:wrap;gap:8px}
+  .nav-links{margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;gap:16px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{white-space:nowrap;font-size:13px}
+}
+
+/* ---- hero ---- */
+.hero{padding:96px 0 78px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(40px,7vw,76px);font-weight:600;letter-spacing:-0.02em;max-width:16ch}
+.hero .kicker{font-family:var(--sans);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--light);margin-bottom:22px}
+.hero .lead{font-size:clamp(19px,2.4vw,23px);margin-top:24px;max-width:54ch}
+.hero .scrollcue{margin-top:40px;font-size:14px;color:var(--ink-faint);font-weight:500;letter-spacing:.04em}
+.beam{position:absolute;right:-6%;top:0;height:100%;width:46%;pointer-events:none;opacity:.9}
+@media(max-width:900px){.beam{display:none}}
+
+/* ---- big idea card ---- */
+.bigidea{border:1.5px solid var(--ink);border-radius:4px;padding:30px 32px;background:#fff;max-width:760px;margin-top:14px}
+.bigidea .label{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:700;color:var(--light);margin-bottom:10px}
+.bigidea .big{font-family:var(--serif);font-size:clamp(20px,2.6vw,27px);font-weight:500;line-height:1.32;color:var(--ink)}
+.bigidea .big b{color:var(--light);font-weight:600}
+
+/* ---- postulate cards ---- */
+.posts{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:8px}
+@media(max-width:720px){.posts{grid-template-columns:1fr}}
+.post{border-left:3px solid var(--light);padding:6px 0 6px 22px}
+.post .n{font-family:var(--serif);font-size:14px;color:var(--light);font-weight:600;letter-spacing:.04em}
+.post h3{font-size:21px;margin:6px 0 8px}
+.post p{font-size:16px;color:var(--ink-soft);margin:0}
+
+/* ---- demo shell ---- */
+.demo{background:#fff;border:1px solid var(--rule);border-radius:8px;padding:24px;margin:26px 0;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.band .demo{background:#222b3d;border-color:#33405a}
+.demo .demo-head{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.demo .demo-tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--light);padding:3px 8px;border-radius:3px}
+.demo h4{font-size:18px;margin:0}
+.band .demo h4{color:#fff}
+.demo .hint{font-size:14px;color:var(--ink-faint);margin:6px 0 18px;max-width:62ch}
+.band .demo .hint{color:#9aa5ba}
+canvas{display:block;max-width:100%;background:transparent}
+
+.controls{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:center;margin-top:16px}
+.ctl{flex:1 1 240px;min-width:200px}
+.ctl label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:7px;letter-spacing:.02em}
+.band .ctl label{color:#aab3c6}
+input[type=range]{width:100%;accent-color:var(--light);height:22px}
+.readout{display:flex;gap:26px;flex-wrap:wrap;margin-top:16px}
+.stat{min-width:120px}
+.stat .v{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--light);line-height:1}
+.band .stat .v{color:#8fb0ff}
+.stat .k{font-size:12.5px;color:var(--ink-faint);margin-top:5px;letter-spacing:.02em}
+.band .stat .k{color:#9aa5ba}
+.btn{font-family:var(--sans);font-weight:600;font-size:14px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;padding:9px 18px;border-radius:5px;cursor:pointer;transition:.15s}
+.btn:hover{background:#000}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:#fff}
+.band .btn.ghost{color:#fff;border-color:#fff}
+.band .btn{border-color:#8fb0ff;background:#8fb0ff;color:#10182a}
+.seg{display:inline-flex;border:1.5px solid var(--rule);border-radius:6px;overflow:hidden}
+.seg button{font-family:var(--sans);font-weight:600;font-size:14px;border:none;background:#fff;color:var(--ink-soft);padding:8px 16px;cursor:pointer}
+.seg button.on{background:var(--light);color:#fff}
+
+/* ---- go deeper ---- */
+details.deeper{border:1px solid var(--rule);border-radius:6px;background:#fff;margin:18px 0;max-width:var(--prose)}
+.band details.deeper{background:#222b3d;border-color:#33405a}
+details.deeper summary{cursor:pointer;padding:14px 18px;font-weight:600;font-size:15px;color:var(--light);list-style:none;display:flex;align-items:center;gap:9px}
+.band details.deeper summary{color:#8fb0ff}
+details.deeper summary::-webkit-details-marker{display:none}
+details.deeper summary .plus{display:inline-block;width:18px;height:18px;border:1.5px solid currentColor;border-radius:50%;position:relative;flex:none}
+details.deeper summary .plus::before,details.deeper summary .plus::after{content:"";position:absolute;background:currentColor;top:50%;left:50%;transform:translate(-50%,-50%)}
+details.deeper summary .plus::before{width:8px;height:1.5px}
+details.deeper summary .plus::after{width:1.5px;height:8px;transition:.2s}
+details.deeper[open] summary .plus::after{transform:translate(-50%,-50%) scaleY(0)}
+details.deeper .body{padding:0 18px 18px;font-size:15.5px;color:var(--ink-soft)}
+.band details.deeper .body{color:#c3cad8}
+.eq{font-family:var(--serif);font-size:20px;text-align:center;padding:14px;background:var(--paper-2);border-radius:5px;margin:14px 0;color:var(--ink)}
+.band .eq{background:#10182a;color:#cfe0ff}
+
+/* ---- pull figure / two-col ---- */
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+@media(max-width:840px){.split{grid-template-columns:1fr;gap:28px}}
+
+/* ---- evidence cards ---- */
+.evgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:#fff;margin-top:10px}
+@media(max-width:820px){.evgrid{grid-template-columns:1fr}}
+.ev{padding:26px 24px;border-right:1px solid var(--rule)}
+.ev:last-child{border-right:none}
+@media(max-width:820px){.ev{border-right:none;border-bottom:1px solid var(--rule)}.ev:last-child{border-bottom:none}}
+.ev .num{font-family:var(--serif);font-size:32px;font-weight:600;color:var(--energy);line-height:1}
+.ev h4{font-size:17px;margin:12px 0 8px}
+.ev p{font-size:14.5px;color:var(--ink-soft);margin:0}
+
+/* ---- quiz ---- */
+.quiz{max-width:760px}
+.q{border:1px solid var(--rule);border-radius:8px;background:#fff;padding:22px 24px;margin-bottom:18px}
+.q .qn{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--light);margin-bottom:8px}
+.q .qtext{font-family:var(--serif);font-size:19px;font-weight:500;margin-bottom:16px}
+.opt{display:block;width:100%;text-align:left;border:1.5px solid var(--rule);background:var(--paper);border-radius:6px;padding:12px 15px;margin-bottom:10px;cursor:pointer;font-family:var(--sans);font-size:15.5px;color:var(--ink);transition:.12s}
+.opt:hover{border-color:var(--light)}
+.opt.correct{border-color:var(--good);background:#eaf5ee}
+.opt.wrong{border-color:var(--bad);background:#f8eae7}
+.opt:disabled{cursor:default}
+.why{font-size:14.5px;color:var(--ink-soft);margin-top:6px;padding:12px 14px;border-left:3px solid var(--light);background:var(--light-soft);border-radius:0 5px 5px 0;display:none}
+.why.show{display:block}
+.why b{color:var(--ink)}
+.score{font-family:var(--serif);font-size:20px;font-weight:600;text-align:center;padding:18px;border:1.5px dashed var(--rule);border-radius:8px;margin-top:6px;display:none}
+.score.show{display:block}
+
+/* ---- sources ---- */
+.sources{font-size:14.5px;color:var(--ink-soft)}
+.sources li{margin-bottom:9px;list-style:none;padding-left:18px;position:relative}
+.sources li::before{content:"";position:absolute;left:0;top:10px;width:7px;height:7px;background:var(--light);border-radius:50%}
+footer{padding:40px 0 60px;color:var(--ink-faint);font-size:13.5px;border-top:1px solid var(--rule)}
+.disclaim{font-size:13.5px;color:var(--ink-faint);max-width:62ch;margin-top:10px}
+
+.kbd{font-family:var(--serif);font-style:italic}
+mark{background:var(--energy-soft);padding:0 3px;border-radius:2px}
+.note-light{color:var(--light);font-weight:600}
+</style>
+</head>
+<body data-review-toggle>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">Special Relativity<span class="c">.</span></div>
+    <nav class="nav-links">
+      <a href="#idea">The idea</a>
+      <a href="#postulates">Postulates</a>
+      <a href="#clock">Light clock</a>
+      <a href="#time">Time</a>
+      <a href="#length">Length</a>
+      <a href="#now">Simultaneity</a>
+      <a href="#spacetime">Spacetime</a>
+      <a href="#emc2">E=mc²</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#quiz">Quiz</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <svg class="beam" viewBox="0 0 400 600" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#2f5ce0" stop-opacity="0.10"/>
+          <stop offset="1" stop-color="#2f5ce0" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <g stroke="#2f5ce0" stroke-width="1.4" opacity="0.5">
+        <line x1="40" y1="80" x2="360" y2="80"/>
+        <line x1="40" y1="150" x2="360" y2="150"/>
+        <line x1="40" y1="220" x2="360" y2="220"/>
+        <line x1="40" y1="290" x2="360" y2="290"/>
+        <line x1="40" y1="360" x2="360" y2="360"/>
+        <line x1="40" y1="430" x2="360" y2="430"/>
+        <line x1="40" y1="500" x2="360" y2="500"/>
+      </g>
+      <g stroke="#2f5ce0" stroke-width="1.4" opacity="0.28">
+        <line x1="80" y1="40" x2="80" y2="540"/>
+        <line x1="150" y1="40" x2="150" y2="540"/>
+        <line x1="220" y1="40" x2="220" y2="540"/>
+        <line x1="290" y1="40" x2="290" y2="540"/>
+      </g>
+      <path d="M40 540 L360 40" stroke="#c06a16" stroke-width="3"/>
+      <circle cx="200" cy="290" r="6" fill="#c06a16"/>
+    </svg>
+    <div class="kicker">A visual explainer · ~12 min</div>
+    <h1>How special relativity works</h1>
+    <p class="lead">Albert Einstein started from one stubborn fact about light — and discovered that time, distance, and mass aren't the fixed things we assume. Here's the whole idea, built up one step at a time, with pieces you can play with.</p>
+    <div class="scrollcue">↓ Scroll to begin · no math required (but it's one click away if you want it)</div>
+  </div>
+</section>
+
+<!-- THE BIG IDEA -->
+<section id="idea" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">The one idea everything hangs on</div>
+    <h2 class="title">Light always moves at the same speed — for everyone</h2>
+    <p class="prose">Imagine you're on a train throwing a ball forward. Someone on the platform sees the ball move at <em>your throw speed plus the train's speed</em>. Speeds add up. That's the world we grew up in.</p>
+    <p class="prose">Now swap the ball for a beam of light. You'd expect the platform observer to measure <em>light speed plus train speed</em>. But every experiment ever done says no: <strong>they measure exactly the same speed of light you do</strong> — about 299,792 km/s — no matter how fast the train goes, no matter which way they're moving.</p>
+    <div class="bigidea">
+      <div class="label">The mental model — hold onto this</div>
+      <div class="big">If the speed of light <b>can't</b> change, then something else must. The only things left to give are <b>time</b> and <b>space</b> themselves. Special relativity is just the careful working-out of what has to bend so that everyone always agrees on the speed of light.</div>
+    </div>
+    <p class="prose" style="margin-top:26px">Keep that sentence in your pocket. Every strange result below — slowing clocks, shrinking rulers, disagreements about "now" — is the universe rearranging time and space to protect that one constant.</p>
+  </div>
+</section>
+
+<!-- POSTULATES -->
+<section id="postulates">
+  <div class="wrap">
+    <div class="eyebrow">Where it starts</div>
+    <h2 class="title">Two assumptions. That's the whole foundation.</h2>
+    <p class="prose">In 1905, Einstein built the entire theory on just two principles. They sound modest. Everything else is a logical consequence.</p>
+    <div class="posts">
+      <div class="post">
+        <div class="n">Postulate 1 — The principle of relativity</div>
+        <h3>The laws of physics are the same for everyone moving steadily</h3>
+        <p>If you're cruising at a constant speed in a windowless cabin, no experiment can tell you whether you're moving or sitting still. There's no "absolute rest" to measure against — all steady motion is relative.</p>
+      </div>
+      <div class="post">
+        <div class="n">Postulate 2 — The constancy of light</div>
+        <h3>Light travels at the same speed for every such observer</h3>
+        <p>That speed, called <span class="note-light">c</span>, doesn't depend on how fast the light's source is moving, or how fast you are. Combine this with Postulate 1 and the familiar rules of adding speeds break — beautifully.</p>
+      </div>
+    </div>
+    <p class="prose" style="margin-top:32px">The word "special" just means this theory covers the <em>special case</em> of steady, straight-line motion. (Add gravity and acceleration and you get Einstein's later <em>general</em> relativity.)</p>
+  </div>
+</section>
+
+<!-- LIGHT CLOCK -->
+<section id="clock" class="band">
+  <div class="wrap">
+    <div class="eyebrow">The engine of the whole theory</div>
+    <h2 class="title">The light clock: watch time stretch</h2>
+    <p class="lead">Here's the single picture that makes relativity click. Build a clock out of light itself, set it moving, and the constant speed of light forces the clock to tick slowly.</p>
+    <p style="max-width:62ch;margin-top:20px">A "light clock" bounces one photon between two mirrors. Each bounce is one tick. Now watch the same clock fly past you: the photon has to travel a longer, <em>diagonal</em> path to keep up with the moving mirrors — but light can't speed up to cover the extra distance. So each tick takes longer. The moving clock runs slow.</p>
+
+    <div class="demo">
+      <div class="demo-head"><span class="demo-tag">Play with it</span><h4>Drag the speed up and compare the two clocks</h4></div>
+      <div class="hint">Left: a light clock sitting still next to you. Right: an identical clock gliding past at the speed you set. Both photons move at exactly the same speed — only the path length differs.</div>
+      <canvas id="clockCanvas" width="640" height="280" aria-label="Two light clocks: one stationary, one moving"></canvas>
+      <div class="controls">
+        <div class="ctl">
+          <label for="speed">Speed of the moving clock: <span id="speedLabel">0.50c</span> (fraction of light speed)</label>
+          <input type="range" id="speed" min="0" max="0.99" step="0.01" value="0.5">
+        </div>
+        <button class="btn ghost" id="clockReset">Reset ticks</button>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="v" id="gamma">1.15</div><div class="k">Time-stretch factor (γ)</div></div>
+        <div class="stat"><div class="v" id="yourTicks">0</div><div class="k">Your clock — ticks</div></div>
+        <div class="stat"><div class="v" id="movTicks">0</div><div class="k">Moving clock — ticks</div></div>
+        <div class="stat"><div class="v" id="rate">87%</div><div class="k">Moving clock's rate</div></div>
+      </div>
+    </div>
+
+    <details class="deeper">
+      <summary><span class="plus"></span>Go deeper: the math is just Pythagoras</summary>
+      <div class="body">
+        <p>Say the mirrors are a distance <em>L</em> apart. In the clock's own frame, one tick takes <em>t₀ = L / c</em>. To you watching it move at speed <em>v</em>, the photon travels a diagonal whose horizontal leg is <em>v·t</em> and vertical leg is <em>L</em>. Since the photon still moves at <em>c</em>, the diagonal length is <em>c·t</em>:</p>
+        <div class="eq">(c·t)² = (v·t)² + L²</div>
+        <p>Solve for <em>t</em> and you get the famous <em>Lorentz factor</em>, usually written γ (gamma):</p>
+        <div class="eq">t = γ·t₀ , &nbsp; where &nbsp; γ = 1 / √(1 − v²/c²)</div>
+        <p>At everyday speeds <em>v/c</em> is tiny, so γ ≈ 1 and nothing seems to change. Push <em>v</em> toward <em>c</em> and γ shoots toward infinity — which is why the slider's effect explodes near the top.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- TIME DILATION -->
+<section id="time">
+  <div class="wrap split">
+    <div>
+      <div class="eyebrow">Consequence 1</div>
+      <h2 class="title">Moving clocks run slow</h2>
+      <p>That light-clock effect isn't about light clocks. <strong>Every</strong> clock moving relative to you — mechanical, atomic, biological — ticks slow by the same factor γ, because time itself is what's stretching. This is called <em>time dilation</em>.</p>
+      <p>The catch that trips everyone up: it's <em>symmetric</em>. From the moving clock's point of view, <em>you're</em> the one moving, so <em>your</em> clock looks slow to it. Neither of you is wrong. There's no universal clock to settle it — that's the whole point of Postulate 1.</p>
+      <p>The effect is real but vanishingly small at human speeds. Fly around the world and you'd return younger than your twin by a few hundred billionths of a second. Approach light speed and the gap becomes years.</p>
+    </div>
+    <div>
+      <div class="demo" style="margin:0">
+        <div class="demo-head"><span class="demo-tag">By the numbers</span><h4>How much do you slow down?</h4></div>
+        <div class="hint">Set a speed and see how one year on a fast ship compares to time back home.</div>
+        <div class="ctl">
+          <label for="tdSpeed">Traveler's speed: <span id="tdLabel">0.90c</span></label>
+          <input type="range" id="tdSpeed" min="0" max="0.999" step="0.001" value="0.9">
+        </div>
+        <div class="readout">
+          <div class="stat"><div class="v" id="tdShip">1.0</div><div class="k">Years on the ship</div></div>
+          <div class="stat"><div class="v" id="tdHome">2.29</div><div class="k">Years back home</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LENGTH CONTRACTION -->
+<section id="length" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Consequence 2</div>
+    <h2 class="title">Moving objects get shorter</h2>
+    <p class="prose">Space gives too. An object flying past you is measured as <em>shorter</em> along its direction of travel — by that same factor γ. A spaceship that's 100 m long at rest measures less than half that as it streaks by near light speed. It isn't squashed or damaged; the distance between its nose and tail genuinely measures shorter to you. This is <em>length contraction</em>.</p>
+    <div class="demo">
+      <div class="demo-head"><span class="demo-tag">Play with it</span><h4>Speed up the ship and watch it shrink</h4></div>
+      <div class="hint">A 100-metre ship. The faint outline is its rest length; the solid ship is what you measure as it passes.</div>
+      <canvas id="shipCanvas" width="640" height="160" aria-label="A spaceship contracting along its direction of motion"></canvas>
+      <div class="controls">
+        <div class="ctl">
+          <label for="lcSpeed">Ship's speed: <span id="lcLabel">0.60c</span></label>
+          <input type="range" id="lcSpeed" min="0" max="0.99" step="0.01" value="0.6">
+        </div>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="v" id="lcLen">80 m</div><div class="k">Length you measure</div></div>
+        <div class="stat"><div class="v" id="lcRest">100 m</div><div class="k">Length at rest</div></div>
+      </div>
+    </div>
+    <p class="prose" style="margin-top:8px">Time dilation and length contraction are two views of the same thing. The muons in the next section "see" the atmosphere as contracted; we see their internal clocks as dilated. Both descriptions predict the identical outcome — that's relativity keeping everyone consistent.</p>
+  </div>
+</section>
+
+<!-- SIMULTANEITY -->
+<section id="now">
+  <div class="wrap">
+    <div class="eyebrow">Consequence 3 — the deepest one</div>
+    <h2 class="title">"At the same time" stops meaning anything absolute</h2>
+    <p class="prose">This is the result Einstein considered most important. If light's speed is fixed for everyone, then observers moving relative to each other <strong>disagree about which events happen simultaneously</strong> — and both are right.</p>
+    <p class="prose">Picture a train car with a lamp at its exact centre. Switch it on. Inside the train, light reaches the front and back walls at the same instant — equal distances, equal speed. But to someone on the platform, the train is moving: the back wall rushes <em>toward</em> the light while the front wall runs <em>away</em>. So the platform observer sees the light hit the back <em>first</em>.</p>
+
+    <div class="demo">
+      <div class="demo-head"><span class="demo-tag">Play with it</span><h4>Flash the lamp — then switch viewpoints</h4></div>
+      <div class="hint">Same event, two observers. Press Flash, then toggle between the train's view and the platform's view. Watch when each wall lights up.</div>
+      <canvas id="trainCanvas" width="640" height="190" aria-label="A train car with a central lamp emitting light toward both walls"></canvas>
+      <div class="controls">
+        <button class="btn" id="flashBtn">Flash the lamp</button>
+        <div class="seg" role="group" aria-label="Viewpoint">
+          <button id="viewTrain" class="on">Train's view</button>
+          <button id="viewPlat">Platform's view</button>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="v" id="backHit">—</div><div class="k">Back wall lit at</div></div>
+        <div class="stat"><div class="v" id="frontHit">—</div><div class="k">Front wall lit at</div></div>
+        <div class="stat"><div class="v" id="verdict" style="font-size:16px;line-height:1.3">Press Flash</div><div class="k">Result</div></div>
+      </div>
+    </div>
+    <p class="prose">There's no trick and no illusion — no "real" answer that one observer is missing. Simultaneity is genuinely relative. Once you accept that two people can't always agree on <em>when</em> things happen, time dilation and length contraction stop feeling paradoxical and start feeling inevitable.</p>
+  </div>
+</section>
+
+<!-- SPACETIME -->
+<section id="spacetime" class="band">
+  <div class="wrap split">
+    <div>
+      <div class="eyebrow">The unifying picture</div>
+      <h2 class="title">Space and time are one fabric</h2>
+      <p>If observers disagree about distances and about times, is <em>anything</em> the same for everyone? Yes. Einstein's teacher Hermann Minkowski showed that space and time are threads of a single fabric: <strong>spacetime</strong>.</p>
+      <p>Observers slice that fabric differently — one person's "pure time" mixes into another's space, and vice versa. But there's a combined measure of the separation between two events, the <em>spacetime interval</em>, that <em>every</em> observer computes to be exactly the same.</p>
+      <p>Think of it like the length of a stick. Turn the stick and its shadow on the wall (its "width") changes, while its real length doesn't. Different motions are like different viewing angles into spacetime: the shadows — space and time separately — change, but the underlying interval is fixed.</p>
+    </div>
+    <div>
+      <div class="demo" style="margin:0">
+        <div class="demo-head"><span class="demo-tag">The invariant</span><h4>What everyone agrees on</h4></div>
+        <div class="hint">For two events, every observer measures the same value of this combination, even when they disagree on the separate space and time parts.</div>
+        <div class="eq" style="background:#10182a;color:#cfe0ff">s² = (c·Δt)² − (Δx)²</div>
+        <p style="font-size:14.5px;color:#c3cad8">One observer might see a big Δt and small Δx; another a small Δt and big Δx. The minus sign lets them trade off so that <em>s²</em> always comes out equal. That stubborn equality is what "space and time are one thing" really means.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- E=MC2 -->
+<section id="emc2">
+  <div class="wrap">
+    <div class="eyebrow">The famous consequence</div>
+    <h2 class="title">E = mc²: mass is frozen energy</h2>
+    <p class="prose">Push relativity's logic one step further and you reach its most famous result: energy and mass are two names for the same thing. Mass is simply energy in an extremely concentrated form — and the rate for converting between them is <em>c²</em>, an enormous number. So even a tiny amount of mass holds a staggering amount of energy.</p>
+    <div class="demo">
+      <div class="demo-head"><span class="demo-tag">Play with it</span><h4>Turn mass into energy</h4></div>
+      <div class="hint">Convert a given mass entirely into energy with E = mc². The comparison shows just how much is packed into so little.</div>
+      <div class="controls">
+        <div class="ctl">
+          <label for="massInput">Mass to convert: <span id="massLabel">1 gram</span></label>
+          <input type="range" id="massInput" min="0.1" max="1000" step="0.1" value="1">
+        </div>
+      </div>
+      <div class="readout">
+        <div class="stat"><div class="v" id="energyOut">9.0×10¹³</div><div class="k">Joules of energy</div></div>
+        <div class="stat"><div class="v" id="tntOut">21,500</div><div class="k">Tonnes of TNT equivalent</div></div>
+        <div class="stat"><div class="v" id="homeOut" style="font-size:20px">8,200</div><div class="k">Homes powered for a year</div></div>
+      </div>
+    </div>
+    <p class="prose">This is the engine behind both the Sun and nuclear power: each works by turning a little mass into a lot of energy. The Sun converts about 4 million tonnes of its own mass into light every second. Why does so little mass release so much energy? Because of that multiplier, <em>c²</em>. The speed of light is about 300 million metres per second, so <em>c²</em> is roughly 90,000,000,000,000,000 — multiplying even a gram of mass by such a colossal number gives a colossal amount of energy.</p>
+  </div>
+</section>
+
+<!-- EVIDENCE -->
+<section id="evidence" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Is any of this actually real?</div>
+    <h2 class="title">Yes — we rely on it every day</h2>
+    <p class="prose">Special relativity isn't a thought experiment that stayed on paper. It's one of the most precisely tested theories in science, confirmed everywhere from mountaintops to your phone.</p>
+    <div class="evgrid">
+      <div class="ev">
+        <div class="num">GPS</div>
+        <h4>Your phone corrects for it</h4>
+        <p>Satellite clocks move fast enough that, uncorrected, GPS would drift by kilometres per day. Engineers build the relativistic time shift right into the system.</p>
+      </div>
+      <div class="ev">
+        <div class="num">μ</div>
+        <h4>Muons reach the ground</h4>
+        <p>These particles, made high in the atmosphere, decay so fast they shouldn't survive the trip down. Time dilation extends their lives just enough — and we detect them.</p>
+      </div>
+      <div class="ev">
+        <div class="num">10⁹</div>
+        <h4>Particle accelerators</h4>
+        <p>Machines like the LHC push particles to 99.9999%+ of light speed daily. They only work if engineers account for the rising γ — exactly as the slider above predicts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="eyebrow">Test yourself</div>
+    <h2 class="title">Did the big idea land?</h2>
+    <p class="prose">Four quick checks. These are about the <em>reasoning</em>, not trivia — pick an answer and you'll see why it's right or wrong.</p>
+    <div class="quiz" id="quiz"></div>
+    <div class="score" id="quizScore"></div>
+    <div style="margin-top:14px"><button class="btn ghost" id="quizReset">Try again</button></div>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Sources &amp; further reading</div>
+    <h2 class="title" style="font-size:26px">Where this comes from</h2>
+    <ul class="sources prose">
+      <li>Einstein, A. (1905). "On the Electrodynamics of Moving Bodies" (<em>Zur Elektrodynamik bewegter Körper</em>) — the original paper introducing special relativity.</li>
+      <li>Einstein, A. (1905). "Does the Inertia of a Body Depend Upon Its Energy Content?" — the short follow-up that gives E = mc².</li>
+      <li>The Feynman Lectures on Physics, Vol. I, Ch. 15–17 — relativity, the Lorentz transformation, and spacetime (feynmanlectures.caltech.edu).</li>
+      <li>NIST / BIPM: the speed of light is defined as exactly 299,792,458 m/s.</li>
+      <li>Particle Data Group and CODATA values for the constants used in the calculators above.</li>
+    </ul>
+    <p class="disclaim">The interactive demos are simplified and illustrative — they convey the real relationships (the Lorentz factor, length contraction, the relativity of simultaneity, and E = mc²) but use exaggerated, non-to-scale animation so the effects are visible. The numerical readouts use the correct formulas.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">An interactive explainer on special relativity · Built to be explored, questioned, and re-shared.</div>
+</footer>
+
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:80;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:12px;right:14px;z-index:82;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:79;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:90;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:95;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:96;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>

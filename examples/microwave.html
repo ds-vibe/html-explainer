@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How a Microwave Oven Heats Food</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* palette — paper + ink + two semantic accents */
+  --paper:#f7f4ed;
+  --paper-2:#efeadf;
+  --card:#fffdf8;
+  --ink:#26231d;
+  --ink-soft:#544f45;
+  --ink-faint:#8a8478;
+  --line:#e0dac9;
+  --line-strong:#ccc4b1;
+  /* accents */
+  --field:#1f6f8b;      /* the electric field / electromagnetic */
+  --field-soft:#dbeef3;
+  --heat:#c4562a;       /* heat / motion / water-flipping */
+  --heat-soft:#f6e2d6;
+  --augment:#b9772a;
+  /* type */
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  /* spacing scale (4/8) */
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:64px;--s9:96px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:17px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 var(--s5)}
+.prose{max-width:64ch}
+h1,h2,h3{font-family:var(--display);font-weight:500;line-height:1.12;letter-spacing:-.01em;color:var(--ink)}
+h2{font-size:clamp(1.7rem,3.4vw,2.5rem);margin:0 0 var(--s4)}
+h3{font-size:1.3rem;margin:0 0 var(--s3)}
+p{margin:0 0 var(--s4)}
+a{color:var(--field)}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--augment);margin:0 0 var(--s3);display:block}
+
+/* ---- sticky nav ---- */
+#topbar{position:sticky;top:0;z-index:40;background:rgba(247,244,237,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+#topbar .wrap{display:flex;align-items:center;gap:var(--s5);height:54px}
+#topbar .brand{font-family:var(--display);font-size:1.05rem;font-weight:600;letter-spacing:-.01em}
+#topbar nav{display:flex;gap:var(--s5);margin-left:auto;font-size:.84rem}
+#topbar nav a{color:var(--ink-soft);text-decoration:none}
+#topbar nav a:hover{color:var(--field)}
+@media(max-width:720px){#topbar nav{display:none}}
+
+/* ---- hero ---- */
+.hero{padding:var(--s9) 0 var(--s8);border-bottom:1px solid var(--line)}
+.hero h1{font-size:clamp(2.4rem,6vw,4rem);font-weight:500;margin:0 0 var(--s5);max-width:18ch}
+.hero .lede{font-size:clamp(1.1rem,2vw,1.32rem);color:var(--ink-soft);max-width:54ch}
+.hero .meta{margin-top:var(--s6);display:flex;gap:var(--s5);flex-wrap:wrap;font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;color:var(--ink-faint);text-transform:uppercase}
+.hero .meta span{display:flex;align-items:center;gap:var(--s2)}
+.hero .meta span::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--heat)}
+
+/* ---- section rhythm ---- */
+section{padding:var(--s9) 0}
+section.band{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-head{max-width:64ch;margin-bottom:var(--s7)}
+.opacity-in{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+.opacity-in.in{opacity:1;transform:none}
+
+/* ---- mental-model card ---- */
+.model{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s7);align-items:center}
+@media(max-width:820px){.model{grid-template-columns:1fr}}
+.model .stat{font-family:var(--mono);font-size:.78rem;color:var(--field);letter-spacing:.04em;margin-top:var(--s5)}
+.dipole-stage{background:var(--card);border:1px solid var(--line-strong);border-radius:16px;padding:var(--s6);position:relative;overflow:hidden}
+.dipole-stage svg{width:100%;height:auto;display:block}
+
+/* ---- demo shell ---- */
+.demo{background:var(--card);border:1px solid var(--line-strong);border-radius:16px;padding:var(--s6);margin-top:var(--s6);box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.demo-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--augment);display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s4)}
+.demo-label::before{content:'';display:inline-block;width:18px;height:1px;background:var(--augment)}
+.demo h3{margin-bottom:var(--s2)}
+.demo .hint{color:var(--ink-faint);font-size:.92rem;margin-bottom:var(--s5)}
+.controls{display:flex;flex-wrap:wrap;gap:var(--s5);align-items:flex-end;margin-bottom:var(--s5)}
+.ctl{display:flex;flex-direction:column;gap:var(--s2);min-width:180px}
+.ctl label{font-size:.8rem;font-weight:600;color:var(--ink-soft)}
+.ctl .val{font-family:var(--mono);font-size:.78rem;color:var(--field)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:5px;background:var(--line-strong);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--field);cursor:pointer;border:2px solid var(--card);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--field);cursor:pointer;border:2px solid var(--card)}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:10px;overflow:hidden}
+.seg button{background:var(--card);border:none;font-family:var(--sans);font-size:.82rem;padding:8px 14px;cursor:pointer;color:var(--ink-soft);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--field);color:#fff;font-weight:600}
+.btn{font-family:var(--sans);font-size:.86rem;font-weight:600;padding:9px 16px;border-radius:10px;border:1px solid var(--field);background:var(--field);color:#fff;cursor:pointer}
+.btn.ghost{background:var(--card);color:var(--field)}
+.readout{display:flex;gap:var(--s6);flex-wrap:wrap;margin-top:var(--s4);font-family:var(--mono);font-size:.82rem}
+.readout b{display:block;font-family:var(--sans);font-size:1.4rem;font-weight:600;color:var(--ink)}
+.readout span{color:var(--ink-faint);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+
+/* demo canvases */
+.stage{background:#fbf8f1;border:1px solid var(--line);border-radius:12px;display:block;width:100%}
+
+/* ---- penetration / why-uneven ---- */
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5);margin-top:var(--s6)}
+@media(max-width:720px){.facts{grid-template-columns:1fr}}
+.fact{border-left:3px solid var(--field);padding:var(--s2) 0 var(--s2) var(--s5)}
+.fact .n{font-family:var(--display);font-size:1.9rem;color:var(--field);line-height:1}
+.fact .l{font-size:.92rem;color:var(--ink-soft);margin-top:var(--s2)}
+.fact.heat{border-color:var(--heat)}
+.fact.heat .n{color:var(--heat)}
+
+/* details / go deeper */
+details{border:1px solid var(--line);border-radius:12px;background:var(--card);margin-top:var(--s5);padding:0 var(--s5)}
+details summary{cursor:pointer;font-weight:600;padding:var(--s4) 0;list-style:none;color:var(--field);font-size:.95rem}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:'+';font-family:var(--mono);margin-right:var(--s3);color:var(--augment)}
+details[open] summary::before{content:'–'}
+details .body{padding:0 0 var(--s5);color:var(--ink-soft);font-size:.96rem}
+
+/* misconception callout */
+.callout{border:1px solid var(--line-strong);border-left:4px solid var(--heat);background:var(--heat-soft);border-radius:12px;padding:var(--s6);margin-top:var(--s6)}
+.callout .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--heat);font-weight:600;margin-bottom:var(--s3)}
+.callout p:last-child{margin-bottom:0}
+
+/* ---- quiz ---- */
+.quiz{background:var(--card);border:1px solid var(--line-strong);border-radius:16px;padding:var(--s7);margin-top:var(--s6)}
+.q{margin-bottom:var(--s6)}
+.q:last-of-type{margin-bottom:var(--s5)}
+.q .qn{font-weight:600;font-size:1.05rem;margin-bottom:var(--s4)}
+.q .qn .num{font-family:var(--mono);color:var(--augment);font-size:.85rem;margin-right:var(--s3)}
+.opts{display:flex;flex-direction:column;gap:var(--s3)}
+.opt{display:flex;align-items:flex-start;gap:var(--s3);text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;font-family:var(--sans);font-size:.95rem;color:var(--ink);transition:border-color .15s,background .15s;width:100%}
+.opt:hover{border-color:var(--line-strong)}
+.opt .mark{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-strong);flex:0 0 auto;margin-top:2px}
+.opt.correct{border-color:#3f8a4f;background:#e6f2e8}
+.opt.correct .mark{border-color:#3f8a4f;background:#3f8a4f}
+.opt.wrong{border-color:var(--heat);background:var(--heat-soft)}
+.opt.wrong .mark{border-color:var(--heat);background:var(--heat)}
+.opt[disabled]{cursor:default}
+.why{margin-top:var(--s4);font-size:.92rem;color:var(--ink-soft);padding:var(--s4);background:var(--paper-2);border-radius:10px;display:none}
+.why.show{display:block}
+.why b{color:var(--ink)}
+.score{font-family:var(--mono);font-size:.9rem;color:var(--field);margin-top:var(--s4);display:flex;align-items:center;gap:var(--s4)}
+
+/* ---- footer ---- */
+footer{border-top:1px solid var(--line);padding:var(--s8) 0 var(--s9);color:var(--ink-soft);font-size:.9rem}
+footer h3{font-size:1.05rem}
+footer ol{padding-left:1.2em;max-width:64ch}
+footer li{margin-bottom:var(--s3)}
+.disclaimer{font-size:.82rem;color:var(--ink-faint);margin-top:var(--s5);max-width:64ch}
+
+@media(prefers-reduced-motion:reduce){.opacity-in{transition:none;opacity:1;transform:none}}
+</style>
+</head>
+<body data-review-toggle>
+
+<header id="topbar">
+  <div class="wrap">
+    <span class="brand">The Microwave</span>
+    <nav>
+      <a href="#model">Mental model</a>
+      <a href="#field-demo">Field demo</a>
+      <a href="#even-demo">Heating demo</a>
+      <a href="#uneven">Why it's uneven</a>
+      <a href="#quiz">Quiz</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">A general-audience explainer</span>
+    <h1>How a microwave oven heats food</h1>
+    <p class="lede">It doesn't "add heat" from the outside the way a stove does. A microwave floods your food with an invisible, fast-reversing electric field — and the water already inside the food does the rest. Here's the one idea that explains all of it.</p>
+    <div class="meta">
+      <span>~8 min read</span>
+      <span>Mental model + 2 demos + quiz</span>
+      <span>Light research</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MENTAL MODEL ============ -->
+<section id="model">
+  <div class="wrap">
+    <div class="sec-head opacity-in">
+      <span class="eyebrow">The one idea</span>
+      <h2>Water molecules are tiny compass needles</h2>
+    </div>
+    <div class="model opacity-in">
+      <div class="prose">
+        <p>A water molecule is lopsided: one end is slightly positive, the other slightly negative. That makes it a tiny <b>electric compass needle</b> — point an electric field at it and it swings to line up, just as a compass needle swings toward north.</p>
+        <p>A microwave's job is simple: it fills the oven with an electric field that <b>flips direction about 2.45 billion times a second</b>. Every flip, the billions of water molecules in your food scramble to re-align — twisting back and forth furiously.</p>
+        <p>That frantic twisting <em>is</em> heat. Hotter just means molecules jostling faster, and here we're driving the jostle directly. Keep this picture — <b>a field that flips, and water that chases it</b> — and the rest of the page is just consequences.</p>
+        <div class="stat">FLIP RATE · 2,450,000,000 reversals per second (2.45 GHz)</div>
+      </div>
+      <div class="dipole-stage" aria-hidden="true">
+        <svg viewBox="0 0 320 256" role="img" aria-label="A water molecule drawn as a compass needle aligning to an electric field arrow that flips direction.">
+          <defs>
+            <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#1f6f8b"/></marker>
+          </defs>
+          <!-- field arrow -->
+          <line x1="40" y1="50" x2="280" y2="50" stroke="#1f6f8b" stroke-width="3" marker-end="url(#ah)"/>
+          <text x="160" y="38" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#1f6f8b">electric field this way →</text>
+          <!-- water molecule as needle -->
+          <g transform="translate(160,150)">
+            <line x1="-55" y1="0" x2="55" y2="0" stroke="#c4562a" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="55" cy="0" r="22" fill="#1f6f8b"/>
+            <text x="55" y="5" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" fill="#fff" font-weight="600">−</text>
+            <circle cx="-55" cy="0" r="16" fill="#f6e2d6" stroke="#c4562a" stroke-width="2"/>
+            <text x="-55" y="5" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" fill="#c4562a" font-weight="600">+</text>
+          </g>
+          <text x="160" y="230" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#8a8478">The molecule swings to line up —</text>
+          <text x="160" y="247" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#8a8478">then the field flips and it swings back.</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEMO 1: the flipping field ============ -->
+<section id="field-demo" class="band">
+  <div class="wrap">
+    <div class="sec-head opacity-in">
+      <span class="eyebrow">Play with it · demo 1</span>
+      <h2>Slow the flip down until you can see it</h2>
+      <p class="prose" style="color:var(--ink-soft)">The real field reverses billions of times a second — far too fast to picture. Slow it right down and watch a water molecule chase the arrow. Speed it up and the chasing turns into a blur of twisting. That blur is the heat.</p>
+    </div>
+    <div class="demo opacity-in">
+      <div class="demo-label">Interactive · drag the slider</div>
+      <h3>The chase</h3>
+      <p class="hint">Drag the speed up. Notice the molecule never catches the field — it's always swinging to catch up, and that constant struggle is what warms the water.</p>
+      <div class="controls">
+        <div class="ctl">
+          <label for="flip-speed">Field flip speed <span class="val" id="flip-speed-val">slow</span></label>
+          <input type="range" id="flip-speed" min="1" max="100" value="10" aria-describedby="flip-speed-val">
+        </div>
+        <button class="btn ghost" id="flip-pause" type="button">Pause</button>
+      </div>
+      <canvas id="field-canvas" class="stage" width="900" height="300" aria-label="Animation: an electric-field arrow flips left and right while a water molecule rotates to follow it. Faster flipping makes the molecule twist more violently."></canvas>
+      <div class="readout">
+        <div><b id="ro-flips">0</b><span>flips so far</span></div>
+        <div><b id="ro-temp">cool</b><span>molecule state</span></div>
+        <div><b id="ro-equiv">— Hz</b><span>vs. real 2.45 GHz</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HEATING & PENETRATION ============ -->
+<section id="penetrate">
+  <div class="wrap">
+    <div class="sec-head opacity-in">
+      <span class="eyebrow">The catch</span>
+      <h2>It heats from the edges in, not the center out</h2>
+    </div>
+    <div class="prose opacity-in">
+      <p>People picture microwaves zapping the center of the food first. The opposite is closer to the truth. The waves are strongest where they enter and <b>get absorbed as they go</b>, so the outer layer soaks up the most energy. By a couple of centimeters deep, much of the wave is already spent.</p>
+      <p>The depth where the wave has faded to about a third of its strength is roughly <b>1–2 cm</b> in wet food. That's why a thick burrito can be lava on the outside and icy in the middle: the microwave never reached the middle — <b>conduction</b> (slow heat creep) and a <b>standing rest</b> have to finish the job.</p>
+    </div>
+    <div class="facts opacity-in">
+      <div class="fact"><div class="n">~1–2 cm</div><div class="l">How far microwaves penetrate before fading by two-thirds in moist food</div></div>
+      <div class="fact heat"><div class="n">100 °C</div><div class="l">Water's ceiling — it boils off rather than getting hotter, so microwaves rarely brown or crisp</div></div>
+      <div class="fact"><div class="n">~1000 W</div><div class="l">Typical power delivered into the food by a household oven</div></div>
+    </div>
+    <div class="callout opacity-in">
+      <div class="tag">Common misconception</div>
+      <p><b>"Microwaves cook from the inside out."</b> They don't. Energy is deposited near the <em>surface</em> first and weakens with depth. The myth comes from the real fact that microwaves heat the <em>water throughout</em> a thin food evenly, instead of searing only the outside like a pan — but for anything thick, the center is the <em>last</em> place to warm up.</p>
+    </div>
+    <details class="opacity-in">
+      <summary>Go deeper: why water, and not the plate?</summary>
+      <div class="body"><p>2.45 GHz isn't a magic "resonance" of water — it's just one of the bands regulators set aside for ovens. Water absorbs it <em>well enough</em> to heat efficiently but <em>weakly enough</em> that the waves still sink a few centimetres in instead of being soaked up entirely at the surface — while glass, ceramic, and most plastics barely absorb it at all, so the food heats while the plate stays cool (the plate only warms by touching hot food). Fats and sugars also absorb somewhat, which is why they can get scorching. Metal is a different story: it reflects the waves and concentrates the field at sharp edges, which is what makes sparks.</p></div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ DEMO 2: even vs uneven heating ============ -->
+<section id="even-demo" class="band">
+  <div class="wrap">
+    <div class="sec-head opacity-in">
+      <span class="eyebrow">Play with it · demo 2</span>
+      <h2>Cold spots, hot spots, and why we spin the plate</h2>
+      <p class="prose" style="color:var(--ink-soft)">Inside the metal box, microwaves bounce off the walls and overlap, building a fixed pattern of strong and weak zones — a "standing wave." Food sitting still cooks unevenly. Toggle the turntable and the half-time stir to see why both exist.</p>
+    </div>
+    <div class="demo opacity-in" id="uneven">
+      <div class="demo-label">Interactive · toggle the fixes</div>
+      <h3>Heat map of the plate</h3>
+      <p class="hint">The bright bands are the standing-wave hot spots. Run it raw, then switch on the turntable, then add a mid-cook stir, and watch how even the final temperature gets.</p>
+      <div class="controls">
+        <div class="ctl" style="min-width:auto">
+          <label>Turntable</label>
+          <div class="seg" id="turn-seg" role="group" aria-label="Turntable on or off">
+            <button data-turn="off" class="on" type="button">Off</button>
+            <button data-turn="on" type="button">Spinning</button>
+          </div>
+        </div>
+        <div class="ctl" style="min-width:auto">
+          <label>Stir at half-time</label>
+          <div class="seg" id="stir-seg" role="group" aria-label="Stir on or off">
+            <button data-stir="off" class="on" type="button">No</button>
+            <button data-stir="on" type="button">Yes</button>
+          </div>
+        </div>
+        <button class="btn" id="cook-go" type="button">Cook 30s</button>
+      </div>
+      <canvas id="heat-canvas" class="stage" width="900" height="340" aria-label="A grid heat-map of a plate of food showing hot and cold patches. Turning on the turntable smears the pattern into rings; adding a stir evens it further."></canvas>
+      <div class="readout">
+        <div><b id="ro-even">—</b><span>evenness score</span></div>
+        <div><b id="ro-cold">—</b><span>coldest spot</span></div>
+        <div><b id="ro-verdict">Press cook</b><span>result</span></div>
+      </div>
+    </div>
+    <details class="opacity-in">
+      <summary>Go deeper: what the turntable and a stir actually do</summary>
+      <div class="body"><p>The hot/cold pattern is roughly fixed in space. A <b>turntable</b> moves the food <em>through</em> that pattern so every part spends time in a hot band — it averages the heating over a ring, but the dead center of the plate barely moves, which is why the middle can still lag. A <b>stir</b> (or flipping/repositioning) physically relocates the cold food into hot zones and mixes warm and cold together, which is the most effective fix of all. Letting the food <b>stand</b> after also lets conduction even things out.</p></div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head opacity-in">
+      <span class="eyebrow">Check yourself</span>
+      <h2>Four quick questions</h2>
+      <p class="prose" style="color:var(--ink-soft)">No grade, just a gut-check on the mental model. Pick an answer to see why it's right or wrong.</p>
+    </div>
+    <div class="quiz opacity-in" id="quiz-box"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <h3>Sources & notes</h3>
+    <ol>
+      <li>Operating frequency of consumer ovens (2.45 GHz) and the dielectric-heating mechanism — U.S. FDA, "Microwave Oven Radiation," and standard physics references on dielectric heating of polar molecules.</li>
+      <li>Penetration depth of microwaves in moist food (~1–2 cm range) — food-science texts on dielectric properties of foods; exact depth varies with water/salt/fat content and temperature.</li>
+      <li>Standing-wave hot/cold patterns, the role of the turntable, and resting/stirring — general microwave-engineering and food-safety guidance (e.g. USDA food-safety advice to stir and let stand for even heating).</li>
+    </ol>
+    <p class="disclaimer">Numbers here are typical ballpark figures meant to build intuition, not precise specs for any one oven — penetration depth, wattage, and heating patterns all depend on the specific appliance and food. Light research; figures are well-established but rounded for clarity.</p>
+  </div>
+</footer>
+
+<script>
+/* ===== scroll reveal (self-healing) ===== */
+(function(){
+  var els=[].slice.call(document.querySelectorAll('.opacity-in'));
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return;}
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}})},{threshold:.12});
+  els.forEach(function(e){io.observe(e)});
+  // failsafe: never leave anything stuck invisible
+  setTimeout(function(){els.forEach(function(e){e.classList.add('in')})},2500);
+})();
+
+/* ===== DEMO 1: flipping field ===== */
+(function(){
+  var cv=document.getElementById('field-canvas');if(!cv)return;
+  var ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var speed=10,paused=false,phase=0,angle=0,flips=0,lastSign=1;
+  var sp=document.getElementById('flip-speed'),spv=document.getElementById('flip-speed-val'),pb=document.getElementById('flip-pause');
+  var roF=document.getElementById('ro-flips'),roT=document.getElementById('ro-temp'),roE=document.getElementById('ro-equiv');
+  sp.addEventListener('input',function(){speed=+sp.value;var lab=speed<25?'slow':speed<55?'medium':speed<85?'fast':'frantic';spv.textContent=lab;});
+  pb.addEventListener('click',function(){paused=!paused;pb.textContent=paused?'Play':'Pause';if(!paused)requestAnimationFrame(loop);});
+  function fmtEquiv(){var hz=(speed/10).toFixed(1);return hz+' Hz';}
+  function loop(){
+    if(paused)return;
+    var step=speed/900; // radians of field oscillation per frame-ish
+    phase+=step;
+    var field=Math.cos(phase); // +1 .. -1, the field direction
+    // count flips on zero-crossings
+    var s=field>=0?1:-1; if(s!==lastSign){flips++;lastSign=s;}
+    // molecule lags the field (chasing it)
+    var target=field>=0?0:Math.PI;
+    var diff=((target-angle+Math.PI*3)%(Math.PI*2))-Math.PI;
+    angle+=diff*Math.min(.18+speed/400,.6);
+    draw(field);
+    roF.textContent=flips;
+    var t=speed<25?'cool':speed<55?'warming':speed<85?'hot':'twisting hard';
+    roT.textContent=t; roE.textContent=fmtEquiv();
+    requestAnimationFrame(loop);
+  }
+  function draw(field){
+    ctx.clearRect(0,0,W,H);
+    var cx=W/2,cy=H/2+10;
+    var dir=field>=0?1:-1;var len=170*Math.abs(field)+30;
+    // top label
+    ctx.fillStyle='#8a8478';ctx.font='13px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillText('THE FIELD — it flips left ⇄ right',cx,34);
+    // field arrow
+    ctx.strokeStyle='#1f6f8b';ctx.lineWidth=6;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(cx-dir*len,74);ctx.lineTo(cx+dir*len,74);ctx.stroke();
+    ctx.fillStyle='#1f6f8b';ctx.beginPath();
+    ctx.moveTo(cx+dir*len,74);ctx.lineTo(cx+dir*len-dir*20,63);ctx.lineTo(cx+dir*len-dir*20,85);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#1f6f8b';ctx.font='600 13px Inter,sans-serif';
+    ctx.fillText(dir>0?'pointing RIGHT →':'← pointing LEFT',cx,106);
+    // molecule (needle) rotated by angle
+    ctx.save();ctx.translate(cx,cy+46);ctx.rotate(angle);
+    ctx.strokeStyle='#c4562a';ctx.lineWidth=11;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(-72,0);ctx.lineTo(72,0);ctx.stroke();
+    ctx.fillStyle='#1f6f8b';ctx.beginPath();ctx.arc(72,0,26,0,7);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 20px Inter';ctx.fillText('−',72,7);
+    ctx.fillStyle='#f6e2d6';ctx.strokeStyle='#c4562a';ctx.lineWidth=3;ctx.beginPath();ctx.arc(-72,0,19,0,7);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#c4562a';ctx.font='bold 16px Inter';ctx.fillText('+',-72,6);
+    ctx.restore();
+    // bottom labels: what it is + live aligned/chasing status
+    ctx.fillStyle='#8a8478';ctx.font='13px Inter,sans-serif';
+    ctx.fillText('THE WATER MOLECULE — swings to line up with the field',cx,H-38);
+    var target=field>=0?0:Math.PI;
+    var d=Math.abs(((target-angle+Math.PI*3)%(Math.PI*2))-Math.PI);
+    var aligned=d<0.25;
+    ctx.font='600 14px Inter,sans-serif';
+    ctx.fillStyle=aligned?'#3f8a4f':'#c4562a';
+    ctx.fillText(aligned?'✓ lined up — then the field flips':'chasing the field…',cx,H-14);
+  }
+  sp.dispatchEvent(new Event('input'));
+  draw(1);
+  requestAnimationFrame(loop);
+})();
+
+/* ===== DEMO 2: even vs uneven heating ===== */
+(function(){
+  var cv=document.getElementById('heat-canvas');if(!cv)return;
+  var ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height;
+  var N=15; // grid
+  var turn=false,stir=false,animating=false;
+  var ci=(N-1)/2,cj=(N-1)/2;
+  var roEven=document.getElementById('ro-even'),roCold=document.getElementById('ro-cold'),roV=document.getElementById('ro-verdict');
+  // base standing-wave pattern: fixed hot/cold bands (oven frame)
+  function basePattern(i,j){
+    var x=i/(N-1),y=j/(N-1);
+    var p=0.5+0.45*Math.sin(x*Math.PI*2.3)*Math.cos(y*Math.PI*2.0);
+    return Math.max(0,Math.min(1,p));
+  }
+  // final time-averaged result: spinning smears the pattern into rings
+  function compute(){
+    var heat=[];
+    for(var i=0;i<N;i++){heat[i]=[];for(var j=0;j<N;j++){heat[i][j]=0;}}
+    var steps=turn?24:1;
+    for(var s=0;s<steps;s++){
+      var ang=turn?(s/steps)*Math.PI*2:0;
+      for(var i=0;i<N;i++)for(var j=0;j<N;j++){
+        var dx=i-ci,dy=j-cj;
+        var ri=ci+dx*Math.cos(ang)-dy*Math.sin(ang);
+        var rj=cj+dx*Math.sin(ang)+dy*Math.cos(ang);
+        ri=Math.max(0,Math.min(N-1,ri));rj=Math.max(0,Math.min(N-1,rj));
+        heat[i][j]+=basePattern(ri,rj)/steps;
+      }
+    }
+    if(stir){
+      var avg=0,c=0;for(var i=0;i<N;i++)for(var j=0;j<N;j++){avg+=heat[i][j];c++;}avg/=c;
+      for(var i=0;i<N;i++)for(var j=0;j<N;j++){heat[i][j]=heat[i][j]*0.45+avg*0.55;}
+    }
+    return heat;
+  }
+  // raw oven-fixed pattern (what's bright while the plate spins under it)
+  function rawPattern(){
+    var heat=[];for(var i=0;i<N;i++){heat[i]=[];for(var j=0;j<N;j++)heat[i][j]=basePattern(i,j);}return heat;
+  }
+  function color(v){
+    v=Math.max(0,Math.min(1,v));
+    var r,g,b;
+    if(v<0.5){var t=v/0.5;r=Math.round(60+t*180);g=Math.round(120+t*90);b=Math.round(200-t*120);}
+    else{var t=(v-0.5)/0.5;r=Math.round(240-t*40);g=Math.round(210-t*150);b=Math.round(80-t*60);}
+    return 'rgb('+r+','+g+','+b+')';
+  }
+  function geom(){var size=Math.min(W,H)-40,ox=(W-size)/2,oy=(H-size)/2;return{size:size,ox:ox,oy:oy,cell:size/N,cx:ox+size/2,cy:oy+size/2,rad:size/2};}
+  function paintHeat(heat,g,dim){
+    ctx.save();
+    ctx.beginPath();ctx.arc(g.cx,g.cy,g.rad,0,7);ctx.clip();
+    var min=2,max=-1;
+    for(var i=0;i<N;i++)for(var j=0;j<N;j++){
+      var v=heat[i][j];if(v<min)min=v;if(v>max)max=v;
+      ctx.globalAlpha=dim?0.5:1;
+      ctx.fillStyle=color(v);
+      ctx.fillRect(g.ox+i*g.cell,g.oy+j*g.cell,g.cell+1,g.cell+1);
+    }
+    ctx.globalAlpha=1;ctx.restore();
+    return {min:min,max:max};
+  }
+  function chrome(g){
+    ctx.strokeStyle='#ccc4b1';ctx.lineWidth=3;ctx.beginPath();ctx.arc(g.cx,g.cy,g.rad,0,7);ctx.stroke();
+    ctx.fillStyle='#8a8478';ctx.font='12px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillText('hot',g.ox+g.size+14,g.oy+18);ctx.fillText('cold',g.ox+g.size+14,g.oy+g.size-6);
+    var lg=ctx.createLinearGradient(0,g.oy+24,0,g.oy+g.size-12);
+    lg.addColorStop(0,color(1));lg.addColorStop(.5,color(.5));lg.addColorStop(1,color(0));
+    ctx.fillStyle=lg;ctx.fillRect(g.ox+g.size+14,g.oy+24,14,g.size-40);
+  }
+  function status(g,txt){
+    ctx.fillStyle='#8a8478';ctx.font='600 13px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillText(txt,g.cx,Math.min(H-6,g.oy+g.size+22));
+  }
+  // a rotating turntable cue so the spin is unmistakable
+  function spinner(g,ang){
+    ctx.save();ctx.translate(g.cx,g.cy);ctx.rotate(ang);
+    ctx.strokeStyle='rgba(35,33,28,.32)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-(g.rad-6));ctx.stroke();
+    ctx.fillStyle='#23211c';ctx.beginPath();ctx.arc(0,-(g.rad-13),6,0,7);ctx.fill();
+    ctx.restore();
+  }
+  function readouts(st){
+    var spread=st.max-st.min;
+    var even=Math.round(100*(1-Math.min(1,spread/0.9)));
+    roEven.textContent=even+'%';
+    roCold.textContent=Math.round(st.min*100)+'° rel';
+    roV.textContent=even>85?'evenly heated':even>65?'mostly even':even>45?'patchy':'very uneven';
+  }
+  function renderFinal(){
+    ctx.clearRect(0,0,W,H);var g=geom();
+    var st=paintHeat(compute(),g,false);chrome(g);readouts(st);return g;
+  }
+  function cook(){
+    if(animating)return;animating=true;
+    var dur=1700,t0=null,rot=turn?Math.PI*2*3:0,raw=rawPattern();
+    function frame(ts){
+      if(t0===null)t0=ts;var p=Math.min(1,(ts-t0)/dur);
+      var g=geom();ctx.clearRect(0,0,W,H);
+      paintHeat(raw,g,true);              // oven-fixed hot zones, dimmed
+      if(turn)spinner(g,rot*p);           // plate visibly turning under them
+      chrome(g);
+      status(g,turn?'turntable spinning — food sweeps through the hot zones':'sitting still — no spin, so the pattern stays put');
+      roV.textContent='cooking…';
+      if(p<1){requestAnimationFrame(frame);}
+      else{renderFinal();animating=false;}
+    }
+    requestAnimationFrame(frame);
+  }
+  function setSeg(seg,attr,cb){
+    seg.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        if(animating)return;
+        seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on')});
+        b.classList.add('on');cb(b.getAttribute(attr)==='on');
+        renderFinal();roV.textContent='Press cook';
+      });
+    });
+  }
+  setSeg(document.getElementById('turn-seg'),'data-turn',function(v){turn=v;});
+  setSeg(document.getElementById('stir-seg'),'data-stir',function(v){stir=v;});
+  document.getElementById('cook-go').addEventListener('click',cook);
+  // initial render (raw, no fixes) so the canvas isn't blank
+  renderFinal();
+  roV.textContent='Press cook';
+})();
+
+/* ===== QUIZ ===== */
+(function(){
+  var box=document.getElementById('quiz-box');if(!box)return;
+  var QS=[
+    {q:'What is the microwave oven actually doing to your food?',
+     options:['Blowing very hot air through it','Filling it with a fast-flipping electric field that twists water molecules','Shooting tiny heated particles at it','Vibrating the metal walls to shake the food'],
+     answer:1,
+     why:'The oven creates an electric field that reverses ~2.45 billion times a second. Water molecules twist back and forth trying to align with it, and that twisting is heat.'},
+    {q:'Why does microwaved food often have hot edges and a cold center?',
+     options:['The center reflects the microwaves away','Microwaves are absorbed near the surface and fade with depth, so they barely reach the middle','The center is denser and resists heat','Ovens aim their beam at the outer ring'],
+     answer:1,
+     why:'Microwaves are strongest where they enter and get absorbed within roughly 1–2 cm. A thick item’s center is the last place to warm up — the opposite of “cooks from the inside out.”'},
+    {q:'What is the turntable mainly for?',
+     options:['To cool the oven motor','To move the food through the fixed pattern of hot and cold spots so heating averages out','To spread the smell evenly','To keep the plate from melting'],
+     answer:1,
+     why:'Bouncing waves form a standing pattern of hot and cold zones fixed in space. Spinning the food carries each part through the hot bands, averaging the heating — though the dead center moves least.'},
+    {q:'Why do microwaves rarely brown or crisp food?',
+     options:['They cook too quickly for browning','They mostly heat water, which tops out near 100°C — too cool for browning reactions','They remove the sugars that brown','Browning needs metal contact'],
+     answer:1,
+     why:'Browning and crisping need surface temperatures well above water’s boiling point. Since microwaves heat the water and water caps out around 100°C, the surface stays too cool and damp to brown.'}
+  ];
+  var done=0,correct=0;
+  QS.forEach(function(item,qi){
+    var qd=document.createElement('div');qd.className='q';
+    var qn=document.createElement('div');qn.className='qn';
+    qn.innerHTML='<span class="num">Q'+(qi+1)+'</span>'+item.q;
+    qd.appendChild(qn);
+    var opts=document.createElement('div');opts.className='opts';
+    var why=document.createElement('div');why.className='why';
+    var answered=false;
+    item.options.forEach(function(txt,oi){
+      var b=document.createElement('button');b.className='opt';b.type='button';
+      b.innerHTML='<span class="mark"></span><span>'+txt+'</span>';
+      b.addEventListener('click',function(){
+        if(answered)return;answered=true;done++;
+        opts.querySelectorAll('.opt').forEach(function(x){x.setAttribute('disabled','')});
+        if(oi===item.answer){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');opts.querySelectorAll('.opt')[item.answer].classList.add('correct');}
+        why.innerHTML='<b>'+(oi===item.answer?'Correct. ':'Not quite. ')+'</b>'+item.why;
+        why.classList.add('show');
+        updateScore();
+      });
+      opts.appendChild(b);
+    });
+    qd.appendChild(opts);qd.appendChild(why);
+    box.appendChild(qd);
+  });
+  var score=document.createElement('div');score.className='score';
+  score.innerHTML='<span id="q-score">0 / '+QS.length+' answered</span>';
+  box.appendChild(score);
+  function updateScore(){
+    document.getElementById('q-score').textContent=correct+' / '+QS.length+' correct ('+done+' answered)';
+  }
+})();
+</script>
+
+<!-- ============================================================
+     Review & edit overlay — review-mode.js (inlined by default)
+     Activates via ?edit or <body data-review-toggle>.
+     ============================================================ -->
+<script>
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  var css = [
+    "body.rv-on #topbar{top:46px}",
+    "body.rv-pad{padding-top:46px}",
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:80;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:12px;right:14px;z-index:82;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:79;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:90;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:95;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:96;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = "";
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  function markEditable() {
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname;
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); }
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+</script>
+
+</body>
+</html>

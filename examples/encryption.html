@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Encryption Works</title>
+<meta name="description" content="How encryption works, built up from scratch: scrambling with a secret, symmetric vs public-key, the HTTPS handshake, and hashing — with playable demos and a built-in Q&A bot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0f14; --panel:#11161d; --panel-2:#161d27; --card:#131a23;
+  --ink:#e6edf3; --ink-soft:#9aa7b4; --ink-faint:#6a7682;
+  --line:#222b36; --line-strong:#313c49;
+  --accent:#36d399; --accent-soft:#10271f; --accent-ink:#7ff0c4;
+  --cyan:#38bdf8; --cyan-soft:#0c2330;
+  --plain:#38bdf8; --cipher:#f6a73e;
+  --public:#36d399; --private:#f472b6;
+  --danger:#f87171; --danger-soft:#2a1414;
+  --display:"Sora",system-ui,sans-serif; --sans:"Inter",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --maxw:1180px; --measure:68ch; --r:14px; --r-sm:9px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+.prose{max-width:var(--measure)}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.12;letter-spacing:-.02em;color:#fff}
+h2{font-size:clamp(27px,3.3vw,38px);margin:0 0 .5rem}
+h3{font-size:19px;margin:0 0 .35rem}
+p{margin:0 0 1rem}
+a{color:var(--accent)}
+.lede{font-size:clamp(18px,2vw,21px);color:var(--ink-soft);line-height:1.55}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:500;margin:0 0 .8rem;display:flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:18px;height:1.5px;background:var(--accent)}
+
+#nav{position:sticky;top:0;z-index:40;background:rgba(11,15,20,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+#nav .wrap{display:flex;align-items:center;gap:22px;height:56px;padding-right:160px}
+#nav .brand{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:-.01em;margin-right:auto;color:#fff}
+#nav .brand span{color:var(--accent)}
+#nav a.lnk{color:var(--ink-soft);text-decoration:none;font-size:13.5px;font-weight:500}
+#nav a.lnk:hover{color:var(--accent)}
+@media(max-width:860px){#nav a.lnk{display:none}}
+
+.hero{padding:78px 0 56px;border-bottom:1px solid var(--line);background:radial-gradient(120% 80% at 80% -10%,rgba(54,211,153,.08),transparent)}
+.hero h1{font-size:clamp(40px,7vw,78px);font-weight:700;letter-spacing:-.03em;margin:0 0 1.1rem}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lede{max-width:60ch}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.tag{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);background:var(--panel);border:1px solid var(--line-strong);border-radius:100px;padding:6px 13px}
+
+section{padding:60px 0}
+.band{background:var(--panel)}
+.bigidea{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
+@media(max-width:820px){.bigidea{grid-template-columns:1fr;gap:28px}}
+.model-card{background:var(--card);border:1px solid var(--line-strong);border-radius:var(--r);padding:30px 32px;position:relative}
+.model-card blockquote{margin:0;font-family:var(--display);font-size:22px;font-weight:500;line-height:1.4;color:#fff}
+.model-card .sub{font-size:14px;color:var(--ink-soft);margin-top:14px}
+
+/* demo shell */
+.demo{background:var(--card);border:1px solid var(--line-strong);border-radius:var(--r);overflow:hidden}
+.demo-head{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:var(--panel-2)}
+.demo-head .dots{display:flex;gap:6px}
+.demo-head .dots i{width:10px;height:10px;border-radius:50%;display:block;background:#2c3743}
+.demo-head h3{margin:0;font-size:14px;font-family:var(--mono);font-weight:500;color:var(--ink-soft)}
+.demo-body{padding:22px}
+label.fld{display:block;font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:7px}
+.io{font-family:var(--mono);font-size:15px;background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:12px 14px;width:100%;color:var(--ink);word-break:break-word}
+textarea.io,input.io{resize:vertical}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.cipher-out{color:var(--cipher);min-height:24px}
+.plain-out{color:var(--plain)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media(max-width:620px){.row2{grid-template-columns:1fr}}
+.btn{font-family:var(--sans);font-size:14px;font-weight:600;border:1px solid var(--line-strong);background:var(--panel-2);color:var(--ink);border-radius:var(--r-sm);padding:9px 15px;cursor:pointer;transition:.15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.green{background:var(--public);border-color:var(--public);color:#06231a}
+.btn.green:hover{filter:brightness(1.08);color:#06231a}
+.btn.pink{background:var(--private);border-color:var(--private);color:#2a0a1c}
+.btn.pink:hover{filter:brightness(1.08);color:#2a0a1c}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.pink.ghost{color:var(--private);border-color:var(--private)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:disabled:hover{border-color:var(--line-strong);color:inherit;filter:none}
+.shiftval{font-family:var(--mono);color:var(--accent);font-weight:700}
+
+/* keys legend */
+.keyline{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;font-family:var(--mono);color:var(--ink-soft);margin-bottom:16px}
+.keyline .k{display:flex;align-items:center;gap:7px}
+.keyline .sw{width:12px;height:12px;border-radius:3px}
+.sw.pub{background:var(--public)} .sw.priv{background:var(--private)}
+.mailbox{margin-top:16px;padding:14px 16px;border-radius:var(--r-sm);border:1px dashed var(--line-strong);font-size:14px;min-height:26px}
+.mailbox.locked{border-color:var(--public);background:var(--accent-soft)}
+.mailbox.open{border-color:var(--cyan);background:var(--cyan-soft)}
+.mailbox.fail{border-color:var(--danger);background:var(--danger-soft);color:#ffb4b4}
+.mailbox .st{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);display:block;margin-bottom:5px}
+
+/* steps */
+.steps{counter-reset:s;display:grid;gap:12px;margin-top:8px}
+.step{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.step::before{counter-increment:s;content:counter(s);font-family:var(--mono);font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.step h3{font-size:16px;margin:.15rem 0 .2rem}
+.step p{font-size:14px;color:var(--ink-soft);margin:0;max-width:64ch}
+
+/* compare */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:680px){.cmp{grid-template-columns:1fr}}
+.cmp .c{border:1px solid var(--line-strong);border-radius:var(--r);padding:22px 24px;background:var(--card)}
+.cmp .c .k{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.cmp .c.enc .k{color:var(--cyan)} .cmp .c.hash .k{color:var(--accent)}
+.cmp .c h3{font-size:18px;margin:.4rem 0 .5rem;font-family:var(--display)}
+.cmp .c p{font-size:14px;color:var(--ink-soft);margin:0 0 .6rem}
+.cmp .c .ex{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;word-break:break-all}
+
+
+/* quiz */
+.quiz{max-width:760px;margin:0 auto}
+.q{background:var(--card);border:1px solid var(--line-strong);border-radius:var(--r);padding:22px 24px;margin-bottom:16px}
+.q .qq{font-weight:600;font-size:17px;margin-bottom:14px;color:#fff}
+.q .opt{display:block;width:100%;text-align:left;border:1px solid var(--line-strong);background:var(--panel-2);border-radius:var(--r-sm);padding:12px 15px;margin-bottom:9px;cursor:pointer;font-family:var(--sans);font-size:15px;color:var(--ink);transition:.12s}
+.q .opt:hover{border-color:var(--accent)}
+.q .opt:disabled{cursor:default}
+.q .opt.correct{border-color:var(--accent);background:var(--accent-soft)}
+.q .opt.wrong{border-color:var(--danger);background:var(--danger-soft)}
+.q .why{font-size:14px;color:var(--ink-soft);margin-top:6px;padding:11px 14px;background:var(--bg);border-radius:var(--r-sm);display:none}
+.q .why.show{display:block}
+.q .why b{color:var(--ink)}
+#score{text-align:center;font-family:var(--display);font-size:21px;margin-top:8px;min-height:30px;color:#fff}
+
+footer{background:var(--panel);border-top:1px solid var(--line);padding:54px 0 40px;font-size:14px;color:var(--ink-soft)}
+footer h3{color:#fff;font-size:18px;font-family:var(--display)}
+footer a{color:var(--accent)}
+.srclist{columns:2;column-gap:34px;margin:14px 0 0;padding:0;list-style:none}
+@media(max-width:620px){.srclist{columns:1}}
+.srclist li{margin:0 0 9px;break-inside:avoid;font-size:13.5px;line-height:1.4}
+.disclaimer{margin-top:26px;padding-top:20px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-faint);max-width:80ch}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+.icon{width:20px;height:20px;display:inline-block;vertical-align:-4px}
+</style>
+</head>
+<body data-review-toggle>
+
+<nav id="nav"><div class="wrap">
+  <span class="brand">encryption<span>.</span></span>
+  <a class="lnk" href="#idea">The idea</a>
+  <a class="lnk" href="#caesar">Cipher</a>
+  <a class="lnk" href="#symmetric">Symmetric</a>
+  <a class="lnk" href="#public">Public-key</a>
+  <a class="lnk" href="#https">HTTPS</a>
+  <a class="lnk" href="#hash">Hashing</a>
+  <a class="lnk" href="#" data-chat-open>Ask</a>
+  <a class="lnk" href="#quiz">Quiz</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <p class="eyebrow">A visual explainer · ~10 min · no math required</p>
+  <h1>How encryption<br><em>works.</em></h1>
+  <p class="lede">Every time you see a padlock in your browser, something quietly remarkable is happening: two strangers who've never met agree on a secret in plain sight, and nobody watching can figure it out. Here's how — built up one idea at a time, with pieces you can play with.</p>
+  <div class="hero-meta">
+    <span class="tag">3 playable demos</span>
+    <span class="tag">Built-in Q&amp;A bot</span>
+    <span class="tag">Newcomer-friendly</span>
+  </div>
+</div></header>
+
+<!-- BIG IDEA -->
+<section id="idea" class="band"><div class="wrap">
+  <div class="bigidea">
+    <div>
+      <p class="eyebrow">The one idea to hold onto</p>
+      <h2>Scramble it so only the right person can unscramble it.</h2>
+      <p class="lede">Encryption turns a readable message (<span style="color:var(--plain)">plaintext</span>) into scrambled nonsense (<span style="color:var(--cipher)">ciphertext</span>) using a <b>key</b>. Without the right key, the ciphertext is useless — even to someone holding the exact method used to scramble it.</p>
+      <p style="color:var(--ink-soft);max-width:54ch">That last part is the whole trick: the <em>method</em> can be public knowledge. Security comes entirely from the <b style="color:var(--accent)">key</b> being secret — not from hiding how it works.</p>
+    </div>
+    <div class="model-card">
+      <blockquote>"A lock everyone can inspect is still safe — as long as only you hold the key."</blockquote>
+      <div class="sub">This is Kerckhoffs's principle: assume the enemy knows the system; rely on the secrecy of the key, never on hiding the algorithm.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- CAESAR -->
+<section id="caesar"><div class="wrap">
+  <p class="eyebrow">Warm-up · try it</p>
+  <h2>The simplest cipher: shift every letter.</h2>
+  <p class="lede prose" style="margin-bottom:24px">Two thousand years ago, Caesar's "key" was just a number: shift each letter forward by N. Type something and slide the key.</p>
+  <div class="demo">
+    <div class="demo-head"><span class="dots"><i></i><i></i><i></i></span><h3>caesar-cipher.js</h3></div>
+    <div class="demo-body">
+      <label class="fld" for="cIn">Plaintext</label>
+      <input id="cIn" class="io" value="meet me at noon" autocomplete="off">
+      <div style="margin:16px 0 6px;display:flex;justify-content:space-between;align-items:center">
+        <label class="fld" style="margin:0" for="cShift">Key — shift by <span class="shiftval" id="cShiftV">3</span></label>
+      </div>
+      <input id="cShift" type="range" min="0" max="25" value="3">
+      <label class="fld" style="margin-top:16px">Ciphertext</label>
+      <div class="io cipher-out" id="cOut"></div>
+      <p style="font-size:13px;color:var(--ink-faint);margin:12px 0 0">Only 25 possible keys — a computer cracks this instantly by trying them all. Real ciphers have so many possible keys that brute force would take longer than the age of the universe.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- SYMMETRIC -->
+<section id="symmetric" class="band"><div class="wrap">
+  <p class="eyebrow">Key idea 1</p>
+  <h2>Symmetric: one shared key locks and unlocks.</h2>
+  <div class="prose">
+    <p>Modern symmetric encryption (like <span style="font-family:var(--mono);color:var(--accent)">AES</span>) is the Caesar idea on steroids: the same secret key scrambles and unscrambles, but the scrambling is fiendishly complex and the key is a huge random number. It's <b>fast</b> and protects almost everything — your disk, your backups, your messages at rest.</p>
+    <p>It has one glaring problem, though. If you and I both need the same secret key, <b>how do I get it to you in the first place</b> without an eavesdropper grabbing it on the way? Mailing the key to unlock the box, in the same truck as the box, defeats the point.</p>
+  </div>
+  <div style="margin-top:18px;padding:16px 18px;border-left:3px solid var(--cyan);background:var(--cyan-soft);border-radius:0 var(--r-sm) var(--r-sm) 0;max-width:62ch">
+    <b style="color:#fff">The key-distribution problem.</b> <span style="color:var(--ink-soft)">For decades this was the catch. The breakthrough that cracked it is the most beautiful idea in the field — and it powers the entire internet.</span>
+  </div>
+</div></section>
+
+<!-- PUBLIC KEY (centerpiece) -->
+<section id="public"><div class="wrap">
+  <p class="eyebrow">Key idea 2 · the breakthrough · try it</p>
+  <h2>Public-key: two keys, and you can share one openly.</h2>
+  <p class="lede prose" style="margin-bottom:22px">Each person gets a <span style="color:var(--public)">public key</span> they hand out to anyone, and a <span style="color:var(--private)">private key</span> they never share. Here's the magic: a message locked with someone's <span style="color:var(--public)">public key</span> can <b>only</b> be opened by their <span style="color:var(--private)">private key</span>. Locking and unlocking use <em>different</em> keys.</p>
+  <div class="demo">
+    <div class="demo-head"><span class="dots"><i></i><i></i><i></i></span><h3>send-to-bob.js</h3></div>
+    <div class="demo-body">
+      <div class="keyline">
+        <span class="k"><span class="sw pub"></span> Bob's public key — everyone has it</span>
+        <span class="k"><span class="sw priv"></span> Bob's private key — only Bob</span>
+      </div>
+      <label class="fld" for="pkIn">Your message to Bob</label>
+      <input id="pkIn" class="io" value="the password is hunter2" autocomplete="off">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+        <button class="btn green" id="pkLock">Seal with Bob's public key</button>
+        <button class="btn pink ghost" id="pkPriv" disabled>Open with private key</button>
+        <button class="btn ghost" id="pkPub" disabled>Try to open with the public key</button>
+        <button class="btn ghost" id="pkReset">Reset</button>
+      </div>
+      <div class="mailbox" id="pkBox"><span class="st">status</span>Type a message and seal it.</div>
+      <p style="font-size:13px;color:var(--ink-faint);margin:14px 0 0">Illustrative — real public-key math (RSA, elliptic curves) does this with one-way number problems, not letter-shifting. The point that's exactly true: <b style="color:var(--ink-soft)">the key that locks can't unlock.</b></p>
+    </div>
+  </div>
+</div></section>
+
+<!-- HTTPS -->
+<section id="https" class="band"><div class="wrap">
+  <p class="eyebrow">Putting it together</p>
+  <h2>How the padlock in your browser actually works.</h2>
+  <p class="lede prose" style="margin-bottom:8px">Public-key crypto is slow, and symmetric is fast — so HTTPS uses public-key <em>once</em> to agree on a shared symmetric key, then switches to the fast stuff. That handshake happens in milliseconds before any page loads.</p>
+  <div class="steps">
+    <div class="step"><div><h3>Your browser says hello</h3><p>It connects to the site and asks for its identity.</p></div></div>
+    <div class="step"><div><h3>The site sends its certificate</h3><p>This contains its <span style="color:var(--public)">public key</span>, signed by a trusted authority so your browser knows it's really them — not an impostor.</p></div></div>
+    <div class="step"><div><h3>They agree on a shared secret</h3><p>Using public-key math, both sides derive the same fresh <span style="color:var(--cyan)">symmetric key</span> — without ever sending it across the wire for an eavesdropper to catch.</p></div></div>
+    <div class="step"><div><h3>Everything switches to fast symmetric encryption</h3><p>The rest of your session — passwords, messages, payments — is scrambled with that shared key. The padlock means this whole dance succeeded.</p></div></div>
+  </div>
+</div></section>
+
+<!-- HASHING -->
+<section id="hash"><div class="wrap">
+  <p class="eyebrow">A common mix-up</p>
+  <h2>Hashing is not encryption.</h2>
+  <p class="lede prose" style="margin-bottom:24px">They look similar — both produce scrambled-looking output — but they're opposites in one crucial way: encryption is meant to be <b>reversed</b>; hashing is meant to be a <b>one-way street</b>.</p>
+  <div class="cmp">
+    <div class="c enc">
+      <span class="k">Encryption · two-way</span>
+      <h3>Designed to be undone</h3>
+      <p>With the key, ciphertext becomes plaintext again. Used to keep secrets you (or the recipient) need to read later.</p>
+      <div class="ex">"hello" &rarr; encrypt &rarr; "9fA2…" &rarr; decrypt &rarr; "hello"</div>
+    </div>
+    <div class="c hash">
+      <span class="k">Hashing · one-way</span>
+      <h3>Designed to be irreversible</h3>
+      <p>A fixed-size fingerprint of the input. You can't get the input back — so it's perfect for checking passwords without ever storing them.</p>
+      <div class="ex">"hello" &rarr; hash &rarr; "2cf24dba5fb0…" &rarr; ✗ no way back</div>
+    </div>
+  </div>
+  <p class="prose" style="margin-top:18px;color:var(--ink-soft)">When a site checks your password, it hashes what you typed and compares it to the stored hash — so it can verify you without ever keeping your actual password. Same idea verifies that a downloaded file wasn't tampered with.</p>
+</div></section>
+
+<!-- ASK THE PAGE (BYOK chat) -->
+<!-- QUIZ -->
+<section id="quiz"><div class="wrap">
+  <p class="eyebrow" style="justify-content:center">Test yourself</p>
+  <h2 style="text-align:center;margin-bottom:1.6rem">Did it stick?</h2>
+  <div class="quiz" id="quiz"></div>
+  <div id="score"></div>
+</div></section>
+
+<footer><div class="wrap">
+  <h3>Sources &amp; further reading</h3>
+  <p style="color:var(--ink-soft);max-width:64ch">Encryption fundamentals are stable and well-documented; these are solid starting points to go deeper.</p>
+  <ul class="srclist">
+    <li><a href="https://www.cloudflare.com/learning/ssl/what-is-encryption/" target="_blank" rel="noopener">Cloudflare — What is encryption?</a></li>
+    <li><a href="https://www.cloudflare.com/learning/ssl/how-does-public-key-encryption-work/" target="_blank" rel="noopener">Cloudflare — How public-key encryption works</a></li>
+    <li><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Transport_Layer_Security" target="_blank" rel="noopener">MDN — Transport Layer Security (TLS)</a></li>
+    <li><a href="https://csrc.nist.gov/glossary/term/encryption" target="_blank" rel="noopener">NIST — Encryption (glossary)</a></li>
+    <li><a href="https://www.nist.gov/cryptography" target="_blank" rel="noopener">NIST — Cryptography</a></li>
+  </ul>
+  <p class="disclaimer">Educational explainer, not security advice. The demos are deliberately simplified illustrations of the concepts — real cryptographic systems rely on rigorously analyzed algorithms and key sizes, and should never be hand-rolled. For production systems, use vetted libraries and current standards (e.g. AES-GCM, TLS 1.3, modern hashing like SHA-256/Argon2).</p>
+</div></footer>
+
+<script>
+/* ---------- Caesar ---------- */
+(function(){
+  var inp=document.getElementById("cIn"), sh=document.getElementById("cShift"), shv=document.getElementById("cShiftV"), out=document.getElementById("cOut");
+  function shift(str,n){return str.replace(/[a-z]/gi,function(ch){var base=ch<="Z"?65:97;return String.fromCharCode((ch.charCodeAt(0)-base+n)%26+base);});}
+  function upd(){shv.textContent=sh.value;out.textContent=shift(inp.value,+sh.value)||"…";}
+  inp.addEventListener("input",upd); sh.addEventListener("input",upd); upd();
+})();
+
+/* ---------- public-key mailbox (illustrative) ---------- */
+(function(){
+  var msgIn=document.getElementById("pkIn"), box=document.getElementById("pkBox");
+  var bLock=document.getElementById("pkLock"), bPriv=document.getElementById("pkPriv"), bPub=document.getElementById("pkPub"), bReset=document.getElementById("pkReset");
+  var K=7, sealed=null;
+  function scramble(s,n){return s.replace(/[a-z]/gi,function(ch){var base=ch<="Z"?65:97;return String.fromCharCode((ch.charCodeAt(0)-base+n)%26+base);});}
+  function set(cls,label,txt){box.className="mailbox "+cls;box.innerHTML='<span class="st">'+label+'</span>'+txt;}
+  bLock.onclick=function(){
+    var m=msgIn.value.trim(); if(!m){set("","status","Type a message first.");return;}
+    sealed=scramble(m,K);
+    set("locked","sealed with Bob's public key",'<span style="color:var(--cipher);font-family:var(--mono)">'+sealed+'</span>');
+    bPriv.disabled=false; bPub.disabled=false;
+  };
+  bPriv.onclick=function(){
+    if(sealed===null)return;
+    set("open","opened with Bob's private key ✓",'<span style="color:var(--plain);font-family:var(--mono)">'+scramble(sealed,26-K)+'</span>');
+  };
+  bPub.onclick=function(){
+    if(sealed===null)return;
+    set("fail","tried the public key ✗",'Still scrambled: <span style="font-family:var(--mono)">'+scramble(sealed,K)+'</span> — the key that <b>locks</b> can’t <b>unlock</b>.');
+  };
+  bReset.onclick=function(){sealed=null;bPriv.disabled=true;bPub.disabled=true;set("","status","Type a message and seal it.");};
+})();
+
+/* ---------- quiz ---------- */
+(function(){
+  var QUIZ=[
+    {q:"What actually keeps an encrypted message secret?",opts:["Hiding how the algorithm works","The key being secret","Making the ciphertext short"],a:1,why:"By <b>Kerckhoffs's principle</b>, the method can be public — security rests on the secrecy of the <b>key</b>."},
+    {q:"The big problem symmetric encryption alone can't solve is…",opts:["Scrambling large files","Getting the shared key to the other person safely","Being fast enough"],a:1,why:"That's the <b>key-distribution problem</b> — and public-key cryptography is what solves it."},
+    {q:"A message locked with someone's public key can be opened by…",opts:["Their public key","Anyone who has the algorithm","Only their matching private key"],a:2,why:"The two keys are a pair: the <b>public</b> key locks, and only the matching <b>private</b> key unlocks."},
+    {q:"During an HTTPS handshake, public-key crypto is used to…",opts:["Encrypt the entire session","Agree on a fast shared symmetric key","Hash your password"],a:1,why:"It's used <b>once</b> to agree on a symmetric key, then the fast symmetric encryption takes over."},
+    {q:"Why store password hashes instead of passwords?",opts:["Hashes are encrypted versions","Hashing is one-way, so the real password is never kept","Hashes are shorter"],a:1,why:"Hashing is <b>irreversible</b> — the site can verify your password without ever storing it."}
+  ];
+  var box=document.getElementById("quiz"), score=document.getElementById("score"), answered=0, right=0;
+  QUIZ.forEach(function(item,qi){
+    var el=document.createElement("div"); el.className="q";
+    var opts=item.opts.map(function(o,oi){return '<button class="opt" type="button" data-q="'+qi+'" data-o="'+oi+'">'+o+'</button>';}).join("");
+    el.innerHTML='<div class="qq">'+(qi+1)+". "+item.q+'</div>'+opts+'<div class="why" id="why'+qi+'"></div>';
+    box.appendChild(el);
+  });
+  box.addEventListener("click",function(e){
+    var b=e.target.closest(".opt"); if(!b) return;
+    var qi=+b.dataset.q, oi=+b.dataset.o, item=QUIZ[qi], parent=b.parentNode;
+    if(parent.dataset.done) return; parent.dataset.done="1";
+    Array.prototype.forEach.call(parent.querySelectorAll(".opt"),function(o){
+      o.disabled=true; var idx=+o.dataset.o;
+      if(idx===item.a) o.classList.add("correct");
+      if(idx===oi && oi!==item.a) o.classList.add("wrong");
+    });
+    var why=document.getElementById("why"+qi);
+    why.innerHTML=(oi===item.a?"<b>Correct. </b>":"<b>Not quite. </b>")+item.why; why.classList.add("show");
+    answered++; if(oi===item.a) right++;
+    if(answered===QUIZ.length) score.textContent="You scored "+right+" / "+QUIZ.length+(right===QUIZ.length?" — flawless.":right>=3?" — solid grasp.":" — worth a re-skim.");
+  });
+})();
+
+/* ---------- reveal (self-healing) ---------- */
+(function(){
+  var wraps=document.querySelectorAll("section > .wrap");
+  function revealAll(){wraps.forEach(function(w){w.classList.add("in");});}
+  if(!("IntersectionObserver" in window)){return;}
+  wraps.forEach(function(w){w.classList.add("reveal");});
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{threshold:.08,rootMargin:"0px 0px -8% 0px"});
+  wraps.forEach(function(e){io.observe(e);});
+  setTimeout(revealAll,1400);
+  window.addEventListener("load",function(){setTimeout(revealAll,400);});
+})();
+</script>
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:80;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:12px;right:14px;z-index:82;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:79;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:90;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:95;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:96;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+<script>window.CHAT_DOCK={"provider":"anthropic","title":"Ask the page","placeholder":"Ask about encryption…","suggestions":["What’s the difference between symmetric and public-key?","Why is hashing one-way?","What does the HTTPS padlock actually guarantee?"]};</script>
+<script>
+/* =====================================================================
+   chat-dock.js — drop-in "Ask the page" floating chat for html-explainer
+
+   WHAT IT IS
+   A self-contained, client-side floating chat widget that answers questions
+   grounded in the current page's content, using the reader's OWN API key
+   (BYOK). It is the single-file alternative to a server-backed chatbot: no
+   server, no build step — paste this <script> before </body> and you have an
+   "ask the page" assistant. Key is held in memory only and sent straight to
+   the provider; nothing is stored or logged.
+
+   HOW TO USE (two steps)
+   1. (Optional) configure before this script runs:
+        <script>
+          window.CHAT_DOCK = {
+            provider: "anthropic",          // "anthropic" (default) | "openai"
+            title: "Ask the page",
+            placeholder: "Ask a question…",
+            suggestions: ["…","…"],         // quick-start prompts
+            // model, accent, grounding, groundChars all optional
+          };
+        <\/script>
+   2. Paste this entire file inside a <script> just before </body>.
+      (Note: when inlining, this comment escapes the closing script tag as
+       <\/script> on purpose — a literal one would close the tag early.)
+
+   It injects its own styles (using the page's design tokens with fallbacks,
+   so it adapts to light OR dark themes) and builds a launcher button bottom-
+   right + a docked chat panel. Any element with `data-chat-open` also opens it.
+
+   GROUNDING: by default it reads the page's text (<main> or <body>) and tells
+   the model to answer from it. Pass `grounding` to override.
+
+   LIMITS (state in the hand-off): replies depend on the reader's own key and
+   on the provider allowing browser calls; this is per-browser, not multi-user.
+   For a shared, key-managed chatbot, use a server route (framework build).
+   ===================================================================== */
+(function () {
+  "use strict";
+  var cfg = (window.CHAT_DOCK || {});
+  if (cfg.enabled === false) return;
+  if (!document.body) return; // paste this before </body> so the body exists
+
+  var PROVIDER = (cfg.provider || "anthropic").toLowerCase();
+  var MODEL = cfg.model || (PROVIDER === "openai" ? "gpt-5.4" : "claude-sonnet-4-6");
+  var TITLE = cfg.title || "Ask the page";
+  var PLACEHOLDER = cfg.placeholder || "Ask a question…";
+  var SUGGEST = cfg.suggestions || [];
+  var ACCENT = cfg.accent || "var(--accent,#3b82f6)";
+  var KEY_HINT = PROVIDER === "openai" ? "sk-… (your OpenAI API key)" : "sk-ant-… (your Anthropic API key)";
+  var KEY_LINK = PROVIDER === "openai" ? "https://platform.openai.com/api-keys" : "https://console.anthropic.com/settings/keys";
+  var PROVIDER_NAME = PROVIDER === "openai" ? "OpenAI" : "Anthropic";
+
+  var GROUND = cfg.grounding || (function () {
+    var main = document.querySelector("main") || document.body;
+    var t = (main.innerText || "").replace(/\s+\n/g, "\n").trim();
+    return t.slice(0, cfg.groundChars || 9000);
+  })();
+
+  // ---- styles (page tokens w/ fallbacks → adapts to light or dark) ----
+  var css = [
+    "#cd-fab{position:fixed;bottom:20px;right:20px;z-index:71;background:" + ACCENT + ";color:#fff;border:none;border-radius:100px;padding:13px 18px;font-family:var(--sans,system-ui,sans-serif);font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.32)}",
+    "#cd-fab:hover{filter:brightness(1.06)}#cd-fab svg{display:block}#cd-fab[hidden]{display:none}",
+    "#cd-panel{position:fixed;bottom:20px;right:20px;z-index:72;width:384px;max-width:calc(100vw - 32px);height:560px;max-height:calc(100vh - 40px);background:var(--card,#fff);color:var(--ink,#181818);border:1px solid var(--line-strong,#cfcfcf);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden;font-family:var(--sans,system-ui,sans-serif)}",
+    "#cd-panel[hidden]{display:none}",
+    ".cd-head{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line,#e3e3e3);background:var(--panel-2,var(--paper-2,rgba(127,127,127,.06)))}",
+    ".cd-head .dot{width:9px;height:9px;border-radius:50%;background:" + ACCENT + ";flex-shrink:0}",
+    ".cd-head h3{font-size:14px;margin:0;font-family:var(--display,inherit);line-height:1.1;color:var(--ink,#181818)}",
+    ".cd-head .sub{font-size:10.5px;color:var(--ink-faint,#8a8a8a);font-family:var(--mono,monospace)}",
+    ".cd-head .x{margin-left:auto;background:none;border:none;color:var(--ink-soft,#666);font-size:22px;cursor:pointer;line-height:1;padding:0 4px}.cd-head .x:hover{color:var(--ink,#000)}",
+    ".cd-key{padding:11px 14px;border-bottom:1px solid var(--line,#e3e3e3);background:var(--panel,var(--paper,rgba(127,127,127,.03)))}.cd-key[hidden]{display:none}",
+    ".cd-key input{width:100%;font-family:var(--mono,monospace);font-size:12.5px;background:var(--bg,var(--paper,#fff));border:1px solid var(--line-strong,#cfcfcf);color:var(--ink,#181818);border-radius:9px;padding:8px 11px;box-sizing:border-box}",
+    ".cd-key .note{font-size:11px;color:var(--ink-faint,#8a8a8a);margin-top:6px;line-height:1.4}.cd-key .note b{color:" + ACCENT + "}.cd-key .note a{color:" + ACCENT + "}",
+    ".cd-log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}",
+    ".cd-msg{max-width:88%;padding:10px 13px;border-radius:12px;font-size:14px;line-height:1.5;white-space:pre-wrap}",
+    ".cd-msg.u{align-self:flex-end;background:var(--accent-soft,rgba(127,127,127,.14));color:var(--ink,#181818)}",
+    ".cd-msg.a{align-self:flex-start;background:var(--panel-2,var(--paper-2,rgba(127,127,127,.09)));border:1px solid var(--line,#e3e3e3)}",
+    ".cd-msg.sys{align-self:center;font-size:11.5px;color:var(--ink-faint,#8a8a8a);font-family:var(--mono,monospace);text-align:center;max-width:100%}",
+    ".cd-msg.a strong{font-weight:700;color:var(--ink,#111)}.cd-msg.a code{font-family:var(--mono,monospace);font-size:.9em;background:var(--bg,rgba(127,127,127,.14));padding:1px 5px;border-radius:5px}",
+    ".cd-msg.a p{margin:0 0 8px}.cd-msg.a p:last-child{margin:0}.cd-msg.a ul,.cd-msg.a ol{margin:6px 0;padding-left:20px}.cd-msg.a li{margin:3px 0}",
+    ".cd-dots{display:inline-flex;gap:4px;padding:3px 0}.cd-dots span{width:6px;height:6px;border-radius:50%;background:var(--ink-faint,#8a8a8a);animation:cdb 1s infinite}",
+    ".cd-dots span:nth-child(2){animation-delay:.15s}.cd-dots span:nth-child(3){animation-delay:.3s}",
+    "@keyframes cdb{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}",
+    ".cd-suggest{display:flex;flex-direction:column;gap:6px;padding:0 14px 10px}.cd-suggest[hidden]{display:none}",
+    ".cd-suggest button{font-family:var(--sans,system-ui,sans-serif);font-size:12.5px;text-align:left;color:var(--ink-soft,#555);background:var(--bg,var(--paper,rgba(127,127,127,.04)));border:1px solid var(--line,#e3e3e3);border-radius:8px;padding:8px 11px;cursor:pointer}",
+    ".cd-suggest button:hover{border-color:" + ACCENT + ";color:" + ACCENT + "}",
+    ".cd-in{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line,#e3e3e3);background:var(--panel-2,var(--paper-2,rgba(127,127,127,.06)))}",
+    ".cd-in input{flex:1;min-width:0;font-family:var(--sans,system-ui,sans-serif);font-size:14px;background:var(--bg,var(--paper,#fff));border:1px solid var(--line-strong,#cfcfcf);color:var(--ink,#181818);border-radius:9px;padding:10px 12px}",
+    ".cd-in button{background:" + ACCENT + ";color:#fff;border:none;border-radius:9px;padding:10px 15px;font-family:var(--sans,system-ui,sans-serif);font-weight:600;font-size:14px;cursor:pointer}",
+    "@media(max-width:520px){#cd-panel{bottom:0;right:0;width:100vw;height:82vh;max-height:none;border-radius:16px 16px 0 0}}"
+  ].join("\n");
+  var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+
+  // ---- markup ----
+  var fab = document.createElement("button");
+  fab.id = "cd-fab"; fab.type = "button"; fab.setAttribute("aria-label", TITLE);
+  fab.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.6-.8L3 21l1.8-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg><span>Ask</span>';
+
+  var panel = document.createElement("div");
+  panel.id = "cd-panel"; panel.hidden = true; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", TITLE);
+  var sugHtml = SUGGEST.map(function (s) { return '<button type="button">' + esc(s) + "</button>"; }).join("");
+  panel.innerHTML =
+    '<div class="cd-head"><span class="dot"></span><div><h3>' + esc(TITLE) + '</h3><div class="sub">grounded · ' + esc(PROVIDER_NAME) + ' · your key</div></div><button class="x" id="cd-x" aria-label="Close">×</button></div>' +
+    '<div class="cd-key" id="cd-key"><input id="cd-apikey" type="password" autocomplete="off" placeholder="' + esc(KEY_HINT) + '"><div class="note">Held <b>in memory only</b>, sent straight to ' + esc(PROVIDER_NAME) + ', never stored. <a href="' + KEY_LINK + '" target="_blank" rel="noopener">Get a key</a></div></div>' +
+    '<div class="cd-log" id="cd-log"><div class="cd-msg sys">Ask a question about this page.</div></div>' +
+    (sugHtml ? '<div class="cd-suggest" id="cd-suggest">' + sugHtml + "</div>" : "") +
+    '<div class="cd-in"><input id="cd-input" autocomplete="off" placeholder="' + esc(PLACEHOLDER) + '"><button id="cd-send" type="button">Send</button></div>';
+
+  document.body.appendChild(fab); document.body.appendChild(panel);
+
+  var keyEl = panel.querySelector("#cd-apikey"), keyRow = panel.querySelector("#cd-key"),
+      inEl = panel.querySelector("#cd-input"), sendEl = panel.querySelector("#cd-send"),
+      log = panel.querySelector("#cd-log"), sug = panel.querySelector("#cd-suggest");
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+  function open(){ panel.hidden = false; fab.hidden = true; (keyEl.value ? inEl : keyEl).focus(); }
+  function close(){ panel.hidden = true; fab.hidden = false; }
+  fab.onclick = open;
+  panel.querySelector("#cd-x").onclick = close;
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape" && !panel.hidden) close(); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-chat-open]"), function(el){ el.addEventListener("click", function(e){ e.preventDefault(); open(); }); });
+
+  var history = [], busy = false;
+  function add(role, text){ var d=document.createElement("div"); d.className="cd-msg "+role; d.textContent=text; log.appendChild(d); log.scrollTop=log.scrollHeight; return d; }
+  // minimal, safe markdown: escape first, then **bold**, `code`, bullet/numbered lists, paragraphs
+  function md(s){
+    var lines = esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").split(/\n/);
+    var out=[], i=0, bullet=/^\s*([-•*]|\d+[.)])\s+/;
+    while(i<lines.length){
+      if(bullet.test(lines[i])){
+        var ordered=/^\s*\d+[.)]\s+/.test(lines[i]), tag=ordered?"ol":"ul", items=[];
+        while(i<lines.length && bullet.test(lines[i])){ items.push("<li>"+lines[i].replace(bullet,"")+"</li>"); i++; }
+        out.push("<"+tag+">"+items.join("")+"</"+tag+">");
+      } else if(lines[i].trim()===""){ i++; }
+      else { var para=[]; while(i<lines.length && lines[i].trim()!=="" && !bullet.test(lines[i])){ para.push(lines[i]); i++; } out.push("<p>"+para.join("<br>")+"</p>"); }
+    }
+    return out.join("");
+  }
+
+  function ask(q){
+    if (busy || !q) return;
+    var key = keyEl.value.trim();
+    if (!key){ add("sys","Paste your " + PROVIDER_NAME + " API key above to start."); keyEl.focus(); return; }
+    if (sug) sug.hidden = true;
+    if (keyRow) keyRow.hidden = true; // collapse once we have a key → feels like a chat stream
+    add("u", q); inEl.value = ""; busy = true;
+    var thinking = add("a", ""); thinking.innerHTML = '<span class="cd-dots"><span></span><span></span><span></span></span>';
+    history.push({ role: "user", content: q });
+    var sys = "You are a friendly assistant embedded in this web page. Answer the user's questions grounded in the page content below. Be concise and clear. If a question goes beyond the page, you may answer briefly from general knowledge but say so. Never invent specifics.\n\n=== PAGE CONTENT ===\n" + GROUND;
+    var req = PROVIDER === "openai" ? {
+      url: "https://api.openai.com/v1/chat/completions",
+      headers: { "content-type":"application/json", "authorization":"Bearer "+key },
+      body: { model: MODEL, max_tokens: 700, messages: [{role:"system",content:sys}].concat(history) },
+      pick: function(d){ return d && d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content; }
+    } : {
+      url: "https://api.anthropic.com/v1/messages",
+      headers: { "content-type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+      body: { model: MODEL, max_tokens: 700, system: sys, messages: history },
+      pick: function(d){ return d && d.content && d.content[0] && d.content[0].text; }
+    };
+    fetch(req.url, { method:"POST", headers:req.headers, body:JSON.stringify(req.body) })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var text = req.pick(data);
+        if (!text){ var em = data && data.error && data.error.message ? data.error.message : "No response — check the key and try again."; thinking.className="cd-msg sys"; thinking.textContent="Error: "+em; busy=false; return; }
+        thinking.innerHTML = md(text); history.push({ role:"assistant", content:text }); busy=false;
+      })
+      .catch(function(err){ thinking.className="cd-msg sys"; thinking.textContent="Request failed: "+err.message+" (some networks block direct API calls)."; busy=false; });
+  }
+  sendEl.onclick = function(){ ask(inEl.value.trim()); };
+  inEl.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); ask(inEl.value.trim()); } });
+  if (sug) Array.prototype.forEach.call(sug.querySelectorAll("button"), function(b){ b.onclick = function(){ ask(b.textContent); }; });
+})();
+
+</script>
+</body>
+</html>

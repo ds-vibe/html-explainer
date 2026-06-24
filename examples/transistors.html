@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Transistors Work — A Visual, Hands-On Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:64px;--s9:96px;
+  /* dark technical surfaces */
+  --bg:#0A0E14; --panel:#101620; --panel-2:#0D131C; --card:#141C28; --card-2:#18212F;
+  --line:#212C3B; --line-strong:#2E3C50;
+  --ink:#E8EEF6; --ink-soft:#A7B6C8; --ink-faint:#6B7C90;
+  /* semantic accents */
+  --current:#22D3EE;   /* electron flow / current */
+  --current-dim:#0E3A45;
+  --gate:#F59E0B;      /* control voltage */
+  --gate-dim:#3A2C0C;
+  --ntype:#3B82F6;     /* N-type silicon */
+  --ptype:#F97316;     /* P-type silicon */
+  --on:#34D399;        /* logic 1 / on */
+  --off:#475569;       /* logic 0 / off */
+  --accent:#22D3EE;
+  --accent-soft:rgba(34,211,238,.14);
+  --display:"Space Grotesk",system-ui,sans-serif;
+  --sans:"Inter",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --maxw:1160px; --measure:64ch;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 40px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.62;font-size:17px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+@media(max-width:640px){body{font-size:16px}}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1.12;letter-spacing:-.015em}
+a{color:var(--current)}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s5)}
+.measure{max-width:var(--measure)}
+.eyebrow{font-family:var(--mono);font-weight:500;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--current)}
+.num{font-family:var(--mono);font-weight:500;font-size:.78rem;letter-spacing:.12em;color:var(--ink-faint);text-transform:uppercase}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;background:rgba(10,14,20,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:var(--s5);height:54px}
+.nav .brand{font-family:var(--display);font-weight:600;font-size:.98rem;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.nav .brand .led{width:9px;height:9px;border-radius:50%;background:var(--current);box-shadow:0 0 10px var(--current)}
+.nav .links{display:flex;gap:var(--s5);margin-left:auto;overflow-x:auto}
+.nav .links a{color:var(--ink-soft);font-size:.83rem;font-weight:500;white-space:nowrap;text-decoration:none}
+.nav .links a:hover{color:var(--current)}
+@media(max-width:900px){.nav .links{display:none}}
+
+/* hero */
+.hero{padding:var(--s9) 0 var(--s8);position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero .wrap{position:relative;z-index:2}
+.hero h1{font-size:clamp(2.6rem,6.4vw,4.8rem);font-weight:700;max-width:15ch;letter-spacing:-.03em}
+.hero h1 .glow{color:var(--current);text-shadow:0 0 28px rgba(34,211,238,.45)}
+.hero .lede{font-size:clamp(1.1rem,2.3vw,1.4rem);color:var(--ink-soft);margin-top:var(--s5);max-width:52ch;line-height:1.5}
+.hero .meta{display:flex;flex-wrap:wrap;gap:var(--s5);margin-top:var(--s7)}
+.hero .meta .m{display:flex;flex-direction:column;gap:3px;padding-right:var(--s5);border-right:1px solid var(--line)}
+.hero .meta .m:last-child{border-right:none}
+.hero .meta .k{font-family:var(--display);font-size:1.7rem;font-weight:600;line-height:1;color:var(--ink)}
+.hero .meta .l{font-size:.76rem;color:var(--ink-faint);font-family:var(--mono);letter-spacing:.04em}
+.hero-grid{position:absolute;inset:0;z-index:1;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:46px 46px;opacity:.34;
+  -webkit-mask-image:radial-gradient(ellipse 80% 70% at 70% 35%,#000 10%,transparent 72%);
+  mask-image:radial-gradient(ellipse 80% 70% at 70% 35%,#000 10%,transparent 72%)}
+
+/* sections */
+section{padding:var(--s9) 0}
+.band{background:var(--panel-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-head{margin-bottom:var(--s7)}
+.sec-head h2{font-size:clamp(1.9rem,3.6vw,2.7rem);max-width:20ch}
+.sec-head p{color:var(--ink-soft);margin-top:var(--s4);max-width:var(--measure);font-size:1.05rem}
+
+/* big idea */
+.idea{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s8);align-items:center}
+.idea>div{min-width:0}
+@media(max-width:880px){.idea{grid-template-columns:1fr;gap:var(--s6)}}
+.idea .pull{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.25;font-weight:500;letter-spacing:-.02em}
+.idea .pull em{font-style:normal;color:var(--current)}
+.idea p{color:var(--ink-soft);margin-top:var(--s5)}
+.idea .note{margin-top:var(--s5);font-size:.9rem;color:var(--ink-faint);border-left:2px solid var(--line-strong);padding-left:var(--s4)}
+/* valve analogy card */
+.analogy{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:var(--s6);box-shadow:var(--shadow)}
+.analogy .map{display:flex;flex-direction:column;gap:var(--s3);margin-top:var(--s4)}
+.analogy .pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:var(--s3);font-size:.92rem}
+.analogy .pair .a{font-family:var(--mono);color:var(--gate);text-align:right}
+.analogy .pair .b{font-weight:600;color:var(--ink)}
+.analogy .pair .eq{color:var(--ink-faint);font-family:var(--mono)}
+.analogy .cap{margin-top:var(--s5);font-size:.82rem;color:var(--ink-faint);font-family:var(--mono);text-align:center;letter-spacing:.03em}
+
+/* demo shell */
+.demo{background:var(--card);border:1px solid var(--line-strong);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.demo-head{padding:var(--s5) var(--s6);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:var(--s3);background:var(--panel)}
+.demo-head .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--bg);background:var(--current);padding:4px 10px;border-radius:6px;font-weight:700}
+.demo-head h3{font-size:1.15rem}
+.demo-body{padding:var(--s6)}
+
+/* valve demo */
+.valve{display:grid;grid-template-columns:1.3fr 1fr;gap:var(--s6);align-items:center}
+@media(max-width:760px){.valve{grid-template-columns:1fr;gap:var(--s5)}}
+.valve svg{width:100%;height:auto;display:block}
+.valve .controls .lab{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:.82rem;color:var(--ink-soft);margin-bottom:var(--s2)}
+.valve .controls .lab b{color:var(--gate);font-size:1.1rem}
+.valve input[type=range]{width:100%;accent-color:var(--gate);height:6px;margin:var(--s2) 0 var(--s5)}
+.gauge{margin-top:var(--s4)}
+.gauge .lab{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:.82rem;color:var(--ink-soft);margin-bottom:var(--s2)}
+.gauge .lab b{color:var(--current);font-size:1.1rem}
+.gauge .bar{height:14px;background:var(--current-dim);border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.gauge .fill{height:100%;width:0;background:linear-gradient(90deg,#0891b2,var(--current));transition:width .15s ease;box-shadow:0 0 12px var(--current)}
+.state{margin-top:var(--s5);padding:var(--s4);border-radius:10px;font-size:.92rem;font-weight:500;border:1px solid;font-family:var(--sans)}
+.state.closed{background:var(--off);background:rgba(71,85,105,.18);border-color:var(--line-strong);color:var(--ink-soft)}
+.state.open{background:var(--current-dim);border-color:#155e6b;color:var(--current)}
+.term-cap{font-family:var(--mono);font-size:.7rem;fill:var(--ink-faint);letter-spacing:.06em}
+
+/* two jobs */
+.jobs{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+@media(max-width:760px){.jobs{grid-template-columns:1fr}}
+.job{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6)}
+.job .ic{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;margin-bottom:var(--s4);border:1px solid}
+.job.sw .ic{color:var(--on);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)}
+.job.amp .ic{color:var(--gate);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
+.job h3{font-size:1.25rem}
+.job .role{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:2px}
+.job p{color:var(--ink-soft);font-size:.95rem;margin-top:var(--s3)}
+
+/* logic demo */
+.logic{display:grid;grid-template-columns:1.25fr 1fr;gap:var(--s6);align-items:center}
+@media(max-width:760px){.logic{grid-template-columns:1fr}}
+.logic svg{width:100%;height:auto;display:block}
+.gate-tabs{display:flex;gap:var(--s2);margin-bottom:var(--s5)}
+.gate-tabs button{font-family:var(--mono);font-size:.82rem;font-weight:500;padding:7px 15px;border-radius:8px;border:1px solid var(--line-strong);background:var(--panel);color:var(--ink-soft);cursor:pointer;transition:all .14s}
+.gate-tabs button[aria-pressed=true]{background:var(--current);border-color:var(--current);color:var(--bg);font-weight:700}
+.toggles{display:flex;gap:var(--s4);margin-bottom:var(--s5)}
+.toggle{flex:1;text-align:center}
+.toggle .tname{font-family:var(--mono);font-size:.8rem;color:var(--ink-soft);margin-bottom:var(--s2)}
+.toggle button{width:100%;font-family:var(--display);font-size:1.5rem;font-weight:700;padding:var(--s4);border-radius:12px;border:2px solid var(--line-strong);background:var(--panel);color:var(--off);cursor:pointer;transition:all .15s}
+.toggle button[data-on=true]{border-color:var(--on);color:var(--on);background:rgba(52,211,153,.1);box-shadow:0 0 18px rgba(52,211,153,.25)}
+.truth{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.86rem;margin-top:var(--s2)}
+.truth th,.truth td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--line)}
+.truth th{color:var(--ink-faint);font-weight:500;font-size:.74rem;letter-spacing:.06em}
+.truth td{color:var(--ink-soft)}
+.truth tr.hot td{background:var(--accent-soft);color:var(--ink)}
+.truth td.out1{color:var(--on);font-weight:700}
+.truth td.out0{color:var(--ink-faint)}
+.outlamp{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s5);font-family:var(--mono);font-size:.9rem;color:var(--ink-soft)}
+.outlamp .bulb{width:30px;height:30px;border-radius:50%;background:var(--off);transition:all .2s;border:1px solid var(--line-strong)}
+.outlamp .bulb.lit{background:var(--on);box-shadow:0 0 22px var(--on)}
+
+/* inside silicon - layered */
+.layers{display:flex;flex-direction:column;gap:var(--s4)}
+.layer{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.layer summary{padding:var(--s5);cursor:pointer;display:flex;align-items:center;gap:var(--s4);list-style:none;font-family:var(--display);font-weight:600;font-size:1.1rem}
+.layer summary::-webkit-details-marker{display:none}
+.layer summary .n{font-family:var(--mono);font-size:.85rem;color:var(--current);border:1px solid var(--line-strong);border-radius:7px;width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto}
+.layer summary .chev{margin-left:auto;color:var(--ink-faint);transition:transform .2s}
+.layer[open] summary .chev{transform:rotate(180deg)}
+.layer .inner{padding:0 var(--s5) var(--s5) calc(var(--s5) + 30px + var(--s4));color:var(--ink-soft);font-size:.96rem}
+.layer .inner p{margin-bottom:var(--s3)}
+.layer .inner strong{color:var(--ink)}
+.chip{display:inline-block;font-family:var(--mono);font-size:.82rem;padding:1px 8px;border-radius:5px;border:1px solid}
+.chip.n{color:var(--ntype);border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.1)}
+.chip.p{color:var(--ptype);border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.1)}
+
+/* mosfet diagram */
+.mosfet{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:var(--s6);margin-top:var(--s5)}
+.mosfet svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:var(--s4);margin-top:var(--s4);font-family:var(--mono);font-size:.78rem;color:var(--ink-soft)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:13px;height:13px;border-radius:3px;display:inline-block}
+
+/* misconception */
+.misc{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.28);border-left:4px solid var(--gate);border-radius:12px;padding:var(--s6);margin-top:var(--s6)}
+.misc .t{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gate);font-weight:700}
+.misc p{margin-top:var(--s3);color:var(--ink-soft)}
+.misc .x{color:var(--ink);font-weight:600}
+
+/* scale */
+.scale-band{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4)}
+@media(max-width:760px){.scale-band{grid-template-columns:1fr}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6)}
+.stat .big{font-family:var(--display);font-size:2.6rem;font-weight:700;color:var(--current);line-height:1;text-shadow:0 0 24px rgba(34,211,238,.3)}
+.stat .lab{font-size:.92rem;color:var(--ink-soft);margin-top:var(--s3)}
+.stat .sub{font-family:var(--mono);font-size:.74rem;color:var(--ink-faint);margin-top:var(--s2)}
+.scalebar{margin-top:var(--s6);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6)}
+.scalebar h4{font-size:1rem;margin-bottom:var(--s4)}
+.scaleline{position:relative;height:54px;margin:var(--s5) 0 var(--s2)}
+.scaleline::before{content:"";position:absolute;left:0;right:0;top:26px;height:2px;background:linear-gradient(90deg,var(--ptype),var(--gate),var(--current))}
+.scalept{position:absolute;top:0;transform:translateX(-50%);text-align:center;width:120px}
+.scalept .dot{width:12px;height:12px;border-radius:50%;background:var(--current);margin:20px auto 0;box-shadow:0 0 10px var(--current);position:relative;z-index:2;border:2px solid var(--bg)}
+.scalept .yr{font-family:var(--mono);font-size:.74rem;color:var(--ink);margin-top:6px}
+.scalept .dsc{font-size:.68rem;color:var(--ink-faint);line-height:1.3}
+
+/* quiz */
+.quiz{background:var(--card);border:1px solid var(--line-strong);border-radius:18px;box-shadow:var(--shadow);padding:var(--s7) var(--s6)}
+.q{margin-bottom:var(--s7)}.q:last-of-type{margin-bottom:var(--s5)}
+.q .qq{font-family:var(--display);font-size:1.18rem;font-weight:600;display:flex;gap:var(--s3)}
+.q .qq .qn{color:var(--current);font-family:var(--mono)}
+.q .opts{margin-top:var(--s4);display:flex;flex-direction:column;gap:var(--s2)}
+.q .opts button{text-align:left;font-family:var(--sans);font-size:.95rem;padding:var(--s3) var(--s4);border:1px solid var(--line-strong);border-radius:10px;background:var(--panel);color:var(--ink);cursor:pointer;transition:all .12s}
+.q .opts button:hover:not(:disabled){border-color:var(--current);color:var(--current)}
+.q .opts button:disabled{cursor:default}
+.q .opts button.correct{background:rgba(52,211,153,.12);border-color:var(--on);color:var(--on);font-weight:600}
+.q .opts button.wrong{background:rgba(248,113,113,.1);border-color:#f87171;color:#f87171}
+.q .exp{margin-top:var(--s3);font-size:.9rem;color:var(--ink-soft);padding:var(--s3) var(--s4);background:var(--panel-2);border-radius:8px;border-left:3px solid var(--current);display:none}
+.q .exp.show{display:block}
+.score{font-family:var(--display);font-size:1.25rem;font-weight:600;text-align:center;padding:var(--s5);border-radius:12px;background:var(--panel);display:none;color:var(--ink)}
+.score.show{display:block}
+
+/* footer */
+.src li{margin:var(--s2) 0;list-style:none;font-size:.9rem;color:var(--ink-soft)}
+.disclaimer{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:var(--s5);font-size:.88rem;color:var(--ink-soft);margin-top:var(--s6)}
+.foot{padding:var(--s7) 0;border-top:1px solid var(--line);color:var(--ink-faint);font-size:.84rem}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+.electron{fill:var(--current)}
+</style>
+</head>
+<body data-review-toggle>
+
+<nav class="nav">
+  <div class="wrap">
+    <span class="brand"><span class="led"></span>Transistors · Explained</span>
+    <div class="links">
+      <a href="#idea">The idea</a>
+      <a href="#valve">The valve</a>
+      <a href="#jobs">Two jobs</a>
+      <a href="#logic">Making logic</a>
+      <a href="#inside">Inside the silicon</a>
+      <a href="#scale">Why it matters</a>
+      <a href="#quiz">Quiz</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow">A visual, hands-on guide</p>
+    <h1>How <span class="glow">transistors</span> work</h1>
+    <p class="lede">They're the tiny switches behind every computer, phone, and chip. At heart, a transistor does one simple thing: it lets a small electrical signal control a much larger one. Master that, and the rest follows.</p>
+    <div class="meta">
+      <div class="m"><span class="k">1947</span><span class="l">first one built</span></div>
+      <div class="m"><span class="k">3</span><span class="l">terminals</span></div>
+      <div class="m"><span class="k">~95B</span><span class="l">on one M4 Max chip</span></div>
+      <div class="m"><span class="k">3 nm</span><span class="l">smallest features today</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- BIG IDEA -->
+<section id="idea">
+  <div class="wrap">
+    <div class="idea reveal">
+      <div>
+        <p class="num">The mental model</p>
+        <p class="pull">A transistor is an <em>electrically controlled valve</em>. A small voltage on one terminal decides how much current flows between the other two.</p>
+        <p>Picture a tap on a water pipe. The water wants to flow from one end to the other, but a valve in the middle controls it. Turn the valve a little and a trickle gets through; turn it more and the flow surges. A transistor is that valve — except the "hand" turning it is itself electrical. That's the whole trick: <strong style="color:var(--ink)">electricity controlling electricity</strong>, with no moving parts.</p>
+        <p>Because the control signal can be tiny and the controlled flow large, one transistor can either act as a <strong style="color:var(--ink)">switch</strong> (fully on or fully off) or an <strong style="color:var(--ink)">amplifier</strong> (a small wiggle steering a big one). Those two behaviours build everything else.</p>
+        <p class="note">Where the analogy leaks: nothing physically moves inside a transistor. The "valve" is an electric field reshaping where charge can travel. We'll open it up in <a href="#inside">Inside the silicon</a>.</p>
+      </div>
+      <div class="analogy" aria-label="Mapping the water-valve analogy to a transistor">
+        <p class="eyebrow" style="color:var(--gate)">The valve, mapped</p>
+        <div class="map">
+          <div class="pair"><span class="a">the valve handle</span><span class="eq">→</span><span class="b">Gate</span></div>
+          <div class="pair"><span class="a">water source</span><span class="eq">→</span><span class="b">Source</span></div>
+          <div class="pair"><span class="a">where it drains to</span><span class="eq">→</span><span class="b">Drain</span></div>
+          <div class="pair"><span class="a">how far you turn it</span><span class="eq">→</span><span class="b">Gate voltage</span></div>
+          <div class="pair"><span class="a">water flow rate</span><span class="eq">→</span><span class="b">Current</span></div>
+        </div>
+        <p class="cap">three terminals: gate · source · drain</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALVE DEMO -->
+<section id="valve" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">01 — Play with it</p>
+      <h2>Turn the gate, watch the current</h2>
+      <p>Here's a single transistor. Drag the <strong style="color:var(--gate)">gate voltage</strong> up and down. Below a certain threshold, the channel stays shut and nothing flows. Push past it and current rushes from source to drain — and rises steeply the harder you push.</p>
+    </div>
+    <div class="demo reveal">
+      <div class="demo-head"><span class="tag">Interactive</span><h3>The transistor as a valve</h3></div>
+      <div class="demo-body">
+        <div class="valve">
+          <svg id="valveSvg" viewBox="0 0 440 240" role="img" aria-label="Transistor schematic: gate above a channel between source and drain, with electrons flowing when the gate voltage is high enough">
+            <!-- channel substrate -->
+            <rect x="40" y="150" width="360" height="36" rx="6" fill="#0d2530" stroke="#1d4350" stroke-width="1.5"/>
+            <!-- source pad -->
+            <rect x="40" y="120" width="70" height="66" rx="6" fill="#13314a" stroke="var(--ntype)" stroke-width="1.5"/>
+            <!-- drain pad -->
+            <rect x="330" y="120" width="70" height="66" rx="6" fill="#13314a" stroke="var(--ntype)" stroke-width="1.5"/>
+            <text x="75" y="205" text-anchor="middle" class="term-cap">SOURCE</text>
+            <text x="365" y="205" text-anchor="middle" class="term-cap">DRAIN</text>
+            <!-- gate stack -->
+            <rect x="120" y="96" width="200" height="14" rx="3" id="gateOxide" fill="#23303f" stroke="#33445a" stroke-width="1"/>
+            <rect x="120" y="74" width="200" height="20" rx="4" id="gateMetal" fill="var(--gate-dim)" stroke="var(--gate)" stroke-width="1.5"/>
+            <text x="290" y="68" text-anchor="middle" class="term-cap" style="fill:var(--gate)">GATE</text>
+            <!-- gate lead -->
+            <line x1="180" y1="74" x2="180" y2="40" stroke="var(--gate)" stroke-width="2"/>
+            <circle cx="180" cy="40" r="4" id="gateNode" fill="var(--gate-dim)" stroke="var(--gate)" stroke-width="1.5"/>
+            <!-- channel highlight when open -->
+            <rect x="120" y="150" width="200" height="10" rx="3" id="channel" fill="var(--current)" opacity="0"/>
+            <!-- electrons group -->
+            <g id="electrons"></g>
+            <!-- field lines when on -->
+            <g id="field" opacity="0">
+              <line x1="150" y1="110" x2="150" y2="150" stroke="var(--gate)" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>
+              <line x1="220" y1="110" x2="220" y2="150" stroke="var(--gate)" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>
+              <line x1="290" y1="110" x2="290" y2="150" stroke="var(--gate)" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>
+            </g>
+          </svg>
+          <div class="controls">
+            <div class="lab"><span>Gate voltage (V<sub>G</sub>)</span><b id="vgVal">0.0 V</b></div>
+            <input type="range" id="vg" min="0" max="5" step="0.1" value="0" aria-label="Gate voltage">
+            <div class="gauge">
+              <div class="lab"><span>Current, source → drain</span><b id="iVal">0.00 mA</b></div>
+              <div class="bar"><div class="fill" id="iFill"></div></div>
+            </div>
+            <div class="state closed" id="valveState">Channel closed — gate voltage is below the threshold (~2 V), so no current flows. The transistor is <strong>OFF</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TWO JOBS -->
+<section id="jobs">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">02 — Two behaviours</p>
+      <h2>One device, two jobs</h2>
+      <p>That single valve behaviour gets used in two very different ways. Almost all of modern electronics is one of these — or both at once.</p>
+    </div>
+    <div class="jobs reveal">
+      <div class="job sw">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="8" rx="4"/><circle cx="16" cy="12" r="2.4" fill="currentColor" stroke="none"/></svg></div>
+        <h3>As a switch</h3>
+        <p class="role">digital · the logic of computers</p>
+        <p>Drive the gate hard — all the way off or all the way on. Off means "no current" (a <strong style="color:var(--ink)">0</strong>); on means "current flows" (a <strong style="color:var(--ink)">1</strong>). Wire millions of these switches together and you can compute anything. This is how every processor works.</p>
+      </div>
+      <div class="job amp">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18 L9 18 L13 6 L17 14"/><path d="M3 12h3"/></svg></div>
+        <h3>As an amplifier</h3>
+        <p class="role">analog · the heart of signals</p>
+        <p>Sit the gate in the middle of its range, where a <em>small</em> wiggle in voltage produces a <em>large</em> swing in current. A faint signal from a microphone or antenna becomes a strong one — without adding information, just power. This drives speakers, radios, and sensors.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGIC DEMO -->
+<section id="logic" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">03 — Build with it</p>
+      <h2>From switches to logic gates</h2>
+      <p>Here's where computing is born. Wire two transistor-switches <strong>in series</strong> and current only gets through when <em>both</em> are on — that's an <strong style="color:var(--current)">AND</strong>. Wire them <strong>in parallel</strong> and <em>either</em> one will do — an <strong style="color:var(--current)">OR</strong>. Flip the inputs and watch the output light up.</p>
+    </div>
+    <div class="demo reveal">
+      <div class="demo-head"><span class="tag">Interactive</span><h3>Two switches make a logic gate</h3></div>
+      <div class="demo-body">
+        <div class="logic">
+          <svg id="logicSvg" viewBox="0 0 440 240" role="img" aria-label="Two transistor switches wiring a logic gate to an output lamp"></svg>
+          <div>
+            <div class="gate-tabs" role="group" aria-label="Choose gate type">
+              <button id="tabAnd" aria-pressed="true">AND · in series</button>
+              <button id="tabOr" aria-pressed="false">OR · in parallel</button>
+            </div>
+            <div class="toggles">
+              <div class="toggle"><div class="tname">Input A</div><button id="inA" data-on="false" aria-pressed="false">0</button></div>
+              <div class="toggle"><div class="tname">Input B</div><button id="inB" data-on="false" aria-pressed="false">0</button></div>
+            </div>
+            <div class="outlamp"><span class="bulb" id="bulb"></span><span>Output: <b id="outVal" style="color:var(--ink);font-family:var(--display)">0</b></span></div>
+            <table class="truth">
+              <thead><tr><th>A</th><th>B</th><th id="thOut">A AND B</th></tr></thead>
+              <tbody id="truthBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIDE SILICON -->
+<section id="inside">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">04 — Go deeper</p>
+      <h2>Inside the silicon</h2>
+      <p>So far, the valve. But why does a slab of silicon behave like one? The answer is the most-used transistor on Earth — the <strong>MOSFET</strong> — and a trick called the field effect. Open each layer when you're ready.</p>
+    </div>
+    <div class="layers reveal">
+      <details class="layer">
+        <summary><span class="n">1</span>Semiconductors: the "sometimes" material<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="inner">
+          <p>Metals always conduct; glass never does. <strong>Silicon</strong> sits in between — a semiconductor. On its own it barely conducts, but its conductivity can be precisely tuned. That tunability is what makes it useful: it can be coaxed between "blocking" and "conducting" on command.</p>
+        </div>
+      </details>
+      <details class="layer">
+        <summary><span class="n">2</span>Doping: making N-type and P-type<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="inner">
+          <p>Add a trace of certain impurities — "doping" — and you change what carries charge. Dope it one way and you get <span class="chip n">N-type</span>, rich in free, negative <strong>electrons</strong>. Dope it the other way and you get <span class="chip p">P-type</span>, full of positive "holes" (missing electrons that act like positive charges).</p>
+          <p>A transistor is built by placing these regions next to each other in a careful pattern. The boundaries between them are where the magic happens.</p>
+        </div>
+      </details>
+      <details class="layer">
+        <summary><span class="n">3</span>The field effect: how the gate opens a channel<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="inner">
+          <p>In a MOSFET, the <strong style="color:var(--gate)">gate</strong> is a metal plate sitting on a wafer-thin layer of insulating glass (oxide), just above the silicon. It doesn't touch the current path at all.</p>
+          <p>Put a positive voltage on the gate and its electric field reaches <em>through</em> the insulator and pulls negative electrons up toward the surface. Enough of them gather to form a thin conducting bridge — the <strong style="color:var(--current)">channel</strong> — connecting source and drain. Now current can flow. Remove the voltage and the channel vanishes. No voltage, no channel, no current. That's the field effect — the "F" in MOSFET.</p>
+          <p>The threshold you felt in the first demo is exactly this: the gate voltage needed before enough electrons gather to form the channel.</p>
+        </div>
+      </details>
+      <details class="layer">
+        <summary><span class="n">4</span>Why MOSFETs took over (CMOS)<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="inner">
+          <p>Because the gate is insulated, holding a MOSFET on or off costs almost no power — current only flows during the instant of switching. Pairing two complementary types (the <strong>CMOS</strong> design) means a logic gate draws power mainly when it changes state, not while it sits still. That efficiency is why billions can share one chip without melting it.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="mosfet reveal">
+      <p class="eyebrow" style="color:var(--ink-soft)">Anatomy of a MOSFET</p>
+      <svg viewBox="0 0 460 210" role="img" aria-label="Cross-section of a MOSFET showing the P-type body, N-type source and drain, the insulating oxide, the gate on top, and the channel that forms beneath the gate">
+        <!-- body -->
+        <rect x="30" y="90" width="400" height="90" rx="6" fill="rgba(249,115,22,.12)" stroke="var(--ptype)" stroke-width="1.5"/>
+        <text x="230" y="160" text-anchor="middle" class="term-cap" style="fill:var(--ptype)">P-TYPE BODY (substrate)</text>
+        <!-- source -->
+        <rect x="60" y="90" width="80" height="46" rx="4" fill="rgba(59,130,246,.18)" stroke="var(--ntype)" stroke-width="1.5"/>
+        <text x="100" y="117" text-anchor="middle" class="term-cap" style="fill:var(--ntype)">N source</text>
+        <!-- drain -->
+        <rect x="320" y="90" width="80" height="46" rx="4" fill="rgba(59,130,246,.18)" stroke="var(--ntype)" stroke-width="1.5"/>
+        <text x="360" y="117" text-anchor="middle" class="term-cap" style="fill:var(--ntype)">N drain</text>
+        <!-- channel -->
+        <rect x="140" y="90" width="180" height="7" fill="var(--current)" opacity=".85"/>
+        <text x="230" y="105" text-anchor="middle" class="term-cap" style="fill:var(--current)">channel forms here</text>
+        <!-- oxide -->
+        <rect x="140" y="76" width="180" height="10" fill="rgba(120,140,160,.4)" stroke="#5a6f86" stroke-width="1"/>
+        <!-- gate -->
+        <rect x="150" y="44" width="160" height="18" rx="3" fill="var(--gate-dim)" stroke="var(--gate)" stroke-width="1.5"/>
+        <!-- leads -->
+        <line x1="100" y1="90" x2="100" y2="28" stroke="var(--ntype)" stroke-width="2"/><text x="100" y="22" text-anchor="middle" class="term-cap" style="fill:var(--ntype)">S</text>
+        <line x1="360" y1="90" x2="360" y2="28" stroke="var(--ntype)" stroke-width="2"/><text x="360" y="22" text-anchor="middle" class="term-cap" style="fill:var(--ntype)">D</text>
+        <line x1="230" y1="44" x2="230" y2="28" stroke="var(--gate)" stroke-width="2"/><text x="230" y="22" text-anchor="middle" class="term-cap" style="fill:var(--gate)">G</text>
+      </svg>
+      <div class="legend">
+        <span><i style="background:var(--gate)"></i>Gate (control)</span>
+        <span><i style="background:rgba(120,140,160,.6)"></i>Oxide (insulator)</span>
+        <span><i style="background:var(--ntype)"></i>N-type (source / drain)</span>
+        <span><i style="background:var(--ptype)"></i>P-type (body)</span>
+        <span><i style="background:var(--current)"></i>Channel (when on)</span>
+      </div>
+    </div>
+
+    <div class="misc reveal">
+      <p class="t">Common misconception</p>
+      <p><span class="x">"A transistor is a tiny mechanical switch that physically flips."</span> Nothing moves. There are no levers, gates that swing, or parts that wear out from flipping. Switching is purely an electric field appearing and disappearing — which is exactly why it can happen billions of times per second and survive for decades.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SCALE -->
+<section id="scale" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">05 — Why it changed everything</p>
+      <h2>Small, cheap, and almost unimaginably many</h2>
+      <p>A transistor is useful. <em>Billions</em> of them, each a few atoms wide and switching billions of times a second, are civilization-altering. The entire digital world rides on making them smaller and packing in more.</p>
+    </div>
+    <div class="scale-band reveal">
+      <div class="stat"><div class="big">~95B</div><div class="lab">transistors on a single Apple M4 Max chip</div><div class="sub">2024 · TSMC 3 nm process</div></div>
+      <div class="stat"><div class="big">3 nm</div><div class="lab">scale of the smallest features in leading chips</div><div class="sub">~30 silicon atoms across</div></div>
+      <div class="stat"><div class="big">~$0</div><div class="lab">cost of one transistor today, effectively</div><div class="sub">from ~$1+ each in the 1950s</div></div>
+    </div>
+    <div class="scalebar reveal">
+      <h4>From a hand-held lab device to invisible</h4>
+      <div class="scaleline">
+        <div class="scalept" style="left:8%"><div class="dot"></div><div class="yr">1947</div><div class="dsc">First transistor — fits in a palm</div></div>
+        <div class="scalept" style="left:40%"><div class="dot"></div><div class="yr">1971</div><div class="dsc">First microprocessor — ~2,300 transistors</div></div>
+        <div class="scalept" style="left:72%"><div class="dot"></div><div class="yr">2024</div><div class="dsc">Tens of billions on a fingernail-sized chip</div></div>
+      </div>
+      <p style="font-size:.82rem;color:var(--ink-faint);font-family:var(--mono);margin-top:var(--s5)">The roughly steady doubling of transistors per chip is known as Moore's Law — an observation, not a physical law, and one now slowing as features approach atomic limits.</p>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">06 — Test yourself</p>
+      <h2>Did it click?</h2>
+      <p>Five quick questions, instant feedback, and the <em>why</em> behind each. No score pressure — retry as much as you like.</p>
+    </div>
+    <div class="quiz reveal" id="quizBox"></div>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section id="sources">
+  <div class="wrap measure">
+    <p class="num">Sources & notes</p>
+    <h2 style="font-size:1.5rem;margin:var(--s3) 0 var(--s5)">Where the facts come from</h2>
+    <ul class="src">
+      <li>· Transistor invention (Bardeen, Brattain, Shockley, Bell Labs, 1947) and MOSFET / field-effect operation — standard semiconductor physics.</li>
+      <li>· <a href="https://en.wikipedia.org/wiki/Apple_M4" target="_blank" rel="noopener">Apple M4 (Wikipedia)</a> — transistor counts (~28B base, ~95B M4 Max) and TSMC 3 nm (N3E) process.</li>
+      <li>· <a href="https://en.wikipedia.org/wiki/Transistor_count" target="_blank" rel="noopener">Transistor count (Wikipedia)</a> and <a href="https://en.wikipedia.org/wiki/Moore%27s_law" target="_blank" rel="noopener">Moore's Law (Wikipedia)</a> — historical scaling, Intel 4004 (~2,300 transistors, 1971).</li>
+    </ul>
+    <div class="disclaimer">
+      The interactive demos are <strong>simplified for teaching</strong>. The current curve, threshold, and electron animation illustrate the qualitative behaviour of an n-channel MOSFET — they're not a circuit simulation, and exact values depend on the specific device. The physics of the field effect, doping, and the switch/amplifier roles is accurate.
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap measure">
+    An interactive primer on how transistors work — the water-valve that built the digital age. Built June 2026. Use the “Ask” button to quiz the page about anything here.
+  </div>
+</footer>
+
+<script>
+/* ---------- VALVE DEMO ---------- */
+(function(){
+  var vg=document.getElementById('vg'),vgVal=document.getElementById('vgVal'),
+      iVal=document.getElementById('iVal'),iFill=document.getElementById('iFill'),
+      channel=document.getElementById('channel'),field=document.getElementById('field'),
+      gateMetal=document.getElementById('gateMetal'),gateNode=document.getElementById('gateNode'),
+      state=document.getElementById('valveState'),eg=document.getElementById('electrons');
+  var VTH=2.0, KMAX=18; // mA at 5V
+  // build electrons
+  var N=9, xs=[];
+  for(var i=0;i<N;i++){var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('r','3.4');c.setAttribute('class','electron');c.setAttribute('cy','155');
+    c.setAttribute('opacity','0');eg.appendChild(c);xs.push(45+i*(310/N));}
+  var current=0;
+  function model(v){ return v<=VTH?0:KMAX*Math.pow((v-VTH)/(5-VTH),2); }
+  function update(){
+    var v=parseFloat(vg.value); current=model(v);
+    vgVal.textContent=v.toFixed(1)+' V';
+    iVal.textContent=current.toFixed(2)+' mA';
+    iFill.style.width=(current/KMAX*100)+'%';
+    var on=current>0.001;
+    channel.setAttribute('opacity', on? (0.25+0.6*current/KMAX).toFixed(2):'0');
+    field.setAttribute('opacity', on?'1':'0');
+    // gate glow intensity
+    var glow=Math.min(1,v/5);
+    gateMetal.setAttribute('fill', v>0.1? 'rgba(245,158,11,'+(0.15+0.5*glow)+')':'var(--gate-dim)');
+    gateNode.setAttribute('fill', v>0.1? 'var(--gate)':'var(--gate-dim)');
+    if(on){state.className='state open';
+      state.innerHTML='Channel <strong>open</strong>. The gate field has pulled a conducting bridge into place, and '+current.toFixed(2)+' mA flows source → drain. The transistor is <strong>ON</strong>.';}
+    else{state.className='state closed';
+      state.innerHTML='Channel closed — gate voltage is below the threshold (~2 V), so no current flows. The transistor is <strong>OFF</strong>.';}
+  }
+  vg.addEventListener('input',update);
+  // animate electrons
+  var last=performance.now();
+  function tick(now){
+    var dt=Math.min(50,now-last); last=now;
+    var speed=current/KMAX; // 0..1
+    for(var i=0;i<N;i++){
+      var c=eg.children[i];
+      if(speed<=0.001){c.setAttribute('opacity','0');continue;}
+      c.setAttribute('opacity','0.95');
+      xs[i]+=(0.04+speed*0.34)*dt;
+      if(xs[i]>355) xs[i]=45;
+      c.setAttribute('cx',xs[i].toFixed(1));
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  update();
+})();
+
+/* ---------- LOGIC DEMO ---------- */
+(function(){
+  var svg=document.getElementById('logicSvg'),
+      inA=document.getElementById('inA'),inB=document.getElementById('inB'),
+      tabAnd=document.getElementById('tabAnd'),tabOr=document.getElementById('tabOr'),
+      bulb=document.getElementById('bulb'),outVal=document.getElementById('outVal'),
+      thOut=document.getElementById('thOut'),truthBody=document.getElementById('truthBody');
+  var SVGNS='http://www.w3.org/2000/svg';
+  var mode='and', a=false, b=false;
+
+  function rect(x,y,w,h,fill,stroke){var e=document.createElementNS(SVGNS,'rect');e.setAttribute('x',x);e.setAttribute('y',y);e.setAttribute('width',w);e.setAttribute('height',h);e.setAttribute('rx',5);e.setAttribute('fill',fill);if(stroke){e.setAttribute('stroke',stroke);e.setAttribute('stroke-width',1.5);}return e;}
+  function line(x1,y1,x2,y2,stroke,w){var e=document.createElementNS(SVGNS,'line');e.setAttribute('x1',x1);e.setAttribute('y1',y1);e.setAttribute('x2',x2);e.setAttribute('y2',y2);e.setAttribute('stroke',stroke);e.setAttribute('stroke-width',w||3);return e;}
+  function txt(x,y,s,cls,fill){var e=document.createElementNS(SVGNS,'text');e.setAttribute('x',x);e.setAttribute('y',y);e.setAttribute('text-anchor','middle');e.setAttribute('class',cls||'term-cap');if(fill)e.setAttribute('fill',fill);e.textContent=s;return e;}
+  function sw(x,y,on,label){ // a transistor-switch glyph
+    var g=document.createElementNS(SVGNS,'g');
+    g.appendChild(rect(x-22,y-16,44,32, on?'rgba(52,211,153,.16)':'rgba(71,85,105,.16)', on?'#34D399':'#475569'));
+    // contact gap
+    g.appendChild(line(x-22,y, x-6,y, on?'#34D399':'#475569',3));
+    g.appendChild(line(x+6,y, x+22,y, on?'#34D399':'#475569',3));
+    if(on){ g.appendChild(line(x-6,y, x+6,y, '#34D399',3)); }
+    else { var d=line(x-5,y-4, x+6,y-9, '#475569',3); g.appendChild(d); }
+    g.appendChild(txt(x,y+28,label,'term-cap', on?'#34D399':'#6B7C90'));
+    return g;
+  }
+  function draw(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    var out=compute(a,b);
+    var live=out; // power rail color when current path complete
+    var railOn= '#22D3EE', railOff='#2E3C50';
+    // power source left, lamp right
+    svg.appendChild(txt(34,128,'+V','term-cap','#A7B6C8'));
+    svg.appendChild(line(30,140,70,140, out?railOn:railOff,3));
+    if(mode==='and'){
+      // series: +V -> swA -> swB -> lamp
+      svg.appendChild(line(70,140,98,140, a?railOn:railOff,3));
+      svg.appendChild(sw(120,140,a,'A'));
+      svg.appendChild(line(142,140,198,140, (a)?railOn:railOff,3));
+      svg.appendChild(sw(220,140,b,'B'));
+      svg.appendChild(line(242,140,300,140, (a&&b)?railOn:railOff,3));
+    } else {
+      // parallel: +V splits to A and B, recombine to lamp
+      svg.appendChild(line(70,140,90,140, out?railOn:railOff,3));
+      svg.appendChild(line(90,90,90,190, out?railOn:railOff,3));
+      // branch A (top)
+      svg.appendChild(line(90,95,98,95, a?railOn:railOff,3));
+      svg.appendChild(sw(120,95,a,'A'));
+      svg.appendChild(line(142,95,300,95, a?railOn:railOff,3));
+      // branch B (bottom)
+      svg.appendChild(line(90,185,98,185, b?railOn:railOff,3));
+      svg.appendChild(sw(120,185,b,'B'));
+      svg.appendChild(line(142,185,300,185, b?railOn:railOff,3));
+      // recombine
+      svg.appendChild(line(300,95,300,185, out?railOn:railOff,3));
+    }
+    // wire to lamp
+    svg.appendChild(line(300,140,360,140, out?railOn:railOff,3));
+    // lamp
+    var lc=document.createElementNS(SVGNS,'circle');
+    lc.setAttribute('cx',390);lc.setAttribute('cy',140);lc.setAttribute('r',22);
+    lc.setAttribute('fill', out?'rgba(52,211,153,.25)':'rgba(71,85,105,.12)');
+    lc.setAttribute('stroke', out?'#34D399':'#2E3C50');lc.setAttribute('stroke-width',2);
+    if(out)lc.setAttribute('filter','drop-shadow(0 0 10px #34D399)');
+    svg.appendChild(lc);
+    svg.appendChild(txt(390,145,out?'ON':'off','term-cap', out?'#34D399':'#6B7C90'));
+    svg.appendChild(txt(390,180,'OUTPUT','term-cap','#6B7C90'));
+  }
+  function compute(x,y){ return mode==='and'? (x&&y) : (x||y); }
+  function refresh(){
+    inA.dataset.on=a; inA.textContent=a?'1':'0'; inA.setAttribute('aria-pressed',a);
+    inB.dataset.on=b; inB.textContent=b?'1':'0'; inB.setAttribute('aria-pressed',b);
+    var out=compute(a,b);
+    bulb.className='bulb'+(out?' lit':''); outVal.textContent=out?'1':'0';
+    outVal.style.color=out?'#34D399':'var(--ink-faint)';
+    thOut.textContent= mode==='and'?'A AND B':'A OR B';
+    // truth table
+    var rows=[[0,0],[0,1],[1,0],[1,1]];
+    truthBody.innerHTML='';
+    rows.forEach(function(r){
+      var o= mode==='and'? (r[0]&&r[1]):(r[0]||r[1]);
+      var hot=(r[0]===(a?1:0))&&(r[1]===(b?1:0));
+      var tr=document.createElement('tr'); if(hot)tr.className='hot';
+      tr.innerHTML='<td>'+r[0]+'</td><td>'+r[1]+'</td><td class="'+(o?'out1':'out0')+'">'+(o?1:0)+'</td>';
+      truthBody.appendChild(tr);
+    });
+    draw();
+  }
+  inA.onclick=function(){a=!a;refresh();};
+  inB.onclick=function(){b=!b;refresh();};
+  tabAnd.onclick=function(){mode='and';tabAnd.setAttribute('aria-pressed','true');tabOr.setAttribute('aria-pressed','false');refresh();};
+  tabOr.onclick=function(){mode='or';tabOr.setAttribute('aria-pressed','true');tabAnd.setAttribute('aria-pressed','false');refresh();};
+  refresh();
+})();
+
+/* ---------- QUIZ ---------- */
+(function(){
+  var quiz=[
+    {q:'In the valve analogy, what does the gate voltage control?',
+     opts:['The colour of the current','How much current flows between source and drain','The number of terminals','The size of the transistor'],
+     a:1,why:'The gate is the valve handle: its voltage sets how open the channel is, and therefore how much current flows source → drain.'},
+    {q:'Why does no current flow until the gate passes a threshold?',
+     opts:['The transistor is broken below it','Enough electrons must gather to form a conducting channel first','Electrons freeze at low voltage','The source runs out of charge'],
+     a:1,why:'Below the threshold, the gate field is too weak to pull a conducting channel into place — so source and drain stay disconnected.'},
+    {q:'Used as a digital switch, what do "off" and "on" represent?',
+     opts:['Plus and minus','Hot and cold','The bits 0 and 1','Analog and digital'],
+     a:2,why:'Off = no current = 0; on = current flows = 1. Millions of these binary switches are what let a processor compute.'},
+    {q:'Two switches wired in series (both must be on to pass current) make which gate?',
+     opts:['OR','AND','NOT','A capacitor'],
+     a:1,why:'Series means current needs BOTH closed — output is 1 only when A and B are both 1. That is an AND gate. (Parallel would be OR.)'},
+    {q:'What actually "moves" when a MOSFET switches on?',
+     opts:['A tiny mechanical lever','Nothing — an electric field forms a channel','The gate slides over','The silicon melts slightly'],
+     a:1,why:'No physical part moves. The gate’s electric field reaches through the insulator and forms a conducting channel — which is why it can switch billions of times a second.'}
+  ];
+  var quizEl=document.getElementById('quizBox'); var answered=0,correct=0;
+  function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
+  quiz.forEach(function(q,qi){
+    var block=el('div','q');
+    block.innerHTML='<div class="qq"><span class="qn">'+(qi+1)+'.</span><span>'+q.q+'</span></div>';
+    var opts=el('div','opts');
+    q.opts.forEach(function(o,oi){
+      var bt=el('button',null,o);
+      bt.onclick=function(){
+        if(block.dataset.done)return;block.dataset.done='1';answered++;
+        opts.querySelectorAll('button').forEach(function(x,xi){x.disabled=true;if(xi===q.a)x.classList.add('correct');});
+        if(oi===q.a)correct++;else bt.classList.add('wrong');
+        exp.classList.add('show');
+        if(answered===quiz.length){scoreEl.classList.add('show');
+          scoreEl.textContent='You got '+correct+' of '+quiz.length+' right. '+(correct===quiz.length?'Flawless — you understand the valve, the switch, and the field effect.':(correct>=3?'Solid grasp of how the valve becomes logic.':'Worth another pass — the valve model up top is the key.'));}
+      };
+      opts.appendChild(bt);
+    });
+    var exp=el('div','exp','<strong>Why:</strong> '+q.why);
+    block.appendChild(opts);block.appendChild(exp);quizEl.appendChild(block);
+  });
+  var scoreEl=el('div','score');quizEl.appendChild(scoreEl);
+})();
+
+/* ---------- REVEAL ---------- */
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(function(e){io.observe(e);});
+  setTimeout(function(){document.querySelectorAll('.reveal').forEach(function(e){e.classList.add('in');});},2500);
+})();
+</script>
+
+<!-- ASK-THE-PAGE CHAT (BYOK, Anthropic) -->
+<script>
+window.CHAT_DOCK={
+  provider:"anthropic",
+  title:"Ask about transistors",
+  placeholder:"e.g. What is the threshold voltage?",
+  suggestions:["Explain the field effect simply","What's the difference between a switch and an amplifier?","Why did MOSFETs win over earlier transistors?","What is doping?"]
+};
+</script>
+<script>
+/* chat-dock.js — drop-in BYOK "Ask the page" chat. Key held in memory only, sent straight to the provider, never stored. */
+(function () {
+  "use strict";
+  var cfg = (window.CHAT_DOCK || {});
+  if (cfg.enabled === false) return;
+  if (!document.body) return;
+  var PROVIDER = (cfg.provider || "anthropic").toLowerCase();
+  var MODEL = cfg.model || (PROVIDER === "openai" ? "gpt-5.4" : "claude-sonnet-4-6");
+  var TITLE = cfg.title || "Ask the page";
+  var PLACEHOLDER = cfg.placeholder || "Ask a question…";
+  var SUGGEST = cfg.suggestions || [];
+  var ACCENT = cfg.accent || "var(--accent,#3b82f6)";
+  var KEY_HINT = PROVIDER === "openai" ? "sk-… (your OpenAI API key)" : "sk-ant-… (your Anthropic API key)";
+  var KEY_LINK = PROVIDER === "openai" ? "https://platform.openai.com/api-keys" : "https://console.anthropic.com/settings/keys";
+  var PROVIDER_NAME = PROVIDER === "openai" ? "OpenAI" : "Anthropic";
+  var GROUND = cfg.grounding || (function () {
+    var main = document.querySelector("main") || document.body;
+    var t = (main.innerText || "").replace(/\s+\n/g, "\n").trim();
+    return t.slice(0, cfg.groundChars || 9000);
+  })();
+  var css = [
+    "#cd-fab{position:fixed;bottom:20px;right:20px;z-index:71;background:" + ACCENT + ";color:#06121a;border:none;border-radius:100px;padding:13px 18px;font-family:var(--sans,system-ui,sans-serif);font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.45)}",
+    "#cd-fab:hover{filter:brightness(1.06)}#cd-fab svg{display:block}#cd-fab[hidden]{display:none}",
+    "#cd-panel{position:fixed;bottom:20px;right:20px;z-index:72;width:384px;max-width:calc(100vw - 32px);height:560px;max-height:calc(100vh - 40px);background:var(--card,#fff);color:var(--ink,#181818);border:1px solid var(--line-strong,#cfcfcf);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;font-family:var(--sans,system-ui,sans-serif)}",
+    "#cd-panel[hidden]{display:none}",
+    ".cd-head{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line,#e3e3e3);background:var(--panel-2,var(--paper-2,rgba(127,127,127,.06)))}",
+    ".cd-head .dot{width:9px;height:9px;border-radius:50%;background:" + ACCENT + ";flex-shrink:0;box-shadow:0 0 8px " + ACCENT + "}",
+    ".cd-head h3{font-size:14px;margin:0;font-family:var(--display,inherit);line-height:1.1;color:var(--ink,#181818)}",
+    ".cd-head .sub{font-size:10.5px;color:var(--ink-faint,#8a8a8a);font-family:var(--mono,monospace)}",
+    ".cd-head .x{margin-left:auto;background:none;border:none;color:var(--ink-soft,#666);font-size:22px;cursor:pointer;line-height:1;padding:0 4px}.cd-head .x:hover{color:var(--ink,#000)}",
+    ".cd-key{padding:11px 14px;border-bottom:1px solid var(--line,#e3e3e3);background:var(--panel,var(--paper,rgba(127,127,127,.03)))}.cd-key[hidden]{display:none}",
+    ".cd-key input{width:100%;font-family:var(--mono,monospace);font-size:12.5px;background:var(--bg,var(--paper,#fff));border:1px solid var(--line-strong,#cfcfcf);color:var(--ink,#181818);border-radius:9px;padding:8px 11px;box-sizing:border-box}",
+    ".cd-key .note{font-size:11px;color:var(--ink-faint,#8a8a8a);margin-top:6px;line-height:1.4}.cd-key .note b{color:" + ACCENT + "}.cd-key .note a{color:" + ACCENT + "}",
+    ".cd-log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}",
+    ".cd-msg{max-width:88%;padding:10px 13px;border-radius:12px;font-size:14px;line-height:1.5;white-space:pre-wrap}",
+    ".cd-msg.u{align-self:flex-end;background:var(--accent-soft,rgba(127,127,127,.14));color:var(--ink,#181818)}",
+    ".cd-msg.a{align-self:flex-start;background:var(--panel-2,var(--paper-2,rgba(127,127,127,.09)));border:1px solid var(--line,#e3e3e3)}",
+    ".cd-msg.sys{align-self:center;font-size:11.5px;color:var(--ink-faint,#8a8a8a);font-family:var(--mono,monospace);text-align:center;max-width:100%}",
+    ".cd-msg.a strong{font-weight:700;color:var(--ink,#111)}.cd-msg.a code{font-family:var(--mono,monospace);font-size:.9em;background:var(--bg,rgba(127,127,127,.14));padding:1px 5px;border-radius:5px}",
+    ".cd-msg.a p{margin:0 0 8px}.cd-msg.a p:last-child{margin:0}.cd-msg.a ul,.cd-msg.a ol{margin:6px 0;padding-left:20px}.cd-msg.a li{margin:3px 0}",
+    ".cd-dots{display:inline-flex;gap:4px;padding:3px 0}.cd-dots span{width:6px;height:6px;border-radius:50%;background:var(--ink-faint,#8a8a8a);animation:cdb 1s infinite}",
+    ".cd-dots span:nth-child(2){animation-delay:.15s}.cd-dots span:nth-child(3){animation-delay:.3s}",
+    "@keyframes cdb{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}",
+    ".cd-suggest{display:flex;flex-direction:column;gap:6px;padding:0 14px 10px}.cd-suggest[hidden]{display:none}",
+    ".cd-suggest button{font-family:var(--sans,system-ui,sans-serif);font-size:12.5px;text-align:left;color:var(--ink-soft,#555);background:var(--bg,var(--paper,rgba(127,127,127,.04)));border:1px solid var(--line,#e3e3e3);border-radius:8px;padding:8px 11px;cursor:pointer}",
+    ".cd-suggest button:hover{border-color:" + ACCENT + ";color:" + ACCENT + "}",
+    ".cd-in{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line,#e3e3e3);background:var(--panel-2,var(--paper-2,rgba(127,127,127,.06)))}",
+    ".cd-in input{flex:1;min-width:0;font-family:var(--sans,system-ui,sans-serif);font-size:14px;background:var(--bg,var(--paper,#fff));border:1px solid var(--line-strong,#cfcfcf);color:var(--ink,#181818);border-radius:9px;padding:10px 12px}",
+    ".cd-in button{background:" + ACCENT + ";color:#06121a;border:none;border-radius:9px;padding:10px 15px;font-family:var(--sans,system-ui,sans-serif);font-weight:700;font-size:14px;cursor:pointer}",
+    "@media(max-width:520px){#cd-panel{bottom:0;right:0;width:100vw;height:82vh;max-height:none;border-radius:16px 16px 0 0}}"
+  ].join("\n");
+  var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+  var fab = document.createElement("button");
+  fab.id = "cd-fab"; fab.type = "button"; fab.setAttribute("aria-label", TITLE);
+  fab.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.6-.8L3 21l1.8-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg><span>Ask</span>';
+  var panel = document.createElement("div");
+  panel.id = "cd-panel"; panel.hidden = true; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", TITLE);
+  var sugHtml = SUGGEST.map(function (s) { return '<button type="button">' + esc(s) + "</button>"; }).join("");
+  panel.innerHTML =
+    '<div class="cd-head"><span class="dot"></span><div><h3>' + esc(TITLE) + '</h3><div class="sub">grounded · ' + esc(PROVIDER_NAME) + ' · your key</div></div><button class="x" id="cd-x" aria-label="Close">×</button></div>' +
+    '<div class="cd-key" id="cd-key"><input id="cd-apikey" type="password" autocomplete="off" placeholder="' + esc(KEY_HINT) + '"><div class="note">Held <b>in memory only</b>, sent straight to ' + esc(PROVIDER_NAME) + ', never stored. <a href="' + KEY_LINK + '" target="_blank" rel="noopener">Get a key</a></div></div>' +
+    '<div class="cd-log" id="cd-log"><div class="cd-msg sys">Ask a question about this page.</div></div>' +
+    (sugHtml ? '<div class="cd-suggest" id="cd-suggest">' + sugHtml + "</div>" : "") +
+    '<div class="cd-in"><input id="cd-input" autocomplete="off" placeholder="' + esc(PLACEHOLDER) + '"><button id="cd-send" type="button">Send</button></div>';
+  document.body.appendChild(fab); document.body.appendChild(panel);
+  var keyEl = panel.querySelector("#cd-apikey"), keyRow = panel.querySelector("#cd-key"),
+      inEl = panel.querySelector("#cd-input"), sendEl = panel.querySelector("#cd-send"),
+      log = panel.querySelector("#cd-log"), sug = panel.querySelector("#cd-suggest");
+  function open(){ panel.hidden = false; fab.hidden = true; (keyEl.value ? inEl : keyEl).focus(); }
+  function close(){ panel.hidden = true; fab.hidden = false; }
+  fab.onclick = open;
+  panel.querySelector("#cd-x").onclick = close;
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape" && !panel.hidden) close(); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-chat-open]"), function(el){ el.addEventListener("click", function(e){ e.preventDefault(); open(); }); });
+  var history = [], busy = false;
+  function add(role, text){ var d=document.createElement("div"); d.className="cd-msg "+role; d.textContent=text; log.appendChild(d); log.scrollTop=log.scrollHeight; return d; }
+  function md(s){
+    var lines = esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").split(/\n/);
+    var out=[], i=0, bullet=/^\s*([-•*]|\d+[.)])\s+/;
+    while(i<lines.length){
+      if(bullet.test(lines[i])){
+        var ordered=/^\s*\d+[.)]\s+/.test(lines[i]), tag=ordered?"ol":"ul", items=[];
+        while(i<lines.length && bullet.test(lines[i])){ items.push("<li>"+lines[i].replace(bullet,"")+"</li>"); i++; }
+        out.push("<"+tag+">"+items.join("")+"</"+tag+">");
+      } else if(lines[i].trim()===""){ i++; }
+      else { var para=[]; while(i<lines.length && lines[i].trim()!=="" && !bullet.test(lines[i])){ para.push(lines[i]); i++; } out.push("<p>"+para.join("<br>")+"</p>"); }
+    }
+    return out.join("");
+  }
+  function ask(q){
+    if (busy || !q) return;
+    var key = keyEl.value.trim();
+    if (!key){ add("sys","Paste your " + PROVIDER_NAME + " API key above to start."); keyEl.focus(); return; }
+    if (sug) sug.hidden = true;
+    if (keyRow) keyRow.hidden = true;
+    add("u", q); inEl.value = ""; busy = true;
+    var thinking = add("a", ""); thinking.innerHTML = '<span class="cd-dots"><span></span><span></span><span></span></span>';
+    history.push({ role: "user", content: q });
+    var sys = "You are a friendly assistant embedded in this web page about how transistors work. Answer the user's questions grounded in the page content below. Be concise and clear. If a question goes beyond the page, you may answer briefly from general knowledge but say so. Never invent specifics.\n\n=== PAGE CONTENT ===\n" + GROUND;
+    var req = PROVIDER === "openai" ? {
+      url: "https://api.openai.com/v1/chat/completions",
+      headers: { "content-type":"application/json", "authorization":"Bearer "+key },
+      body: { model: MODEL, max_tokens: 700, messages: [{role:"system",content:sys}].concat(history) },
+      pick: function(d){ return d && d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content; }
+    } : {
+      url: "https://api.anthropic.com/v1/messages",
+      headers: { "content-type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+      body: { model: MODEL, max_tokens: 700, system: sys, messages: history },
+      pick: function(d){ return d && d.content && d.content[0] && d.content[0].text; }
+    };
+    fetch(req.url, { method:"POST", headers:req.headers, body:JSON.stringify(req.body) })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var text = req.pick(data);
+        if (!text){ var em = data && data.error && data.error.message ? data.error.message : "No response — check the key and try again."; thinking.className="cd-msg sys"; thinking.textContent="Error: "+em; busy=false; return; }
+        thinking.innerHTML = md(text); history.push({ role:"assistant", content:text }); busy=false;
+      })
+      .catch(function(err){ thinking.className="cd-msg sys"; thinking.textContent="Request failed: "+err.message+" (some networks block direct API calls)."; busy=false; });
+  }
+  sendEl.onclick = function(){ ask(inEl.value.trim()); };
+  inEl.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); ask(inEl.value.trim()); } });
+  if (sug) Array.prototype.forEach.call(sug.querySelectorAll("button"), function(b){ b.onclick = function(){ ask(b.textContent); }; });
+})();
+</script>
+
+<!-- ============================================================
+     Review \u0026 edit overlay — review-mode.js (inlined for gallery)
+     Activates via ?edit or <body data-review-toggle>.
+     ============================================================ -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:80;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:12px;right:14px;z-index:82;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:79;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:90;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:95;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:96;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>

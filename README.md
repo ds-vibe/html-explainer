@@ -43,6 +43,7 @@ Built with this skill, hosted on GitHub Pages — each is a self-contained `.htm
 | How encryption works | scrolling page + BYOK chatbot | [open](https://ds-vibe.github.io/html-explainer/examples/encryption.html) |
 | The EU AI Act | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ai-act.html) |
 | The CCPA | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ccpa.html) |
+| How Gutenberg's press changed the world | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/gutenberg.html) |
 
 Source lives in [`examples/`](./examples).
 
@@ -68,11 +69,12 @@ git clone https://github.com/ds-vibe/html-explainer ~/.claude/skills/html-explai
 
 It loads automatically when a request matches (e.g. "make an interactive explainer about X").
 
-> **Heads up — a build takes a few minutes.** It's doing real work: generating the page, then
-> rendering it in a headless browser for the quality loop. The **first** run is slowest — a
-> one-time Playwright + Chromium install (~100–200 MB), fully automatic. *(Speeding up generation is
-> something we're actively working on.)* The Claude **app** has no render step, so it skips the
-> browser install.
+> **Heads up — a build takes 4–10 minutes.** It's doing real work: research, a scoping
+> interview, generation, and a visual quality loop. **Claude Code** renders the page in a headless
+> browser (desktop + mobile screenshots) and iterates until it passes — this is where the quality
+> comes from. The first run installs Playwright + Chromium (~100–200 MB, fully automatic). The
+> **Claude app / cowork** has no headless browser, so it runs a rigorous static pre-flight instead
+> and skips the install. *(Best results: Opus 4.8 at high effort in Claude Code.)*
 
 **Claude desktop / web app** — download the prebuilt
 [`html-explainer-skill.zip`](https://github.com/ds-vibe/html-explainer/releases/latest) and upload
