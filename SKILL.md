@@ -311,6 +311,10 @@ Same content and demos/quiz inside either; an *IA* choice, decided before sequen
 - **Slide deck / horizontal click-through.** Full-viewport panels advanced laterally. Best for a
   linear narrative/talk/walkthrough. Build it properly:
   - **One concept per slide**, single-viewport; if it overflows, scroll *within* the slide.
+  - **Quiz in a deck: one question at a time, never stacked.** Multiple questions on one slide
+    overflow the viewport and the deck's keyboard handler swallows scroll — the user can't reach
+    question 2+. Fix: paginate the quiz *within* the slide using its own Prev/Next buttons (not
+    the deck's). Show one question at a time; only the deck advances when the quiz is complete.
   - **All advance controls:** on-screen prev/next **and** keyboard (`←`/`→`, `PageUp`/`PageDown`,
     `Space`) **and** touch-swipe. Never trap the keyboard.
   - **Always-visible progress:** slide counter ("4 / 11") and/or dots.
