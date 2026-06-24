@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://html-explainer.dev/schema/content.schema.json",
+  "title": "HTML Explainer content spec",
+  "type": "object",
+  "required": ["meta", "hero", "sections"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["title"],
+      "properties": {
+        "title": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+        "brand": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+        "theme": { "enum": ["minimal-editorial"], "default": "minimal-editorial" },
+        "format": { "enum": ["scroll", "deck", "hybrid"], "default": "scroll" },
+        "fallback": { "type": "string" },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["code", "label"],
+            "properties": {
+              "code": { "type": "string" },
+              "label": { "type": "string" },
+              "dir": { "enum": ["ltr", "rtl"], "default": "ltr" }
+            }
+          }
+        }
+      }
+    },
+    "ui": { "type": "object" },
+    "nav": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "oneOf": [{ "type": "string" }, { "type": "object" }] }
+        }
+      }
+    },
+    "hero": {
+      "type": "object",
+      "required": ["headline", "lede"],
+      "properties": {
+        "eyebrow": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+        "headline": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+        "lede": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+        "stats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["value", "label"],
+            "properties": {
+              "value": { "type": "string" },
+              "label": { "oneOf": [{ "type": "string" }, { "type": "object" }] }
+            }
+          }
+        }
+      }
+    },
+    "quiz": { "type": "array" },
+    "sources": { "type": "object" },
+    "footer": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": {
+            "enum": [
+              "model",
+              "tier-cards",
+              "two-col",
+              "demo-section",
+              "ban-list",
+              "filter-matrix",
+              "compare-cols",
+              "who-cards",
+              "penalty-tiers",
+              "timeline",
+              "prose",
+              "quiz"
+            ]
+          },
+          "band": { "type": "boolean" },
+          "num": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+          "title": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+          "intro": { "oneOf": [{ "type": "string" }, { "type": "object" }] }
+        }
+      }
+    }
+  }
+}

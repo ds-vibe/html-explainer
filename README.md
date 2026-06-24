@@ -50,11 +50,14 @@ Source lives in [`examples/`](./examples).
 
 ```
 SKILL.md                     the process (this is the skill)
+build.mjs                    compiles *.content.json → *.html (agent runs this)
+lib/                         themes, blocks, demo widgets, runtime
+schema/content.schema.json   content spec shape
 scripts/shoot.mjs            Playwright screenshot helper for the quality loop
-scripts/review-mode.js       drop-in "Review & edit" overlay (paste before </body>)
-scripts/chat-dock.js         drop-in BYOK "ask the page" chat widget
+scripts/review-mode.js       drop-in "Review & edit" overlay (inlined by build.mjs)
+scripts/chat-dock.js         drop-in BYOK "ask the page" chat widget (post-build if needed)
 reference/                   visual reference image for the design bar
-examples/                    explainers built with the skill (served via GitHub Pages)
+examples/                    *.content.json specs + shipped *.html explainers
 index.html                   the examples gallery landing page
 ```
 

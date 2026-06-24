@@ -1,3 +1,7 @@
 node_modules/
 .DS_Store
 *.log
+examples/*-built.html
+
+# Claude Code local project config (paths, permissions, launch configs)
+.claude/

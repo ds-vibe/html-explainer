@@ -23,7 +23,7 @@ blanks. What matters most:
 
 ---
 
-> **STOP — do Phase 0 before writing any HTML or running any research.** Your FIRST response to a
+> **STOP — do Phase 0 before writing any content spec or running any research.** Your FIRST response to a
 > build request must be a short scoping interview covering **all six** must-ask questions below.
 > **Use the environment's richest input UI:** where you have clickable choices / multiple-choice
 > cards (cowork, the Claude app), present each axis as its own **option menu** with the recommended
@@ -45,7 +45,7 @@ blanks. What matters most:
 > research and build — and the deliverable is a real **`.html` file**, never pasted inline.
 > Detail for each axis is in Phase 0.
 
-## Phase 0 — Research & sharpen (before any HTML)
+## Phase 0 — Research & sharpen (before any build)
 
 - **Get the facts first.** Don't plan or write load-bearing facts (dates, numbers, current state,
   anything past your cutoff) from memory. Ground in the user's provided material and/or web-search
@@ -53,16 +53,19 @@ blanks. What matters most:
 - **The six must-ask axes (from the gate above), in detail.** Present each as a **clickable option
   menu** where the environment offers one (cowork, the app); otherwise list them in one message.
   Recommend a default for each (one click); cover all six, never collapse to one or two:
-  - **Grounding** — material to ground in (doc, PDF, dataset, notes, URL, existing page), research
-    from scratch, or both? If they have material, treat it as the **primary source of truth** —
-    draw specifics from it, cite within it, don't invent beyond it. Default: ground in what they
-    give, else research from primary sources.
+  - **Grounding** — material to ground in (doc, PDF, dataset, notes, URL, existing page, **code
+    repo / folder**), research from scratch, or both? If they have material, treat it as the
+    **primary source of truth** — draw specifics from it, cite within it, don't invent beyond it.
+    If they point at a repo or directory, read it (README, docs, representative source) before
+    planning sections. Default: ground in what they give, else research from primary sources.
   - **Audience & depth** — newcomer / practitioner / both-layered, and how deep. Drives sequencing.
   - **Format / reading shape** — scrolling page (default) / slide deck / hybrid. Changes the whole
     IA. See *Format & reading shape*.
   - **Visual style / vibe** — the most personal axis. Offer presets + a default: minimal-editorial
     (clean, Stripe-docs — good default) / bold-playful / technical-dark / brand-matched (they supply
-    colors/font/URL). All style in centralized tokens.
+    colors/font/URL). Set `meta.theme` in the content spec. **Compiler themes today:** only
+    `minimal-editorial` is implemented; other presets are roadmap — if chosen, use
+    `minimal-editorial` and note the gap, or hand-build CSS for framework targets.
   - **Quiz / knowledge check?** — don't assume no. A short test-yourself (MC or fill-in, instant
     right/wrong + a one-line *why*) makes it stickier and works in a pure file. Default **yes, small
     end-of-section or end-of-page** unless declined or it's reference-style.
@@ -73,6 +76,10 @@ blanks. What matters most:
     recommend "no," or quietly assume it.** Only if the user doesn't engage, proceed without chat
     (designed to add later) and say so.
 - **Default unless the topic/answers make it relevant** (state your default; only ask if it matters):
+  **languages** — English only (default) · multilingual with in-page toggle (which locales? e.g.
+  EN+FR+DE). Put copy in locale maps in the content spec; the compiler embeds all locales, defaults
+  to the reader's device language (`navigator.language`), and shows a nav toggle. Don't ask the user
+  about implementation — just which languages they want.
   **depth/length** — *quick one-pager* (~3 min, one idea, ~1 demo) · **standard** (~8–10 min,
   default) · *comprehensive deep-dive* (more sections + demos; deeper layers); sets how much you
   build, distinct from *audience/depth* (who it's for) · scope (in/out for v1) · interactivity depth
@@ -152,22 +159,92 @@ blanks. What matters most:
   must never stay stuck at `opacity:0` (also why such pages screenshot blank).
 - **Don't over-engineer the dataviz.** A clean conventional chart/table beats an exotic
   treemap/sunburst almost always. Reach for advanced viz only when the data needs it.
-- Default to **shadcn/ui + Tailwind** in a framework build, or hand-rolled CSS in a single file.
-  Either way: design tokens / CSS variables, not scattered magic numbers.
+- **Single-file builds:** the compiler ships **`minimal-editorial`** tokens in `lib/themes/` — match
+  Phase 2 via block choice and semantic color in the spec, not ad-hoc CSS.
+- **Framework builds:** shadcn/ui + Tailwind; design tokens / CSS variables, not scattered magic numbers.
 
 ## Phase 3 — Build
 
-- **The deliverable is an actual file, never pasted into the chat.** Write a single-file explainer
-  to a real **`.html` file** (e.g. `eu-ai-act.html`) the user can open, download, and iterate on.
-  Wherever you can create files (Claude Code, the desktop/web app's file/artifact tools, cowork, a
-  repo), create the file and hand over its path/link. Only with genuinely no file-creation capability
-  may you fall back to one fenced code block — and say so. (This is also what makes Phase 4's render
-  and the review overlay possible.)
-- Build the **centerpiece first**, then supporting sections, then polish.
-- **Accessibility & responsive are not optional:** semantic HTML, keyboard-operable controls,
-  sufficient contrast, alt text, a real mobile layout (test it — Phase 4).
-- Keep content in **structured data** (a JSON/JS array) separate from presentation wherever there's
-  repetition — it makes the loop and edits far easier.
+**What the user gets:** a real **`.html` file** they can open, share, and iterate on — never pasted
+inline. **What you do internally:** write a **content spec** (JSON), compile it with the skill's
+**`build.mjs`**, and hand over the HTML. **Never ask the user to run the compiler, know the schema,
+or understand block types** — that's your job.
+
+### Default build path (single-file `.html`)
+
+1. **Pick an output location** — sensible default: alongside the user's material (`docs/explainer.html`
+   in their repo) or in the skill's `examples/` if no project context. Use a short slug
+   (e.g. `gps`, `eu-ai-act`).
+2. **Write `<slug>.content.json`** — facts, IA, section order, quiz, sources, demo configs. Shape and
+   field names: `schema/content.schema.json`. **Worked example:** `examples/ai-act.content.json`.
+3. **Compile** (whenever you have shell access — Claude Code, Cursor, cowork with execution):
+   `node <skill-root>/build.mjs <slug>.content.json -o <slug>.html`
+   `<skill-root>` is this skill's directory (where `build.mjs` and `lib/` live). If you're working
+   in the user's repo, use the absolute path to the installed skill — e.g.
+   `~/.claude/skills/html-explainer/build.mjs` — you don't need to copy the compiler into their project.
+4. **Deliver the `.html` file** (path/link). Optionally keep the `.content.json` in the same folder
+   for cheap revisions — the user doesn't need to touch it unless they want to.
+5. Build the **centerpiece first** in the spec (section order + demo choice), then supporting
+   sections, then polish.
+
+**If you cannot run the compiler** (no shell, e.g. Claude app with only artifacts): write the
+`.content.json` as the hand-off and say a one-line compile step exists — **or**, as a last resort
+only, generate a self-contained `.html` directly (old path). Prefer the spec whenever file creation
+exists; the spec is the source of truth for Phase 6 either way.
+
+### Content spec rules (agent-facing — see also *Content spec reference*)
+
+- **Sections = block types + data**, not hand-rolled layout. Pick the block that fits; vary treatments
+  across sections (Phase 2).
+- **Languages:** any translatable field is either a plain string (single language) or a locale map
+  `{ "en": "…", "fr": "…" }`. Set `meta.languages`, `meta.fallback`. The compiler handles device
+  default + toggle — never explain this to the user.
+- **Demos:** prefer built-in widgets (`filter-list`, `slider`) with params; use **`custom`** only for
+  the 1–2 centerpiece interactions nothing else covers (max **2 custom demos** per page). Custom =
+  scoped `html` + `init(root, ctx)` in the spec — you write it, the compiler inlines it.
+- **Theme:** set `meta.theme` (default `minimal-editorial`); visual bar still comes from Phase 2 +
+  `reference/ai-act-explainer.jpg`.
+- **Accessibility & responsive** are enforced by the compiler + your content choices; verify in Phase 4.
+
+### Other output targets
+
+- **Framework app / Notion** — skip the compiler; build in that target's native form (Phase 0 choice).
+- **`chat-dock.js`** — not in the compiler yet; if the user chose AI chat on a single-file build,
+  append manually after compile or extend the page post-build (see *Drop-in widgets*).
+
+## Content spec reference (agent-facing)
+
+**Do not recite this to the user.** Use it to build fast and revise cheaply.
+
+| Block `type` | Use for |
+|---|---|
+| `model` | Mental model + example rows |
+| `tier-cards` | Accordion pyramid / tier list |
+| `demo-section` | Section built around one demo widget |
+| `ban-list` | Numbered prohibition / list cards |
+| `filter-matrix` | Filterable domain matrix + requirements grid |
+| `compare-cols` | Two-column comparison cards |
+| `who-cards` | Role cards + optional reach callout |
+| `penalty-tiers` | Tiered penalty cards + optional demo |
+| `timeline` | Dated rollout / sequence |
+| `prose` | Text + optional callout |
+| `quiz` | Knowledge check (questions in top-level `quiz` array) |
+| `two-col` | Prose + aside demo |
+
+| Demo widget | Use for |
+|---|---|
+| `filter-list` | Pick item → verdict + why |
+| `slider` | Range → live readout (params: min/max/threshold/format) |
+| `custom` | Novel centerpiece — `html` + `init` body; max 2/page; **both may be locale maps** |
+
+**Themes (compiler):** `minimal-editorial` only (`lib/themes/`). Phase 0 still offers other vibes for
+future themes / hand-built pages.
+
+**i18n:** `meta.languages` + locale maps on strings; optional `meta.fallback` (default first listed).
+UI chrome strings (`ui.allAreas`, etc.) have defaults — override via top-level `"ui": { … }` in the spec.
+
+Compiler layout: `build.mjs`, `lib/`, `schema/`, `lib/themes/`. Review overlay is injected
+automatically. Rebuild after any spec edit: same `node build.mjs …` command.
 
 ## Phase 4 — The quality loop (this is where quality actually comes from)
 
@@ -207,8 +284,8 @@ not deliver until all pass:
       order, magnitude, legend all agree with the caption (don't draw an up-slope under "downhill").
 - [ ] **Accessible & responsive** — semantic HTML, keyboard-operable, alt text, real mobile layout
       (stacks cleanly, no horizontal overflow, tap targets ≥40px).
-- [ ] **Review & edit overlay inlined** — `review-mode.js` is in the page by default (with `<body
-      data-review-toggle>`) unless the user opted out; the "Review & edit" launcher should appear.
+- [ ] **Review & edit overlay present** — default compiler builds include it automatically (`<body
+      data-review-toggle>`). Only omit if the user opted out.
 
 Then run the look-and-fix loop:
 1. **Render it for real and look.** Headless-browser screenshot — desktop *and* mobile — including
@@ -244,13 +321,14 @@ Then run the look-and-fix loop:
 
 - **Expect a round of changes** — usually aesthetic ("nice, but I don't love the look"). Treat v1 as
   a draft to react to, and make revision cheap by design.
-- **Restyle = token swap, not rewrite.** Because color/type/spacing live in centralized tokens
-  (Phase 2), changing the whole vibe is editing a handful of variables. If a restyle means hunting
-  through markup, the tokens weren't centralized — fix that first.
+- **Restyle = spec + rebuild, not HTML surgery.** Edit `meta.theme` / block content in
+  `<slug>.content.json`, re-run `build.mjs`, re-check Phase 4. Don't hand-edit compiled HTML except
+  for one-off post-build add-ons (e.g. inlining `chat-dock.js`).
 - **Other common revisions:** re-scope (add/cut a section), add/remove interactivity, change output
-  target, refresh a fact. Re-run the relevant earlier phase rather than patching blindly.
+  target, refresh a fact — all in the `.content.json`, then rebuild.
 - **Non-technical reviewers can feed this loop directly** via the review overlay (*Drop-in widgets*):
-  they edit in-place or leave notes; you apply the revision brief to the *source* and re-run Phase 4.
+  they edit in-place or leave notes; you apply the revision brief to the **content spec**, rebuild,
+  and re-run Phase 4.
 - **Re-run the quality loop after any visual change** — a token swap can break contrast, rhythm, or a
   chart's legibility. Re-screenshot and *look*; don't declare a restyle done from the diff.
 
@@ -258,9 +336,10 @@ Then run the look-and-fix loop:
 
 ## Output targets (pick one in Phase 0)
 
-- **Single self-contained `.html`** (inline CSS, vanilla JS): default for static or lightly-interactive
-  explainers. Maximally portable, opens offline, trivial to share. Prefer unless you need a server.
-  Deliver as a real file (Phase 3), never an inline code block.
+- **Single self-contained `.html`** (inline CSS, vanilla JS): **default.** The skill compiler
+  (`build.mjs`) produces this from a content spec — portable, offline, trivial to share. Deliver the
+  **`.html` file**; keep `.content.json` as the editable source when you have it. Prefer unless you
+  need a server.
 - **Framework app (Next.js on Vercel):** when you need a server — most commonly a **chatbot** with a
   managed key, server-side data, or auth. Use the AI SDK.
 - **Notion page** (Notion API/MCP): when the user lives in Notion. Map to native blocks (toggles =
@@ -291,11 +370,13 @@ Same content and demos/quiz inside either; an *IA* choice, decided before sequen
 Keep the chosen shape in **one place** (a layout wrapper + a couple of flags) so switching scroll ⇄
 deck later is contained, not a rewrite.
 
-## Drop-in widgets (`scripts/` — paste inline before `</body>`; full usage in each file's header)
+## Drop-in widgets (`scripts/` — used by the compiler or post-build; full usage in each file's header)
 
 Both are self-contained JS+CSS (single-file pages can't use `<script src>` and stay portable), inject
-their own themed UI, and adapt to light/dark. When inlining, escape any literal `</`+`script>` in the
-file (the bundled copies already do). **These are the single source of truth for chat & review.**
+their own themed UI, and adapt to light/dark. **`review-mode.js` is inlined automatically by
+`build.mjs`.** Add **`chat-dock.js`** manually after compile if the user chose AI chat (not yet in the
+compiler). When inlining by hand, escape any literal `</`+`script>` in the file (the bundled copies
+already do).
 
 - **`review-mode.js` — Review & edit overlay.** Front end of the Phase 6 revise loop. **Inline it by
   DEFAULT in every single-file explainer** (before `</body>` + `<body data-review-toggle>`); only

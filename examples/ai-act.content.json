@@ -1,0 +1,429 @@
+{
+  "$schema": "../schema/content.schema.json",
+  "meta": {
+    "title": {
+      "en": "How the EU AI Act Works — A Practical Breakdown",
+      "fr": "Comment fonctionne l'AI Act de l'UE — guide pratique"
+    },
+    "brand": {
+      "en": "EU AI Act · Explained",
+      "fr": "AI Act UE · Expliqué"
+    },
+    "theme": "minimal-editorial",
+    "format": "scroll",
+    "languages": [
+      { "code": "en", "label": "English" },
+      { "code": "fr", "label": "Français" }
+    ],
+    "fallback": "en"
+  },
+  "nav": [
+    { "id": "idea", "label": { "en": "The big idea", "fr": "L'idée centrale" } },
+    { "id": "pyramid", "label": { "en": "Risk tiers", "fr": "Niveaux de risque" } },
+    { "id": "classify", "label": { "en": "Classify it", "fr": "Classer" } },
+    { "id": "banned", "label": { "en": "Banned uses", "fr": "Usages interdits" } },
+    { "id": "highrisk", "label": { "en": "High-risk", "fr": "Haut risque" } },
+    { "id": "gpai", "label": { "en": "General-purpose AI", "fr": "IA à usage général" } },
+    { "id": "penalties", "label": { "en": "Penalties", "fr": "Sanctions" } },
+    { "id": "timeline", "label": { "en": "Timeline", "fr": "Calendrier" } },
+    { "id": "quiz", "label": { "en": "Quiz", "fr": "Quiz" } }
+  ],
+  "hero": {
+    "eyebrow": { "en": "A practical breakdown", "fr": "Un guide pratique" },
+    "headline": {
+      "en": "How the EU AI Act works",
+      "fr": "Comment fonctionne l'AI Act de l'UE"
+    },
+    "lede": {
+      "en": "The world's first comprehensive law for artificial intelligence. The trick to understanding it: it doesn't regulate the technology — it regulates what you <em>do</em> with it, and the rules scale with the risk.",
+      "fr": "La première grande loi mondiale sur l'intelligence artificielle. L'essentiel : elle ne régule pas la technologie en soi — elle régule ce que vous <em>en faites</em>, et les règles suivent le niveau de risque."
+    },
+    "stats": [
+      { "value": "2024", "label": { "en": "In force since 1 Aug", "fr": "En vigueur depuis le 1<sup>er</sup> août" } },
+      { "value": "4", "label": { "en": "Risk tiers", "fr": "Niveaux de risque" } },
+      { "value": "€35M", "label": { "en": "Top fine, or 7% of turnover", "fr": "Amende max., ou 7 % du CA" } },
+      { "value": "2025–28", "label": { "en": "Phasing in", "fr": "Entrée en vigueur progressive" } }
+    ]
+  },
+  "quiz": [
+    {
+      "q": "What does the EU AI Act primarily regulate?",
+      "options": [
+        "The AI technology itself",
+        "How AI is used, by risk level",
+        "Only large language models",
+        "AI made by European companies"
+      ],
+      "answer": 1,
+      "why": "The Act is risk- and use-based: the same technology can be minimal-risk or banned depending on what it's used for."
+    },
+    {
+      "q": "A company uses AI to rank job applicants. Which tier?",
+      "options": [
+        "Minimal — no rules",
+        "Limited — just disclose",
+        "High risk — full obligations",
+        "Banned"
+      ],
+      "answer": 2,
+      "why": "Employment is an Annex III area, so hiring tools are high-risk and carry the heaviest set of obligations."
+    },
+    {
+      "q": "Which of these is outright banned?",
+      "options": [
+        "A customer-service chatbot",
+        "General social scoring of citizens",
+        "A high-risk hiring tool",
+        "An AI spam filter"
+      ],
+      "answer": 1,
+      "why": "Social scoring is one of the eight prohibited practices under Article 5 — there's no compliance path for it."
+    },
+    {
+      "q": "What's the maximum fine for using a banned practice?",
+      "options": [
+        "€7.5M or 1% of turnover",
+        "€15M or 3% of turnover",
+        "€35M or 7% of turnover",
+        "€100M flat"
+      ],
+      "answer": 2,
+      "why": "Banned-practice breaches carry the top fine: €35M or 7% of global annual turnover, whichever is higher."
+    },
+    {
+      "q": "Your company is in the US. When does the Act apply to you?",
+      "options": [
+        "Never — it's EU-only",
+        "When your system's output is used in the EU",
+        "Only if you have an EU office",
+        "Only for GPAI models"
+      ],
+      "answer": 1,
+      "why": "The Act applies extraterritorially: if your AI's output is used in the EU, you're in scope wherever you're based."
+    }
+  ],
+  "sources": {
+    "title": "Where this comes from",
+    "items": [
+      {
+        "label": "High-level summary of the AI Act",
+        "url": "https://artificialintelligenceact.eu/high-level-summary/",
+        "note": "Future of Life Institute (risk tiers, prohibited list, Annex III, GPAI duties)"
+      },
+      {
+        "label": "Implementation Timeline",
+        "url": "https://artificialintelligenceact.eu/implementation-timeline/"
+      },
+      {
+        "label": "Article 5 — Prohibited AI Practices",
+        "url": "https://artificialintelligenceact.eu/article/5/"
+      },
+      {
+        "label": "Article 99 — Penalties",
+        "url": "https://artificialintelligenceact.eu/article/99/"
+      },
+      {
+        "label": "European Commission — AI Act regulatory framework",
+        "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+      },
+      {
+        "label": "Council of the EU — Digital Omnibus provisional agreement (7 May 2026)",
+        "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/"
+      }
+    ],
+    "disclaimer": "This is an educational explainer, not legal advice. The EU AI Act is long and evolving; specific obligations depend on facts and on guidance still being issued. Consult the official text and qualified counsel for compliance decisions."
+  },
+  "footer": "Built as a plain-language guide to Regulation (EU) 2024/1689. Facts verified against EU and Future of Life Institute primary sources, June 2026.",
+  "sections": [
+    {
+      "id": "idea",
+      "type": "model",
+      "pull": "The Act is a <em>sorting machine</em>. Every AI system gets dropped in by its risk, and the weight of the rules matches the tier it lands in.",
+      "paragraphs": [
+        "Most people expect a law that says \"here are the rules for AI.\" The EU AI Act is built differently. It asks one question about each system — <strong>how much risk does this particular use create for people's rights and safety?</strong> — and sorts it into one of four tiers.",
+        "This is why the <em>same</em> piece of technology can sit in totally different tiers. A face-matching model is minimal-risk when it unlocks your phone, high-risk when it screens job applicants, and outright banned when it scrapes the open web to build a surveillance database."
+      ],
+      "examplesTitle": "Same tech · different use · different tier",
+      "examplesLabel": "Same technology, different risk tiers depending on use",
+      "examples": [
+        { "tool": "Face recognition", "use": "unlocking your phone", "tier": "Minimal", "tone": "green" },
+        { "tool": "Face recognition", "use": "screening job applicants", "tier": "High-risk", "tone": "amber" },
+        { "tool": "Face recognition", "use": "scraping the web for a DB", "tier": "Banned", "tone": "red" },
+        { "tool": "A chatbot", "use": "answering FAQs", "tier": "Limited", "tone": "blue" }
+      ]
+    },
+    {
+      "id": "pyramid",
+      "type": "tier-cards",
+      "band": true,
+      "num": "01 — THE FOUR TIERS",
+      "title": "The risk pyramid",
+      "intro": "The fewer the systems in a tier, the heavier its rules. A tiny number of uses are banned at the top; the vast majority of everyday AI sits unregulated at the bottom. Click any tier to open it.",
+      "items": [
+        {
+          "cls": "t-prohibited",
+          "width": "tw1",
+          "tag": "Tier 1",
+          "name": "Unacceptable — Banned",
+          "sub": "A clear threat to rights. Prohibited outright.",
+          "body": [
+            "Social scoring of people by behaviour or traits",
+            "Manipulative or exploitative systems that cause harm",
+            "Untargeted scraping of faces to build recognition databases",
+            "Emotion recognition at work or school",
+            "Most real-time facial recognition in public by police"
+          ],
+          "note": "8 categories in total — see \"The eight banned uses\" below."
+        },
+        {
+          "cls": "t-high",
+          "width": "tw2",
+          "tag": "Tier 2",
+          "name": "High risk — Regulated",
+          "sub": "Allowed, but with heavy obligations. Most of the Act.",
+          "body": [
+            "Used in hiring, credit, education, essential services, law enforcement, migration, justice…",
+            "…or as a safety part of a regulated product (medical devices, machinery, cars)",
+            "Provider must do risk management, data governance, documentation, human oversight, testing, registration"
+          ],
+          "note": "Roughly 8 sensitive areas listed in Annex III."
+        },
+        {
+          "cls": "t-limited",
+          "width": "tw3",
+          "tag": "Tier 3",
+          "name": "Limited risk — Transparency",
+          "sub": "Just be honest that it's AI.",
+          "body": [
+            "Chatbots must tell users they're talking to a machine",
+            "AI-generated images, audio and video (deepfakes) must be labelled",
+            "Synthetic content must be machine-readable as AI-generated"
+          ],
+          "note": "Light-touch: disclosure, not heavy compliance."
+        },
+        {
+          "cls": "t-minimal",
+          "width": "tw4",
+          "tag": "Tier 4",
+          "name": "Minimal risk — Free",
+          "sub": "No special obligations. The vast majority of AI.",
+          "body": [
+            "Spam filters, recommendation engines, AI in video games",
+            "Inventory and logistics optimisation",
+            "The bulk of AI products on the market today"
+          ],
+          "note": "Providers may still voluntarily follow codes of conduct."
+        }
+      ],
+      "callout": {
+        "title": "One more track, running alongside",
+        "body": "General-purpose AI models — the large models like GPT, Gemini or Llama that power many products — are governed by their <strong>own separate set of rules</strong>, not the pyramid. We cover those <a href=\"#gpai\">further down</a>."
+      }
+    },
+    {
+      "id": "classify",
+      "type": "demo-section",
+      "num": "02 — TRY IT YOURSELF",
+      "title": "Which tier does it land in?",
+      "intro": "The whole Act turns on classification. Pick a real-world AI use below and see where the sorting machine drops it — and why.",
+      "demo": {
+        "type": "filter-list",
+        "props": {
+          "eyebrow": "Interactive · the classifier",
+          "placeholder": "← Pick a use case to classify it.",
+          "cases": [
+            {
+              "label": "AI that screens and ranks job applicants",
+              "verdict": "High risk",
+              "color": "amber",
+              "why": "Employment decisions are an Annex III area. Hiring tools shape people's livelihoods, so they carry the full high-risk obligations."
+            },
+            {
+              "label": "A social-scoring system rating citizens by behaviour",
+              "verdict": "Banned",
+              "color": "red",
+              "why": "General-purpose social scoring by public or private actors is a prohibited practice under Article 5 — no compliance path."
+            },
+            {
+              "label": "A customer-service chatbot on a website",
+              "verdict": "Limited risk",
+              "color": "blue",
+              "why": "Allowed, but it must clearly tell users they are interacting with an AI, not a human. That's the transparency tier."
+            },
+            {
+              "label": "A spam filter in your email",
+              "verdict": "Minimal risk",
+              "color": "green",
+              "why": "No special obligations. The overwhelming majority of AI — including spam filters — sits in the free, unregulated tier."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "banned",
+      "type": "ban-list",
+      "band": true,
+      "num": "03 — UNACCEPTABLE RISK",
+      "title": "The eight banned uses",
+      "intro": "At the top of the pyramid, a short list of practices is prohibited outright across the EU — no compliance path, no exceptions for most. (Article 5.)",
+      "items": [
+        { "index": "1", "title": "Manipulation & deception", "body": "Subliminal or deceptive techniques that distort behaviour and cause harm." },
+        { "index": "2", "title": "Exploiting vulnerabilities", "body": "Targeting age, disability or hardship to distort behaviour and cause harm." },
+        { "index": "3", "title": "Social scoring", "body": "Rating people by social behaviour or traits, leading to unfair treatment." },
+        { "index": "4", "title": "Predictive policing of individuals", "body": "Predicting crime risk based solely on profiling or personality." },
+        { "index": "5", "title": "Face-database scraping", "body": "Building facial-recognition databases by untargeted scraping of web/CCTV images." },
+        { "index": "6", "title": "Emotion recognition at work/school", "body": "Inferring emotions in workplaces or schools (bar medical/safety reasons)." },
+        { "index": "7", "title": "Sensitive biometric categorisation", "body": "Inferring race, politics, religion, sexual orientation, etc. from biometrics." },
+        { "index": "8", "title": "Live public face recognition by police", "body": "Real-time remote biometric ID in public — banned but for narrow exceptions." }
+      ],
+      "callout": {
+        "title": "The narrow exception",
+        "body": "Real-time facial recognition in public by police is banned <em>by default</em>, but narrowly allowed for things like searching for a missing child or preventing an imminent terror attack — and only with a fundamental-rights assessment and judicial sign-off."
+      }
+    },
+    {
+      "id": "highrisk",
+      "type": "filter-matrix",
+      "num": "04 — HIGH RISK",
+      "title": "High-risk: where most of the law lives",
+      "intro": "These systems are allowed, but heavily regulated — the bulk of the Act is about them. Filter the areas, then see what providers must actually do.",
+      "requirementsTitle": "IF IT'S HIGH-RISK, THE PROVIDER MUST…",
+      "areas": [
+        { "key": "Biometrics", "title": "Biometrics (non-banned)", "description": "Remote identification, emotion recognition, and biometric categorisation that aren't outright prohibited." },
+        { "key": "Infrastructure", "title": "Critical infrastructure", "description": "Safety components running water, gas, electricity, heating, road traffic and digital infrastructure." },
+        { "key": "Education", "title": "Education & training", "description": "Deciding admissions, evaluating learning outcomes, or monitoring students during exams." },
+        { "key": "Employment", "title": "Employment & workers", "description": "Recruitment, filtering applications, promotion, termination, and performance monitoring." },
+        { "key": "Services", "title": "Essential services", "description": "Eligibility for benefits, creditworthiness, insurance pricing, and emergency-call triage." },
+        { "key": "Law", "title": "Law enforcement", "description": "Victim-risk assessment, polygraphs, evidence reliability, and profiling in investigations." },
+        { "key": "Migration", "title": "Migration & borders", "description": "Polygraphs, risk assessments, and examining visa or asylum applications." },
+        { "key": "Justice", "title": "Justice & democracy", "description": "Helping interpret and apply the law, or influencing elections and voting behaviour." }
+      ],
+      "requirements": [
+        { "title": "Risk management", "body": "A system to find and reduce risks across the whole lifecycle." },
+        { "title": "Data governance", "body": "Training data that's relevant, representative and as error-free as possible." },
+        { "title": "Technical documentation", "body": "Records that prove compliance to regulators." },
+        { "title": "Record-keeping", "body": "Automatic logging of events for traceability." },
+        { "title": "Instructions for use", "body": "Clear info so deployers can use it compliantly." },
+        { "title": "Human oversight", "body": "Designed so a person can intervene and override." },
+        { "title": "Accuracy & cybersecurity", "body": "Robust, accurate and secure by design." },
+        { "title": "Quality management", "body": "An organisational system to keep it all compliant." }
+      ]
+    },
+    {
+      "id": "gpai",
+      "type": "compare-cols",
+      "band": true,
+      "num": "05 — GENERAL-PURPOSE AI",
+      "title": "The parallel track: general-purpose models",
+      "intro": "The big foundation models don't fit the use-based pyramid — one model can be put to a thousand uses. So they get their own rules, in two layers.",
+      "columns": [
+        {
+          "title": "Every GPAI model",
+          "bullets": [
+            "Keep <strong>technical documentation</strong> of how the model was built, trained and tested.",
+            "Give downstream developers the <strong>info they need</strong> to build on it compliantly.",
+            "Have a policy to <strong>respect EU copyright</strong> law.",
+            "Publish a <strong>summary of the training data</strong> used."
+          ],
+          "note": "Free & open-licence models only owe the last two — unless they hit systemic risk."
+        },
+        {
+          "title": "+ systemic risk",
+          "badge": "+ systemic risk",
+          "variant": "muted",
+          "bullets": [
+            "Run <strong>model evaluations</strong> and <strong>adversarial testing</strong> (red-teaming).",
+            "Assess and <strong>mitigate systemic risks</strong> at their source.",
+            "<strong>Track and report serious incidents</strong> to the EU AI Office.",
+            "Ensure strong <strong>cybersecurity</strong> for the model and its weights."
+          ],
+          "note": "These stack on top of the baseline — systemic-risk models owe both sets."
+        }
+      ],
+      "demo": {
+        "type": "custom",
+        "props": {
+          "id": "flop-threshold",
+          "wrapperClass": "flops",
+          "reason": "Superscript exponent readout on a log-scale FLOP slider",
+          "html": "<p class=\"num\" style=\"color:var(--violet)\">WHAT COUNTS AS \"SYSTEMIC RISK\"? — DRAG TO EXPLORE</p><p style=\"font-size:.92rem;color:var(--ink-2);margin-top:var(--s3)\">The headline trigger is raw training compute. A model is presumed to pose systemic risk once the compute used to train it crosses <strong>10<sup>25</sup> floating-point operations (FLOP)</strong>.</p><div class=\"read\"><span class=\"big\" id=\"flopVal\">10²⁵</span><span style=\"color:var(--ink-3)\">FLOP of training compute</span></div><input type=\"range\" id=\"flopSlider\" min=\"22\" max=\"27\" step=\"0.1\" value=\"25\" aria-label=\"Training compute in powers of ten\"><div class=\"scale\"><span>10²²</span><span>10²³</span><span>10²⁴</span><span>10²⁵</span><span>10²⁶</span><span>10²⁷</span></div><div class=\"out out-no\" id=\"flopOut\">Below the threshold — baseline GPAI rules apply, but not the extra systemic-risk duties.</div><p class=\"demo-note\">The compute figure is the legal presumption; the Commission can also designate a model systemic on other grounds.</p>",
+          "init": "var slider=root.querySelector('#flopSlider');var flopVal=root.querySelector('#flopVal');var flopOut=root.querySelector('#flopOut');var sup={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','.':'.'};function toSup(n){return String(n).split('').map(function(c){return sup[c]||c;}).join('');}function upd(){var v=parseFloat(slider.value);var disp=v%1===0?String(v):v.toFixed(1);flopVal.textContent='10'+toSup(disp);if(v>=25){flopOut.className='out out-yes';flopOut.innerHTML='<strong>Systemic risk.</strong> At or above 10²⁵ FLOP, the model is presumed systemic — evaluations, red-teaming, incident reporting and cybersecurity duties all kick in.';}else{flopOut.className='out out-no';flopOut.innerHTML='Below the threshold — baseline GPAI rules apply, but not the extra systemic-risk duties.';}}ctx.on(slider,'input',upd);upd();"
+        }
+      }
+    },
+    {
+      "id": "penalties",
+      "type": "penalty-tiers",
+      "band": true,
+      "num": "07 — PENALTIES",
+      "title": "What it costs to get it wrong",
+      "intro": "Fines are tiered to match the severity of the breach, and calculated as the <strong>higher</strong> of a fixed sum or a percentage of global annual turnover.",
+      "tiers": [
+        {
+          "amount": "€35M",
+          "percent": "or 7% of worldwide turnover",
+          "label": "Using a banned practice",
+          "detail": "The most serious breach — deploying one of the prohibited AI uses."
+        },
+        {
+          "amount": "€15M",
+          "percent": "or 3% of worldwide turnover",
+          "label": "Breaking high-risk rules",
+          "detail": "Most other obligation breaches — by providers or deployers of high-risk systems."
+        },
+        {
+          "amount": "€7.5M",
+          "percent": "or 1% of worldwide turnover",
+          "label": "Giving false information",
+          "detail": "Supplying incorrect or misleading information to authorities."
+        }
+      ],
+      "demo": {
+        "type": "custom",
+        "props": {
+          "id": "penalty-calc",
+          "reason": "Live fine calculator with whichever-is-higher logic",
+          "html": "<div class=\"calc reveal\"><p class=\"num\">DO THE MATH — THE \"WHICHEVER IS HIGHER\" CATCH</p><div class=\"inrow\" style=\"margin-top:var(--s4)\"><label for=\"turnover\">Company global turnover (€):</label><input type=\"number\" id=\"turnover\" value=\"900000000\" min=\"0\" step=\"1000000\"><label for=\"breach\">Breach:</label><select id=\"breach\"><option value=\"0.07-35000000\">Banned practice (7% / €35M)</option><option value=\"0.03-15000000\">High-risk breach (3% / €15M)</option><option value=\"0.01-7500000\">False info (1% / €7.5M)</option></select></div><div class=\"result\" id=\"calcResult\"></div><p style=\"font-size:.8rem;color:var(--ink-3);margin-top:var(--s4)\">For SMEs and start-ups, the rule flips to whichever is <em>lower</em>, to keep fines proportionate.</p></div>",
+          "init": "var turnover=root.querySelector('#turnover');var breach=root.querySelector('#breach');var calcResult=root.querySelector('#calcResult');function fmt(n){return ctx.fmtEuro(n);}function calc(){var parts=breach.value.split('-');var pct=Number(parts[0]);var fixed=Number(parts[1]);var t=Math.max(0,Number(turnover.value)||0);var pctVal=t*pct;var fixedVal=fixed;var win=Math.max(pctVal,fixedVal);calcResult.innerHTML='<div class=\"rc'+(pctVal>=fixedVal?' win':'')+'\"><div class=\"rl\">'+(pct*100)+'% of turnover</div><div class=\"rv\">'+fmt(pctVal)+'</div></div><div class=\"rc'+(fixedVal>pctVal?' win':'')+'\"><div class=\"rl\">Fixed cap</div><div class=\"rv\">'+fmt(fixedVal)+'</div></div><div class=\"rc win\" style=\"grid-column:1/-1\"><div class=\"rl\">Maximum fine — whichever is higher</div><div class=\"rv\">'+fmt(win)+'</div></div>';}ctx.on(turnover,'input',calc);ctx.on(breach,'change',calc);calc();"
+        }
+      }
+    },
+    {
+      "id": "timeline",
+      "type": "timeline",
+      "num": "08 — THE ROLLOUT",
+      "title": "It arrives in waves, not all at once",
+      "intro": "The Act entered into force in August 2024, but its rules switch on in stages over several years — banned uses first, the heaviest high-risk duties last.",
+      "events": [
+        { "date": "Aug 2024", "status": "done", "label": "In force", "text": "The Act enters into force. Nothing applies yet — the clock starts on a staged rollout." },
+        { "date": "Feb 2025", "status": "done", "label": "Live", "text": "The banned practices and AI-literacy duties become enforceable — the first rules with teeth." },
+        { "date": "Aug 2025", "status": "done", "label": "Live", "text": "Rules for general-purpose AI models, the governance structure (the EU AI Office), and the penalty regime switch on." },
+        {
+          "date": "Aug 2026",
+          "status": "now",
+          "label": "Now-ish",
+          "text": "Originally the date most high-risk obligations and Annex III rules applied.",
+          "defer": "Proposed deferral: under the May 2026 Digital Omnibus, Annex III high-risk duties move to <b>2 December 2027</b>."
+        },
+        {
+          "date": "Aug 2027",
+          "status": "future",
+          "label": "Upcoming",
+          "text": "High-risk AI embedded in regulated products (medical devices, machinery, vehicles) must fully comply.",
+          "defer": "Proposed deferral: product-embedded high-risk duties may move to <b>2 August 2028</b>."
+        },
+        { "date": "2027–30", "status": "future", "label": "Later", "text": "Remaining transition deadlines: pre-existing GPAI models, public-authority systems and large-scale EU IT systems are brought into full compliance." }
+      ],
+      "disclaimer": "<strong>A moving target.</strong> In May 2026, EU institutions reached a provisional \"Digital Omnibus\" agreement to <em>postpone</em> the heaviest high-risk deadlines. As of this writing it is agreed but not yet formally adopted — always check the official timeline before relying on a date."
+    },
+    {
+      "id": "quiz",
+      "type": "quiz",
+      "band": true,
+      "num": "09 — TEST YOURSELF",
+      "title": "Did it click?",
+      "intro": "Five quick questions. You get instant feedback and the <em>why</em> behind each answer."
+    }
+  ]
+}

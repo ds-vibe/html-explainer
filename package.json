@@ -1,4 +1,9 @@
 {
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "build:ai-act": "node build.mjs examples/ai-act.content.json -o examples/ai-act-built.html"
+  },
   "devDependencies": {
     "playwright": "^1.61.0"
   }
