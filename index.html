@@ -24,7 +24,9 @@ header{padding:80px 0 40px;border-bottom:1px solid var(--line)}
 h1{font-family:var(--display);font-weight:500;font-size:clamp(38px,6vw,62px);letter-spacing:-.02em;line-height:1.05;margin:0 0 1rem}
 h1 em{font-style:italic;color:var(--accent)}
 .lede{font-size:clamp(18px,2vw,21px);color:var(--ink-soft);max-width:60ch;margin:0}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding:48px 0 24px}
+.section{font-family:var(--display);font-weight:500;font-size:clamp(20px,2.6vw,27px);letter-spacing:-.01em;color:var(--ink);margin:0;padding:44px 0 0;border-top:1px solid var(--line)}
+.section:first-of-type{border-top:0;padding-top:40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding:18px 0 12px}
 a.card{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line-strong);border-radius:14px;padding:26px 28px;transition:transform .15s,box-shadow .15s,border-color .15s}
 a.card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.07);border-color:var(--accent)}
 .card .tag{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:14px}
@@ -43,35 +45,62 @@ footer a{color:var(--accent)}
 </div></header>
 
 <main class="wrap">
+  <h2 class="section">Science &amp; how things work</h2>
+  <div class="grid">
+    <a class="card" href="./examples/microwave.html">
+      <span class="tag">Physics</span>
+      <h2>How a microwave heats food</h2>
+      <p>Not heat from the outside — a fast-flipping electric field that twists the water already in your food. With a slow-it-down field demo and a turntable heat-map you can cook.</p>
+      <span class="go">Open the explainer &rarr;</span>
+    </a>
+    <a class="card" href="./examples/transistors.html">
+      <span class="tag">Electronics</span>
+      <h2>How transistors work</h2>
+      <p>The MOSFET that runs the world, built from the field up — doping, the insulated gate, and why "nothing physically moves." Hands-on valve and logic demos.</p>
+      <span class="go">Open the explainer &rarr;</span>
+    </a>
+    <a class="card" href="./examples/gps.html">
+      <span class="tag">Physics</span>
+      <h2>How GPS finds you</h2>
+      <p>Not a map problem — a timing problem. Four satellites, the speed of light, and a clock trick, with a trilateration demo and a clock-error slider you can break.</p>
+      <span class="go">Open the explainer &rarr;</span>
+    </a>
+  </div>
+
+  <h2 class="section">Tech &amp; AI</h2>
   <div class="grid">
     <a class="card" href="./examples/rag.html">
-      <span class="tag">Slide deck · AI</span>
+      <span class="tag">AI · slide deck</span>
       <h2>How RAG works</h2>
       <p>Retrieval-augmented generation as an open-book exam for AI — a 12-slide walkthrough, no prior AI knowledge needed.</p>
       <span class="go">Open the deck &rarr;</span>
     </a>
-    <a class="card" href="./examples/special-relativity.html">
-      <span class="tag">Scrolling · physics</span>
-      <h2>How special relativity works</h2>
-      <p>Einstein's one stubborn fact about light, built up step by step — with playable pieces and no math required.</p>
+    <a class="card" href="./examples/blockchain.html">
+      <span class="tag">Tech</span>
+      <h2>How blockchain works</h2>
+      <p>No coins, no hype — just the tamper-evident ledger, built one page at a time. Hashing, the chain, and a majority of copies, poked until you see why it holds.</p>
       <span class="go">Open the explainer &rarr;</span>
     </a>
+    <a class="card" href="./examples/encryption.html">
+      <span class="tag">Security</span>
+      <h2>How encryption works</h2>
+      <p>From Caesar cipher to public-key and the HTTPS handshake — with playable demos and a built-in "ask the page" chatbot.</p>
+      <span class="go">Open the explainer &rarr;</span>
+    </a>
+  </div>
+
+  <h2 class="section">Law &amp; policy</h2>
+  <div class="grid">
     <a class="card" href="./examples/ai-act.html">
-      <span class="tag">Scrolling · policy</span>
+      <span class="tag">Policy</span>
       <h2>The EU AI Act</h2>
       <p>How Europe's AI law works — the four risk tiers, the fines, and the 2026 timeline. With an interactive risk pyramid and a use-case classifier.</p>
       <span class="go">Open the explainer &rarr;</span>
     </a>
     <a class="card" href="./examples/ccpa.html">
-      <span class="tag">Scrolling · policy</span>
+      <span class="tag">Policy</span>
       <h2>The CCPA</h2>
       <p>California's privacy law — who must comply, your rights, sell vs share, and the penalties. With a live "does it apply to my business?" checker.</p>
-      <span class="go">Open the explainer &rarr;</span>
-    </a>
-    <a class="card" href="./examples/encryption.html">
-      <span class="tag">Scrolling · security</span>
-      <h2>How encryption works</h2>
-      <p>From Caesar cipher to public-key and the HTTPS handshake — with playable demos and a built-in "ask the page" chatbot.</p>
       <span class="go">Open the explainer &rarr;</span>
     </a>
   </div>

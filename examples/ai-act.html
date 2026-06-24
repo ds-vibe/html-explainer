@@ -1,417 +1,773 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The EU AI Act, explained</title>
-<meta name="description" content="The EU AI Act in one read: it regulates AI by how risky the use is. The four risk tiers, the fines, general-purpose AI, and the 2026 timeline — with interactive demos.">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How the EU AI Act Works — A Practical Breakdown</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#f7f6fb; --paper-2:#edebf6; --band:#1a1726; --card:#fffdfb;
-  --ink:#1a1726; --ink-soft:#56506a; --ink-faint:#8c86a0;
-  --line:#e2def0; --line-strong:#cbc5e0;
-  --accent:#5b4ee0; --accent-soft:#ebe8fb; --accent-ink:#4133b5;
-  --prohibited:#c0392b; --prohibited-soft:#f8e7e4;
-  --high:#cd7a13; --high-soft:#faeeda;
-  --limited:#2563eb; --limited-soft:#e5eefb;
-  --minimal:#2f855a; --minimal-soft:#e4f1ea;
-  --display:"Space Grotesk",system-ui,sans-serif; --sans:"Inter",system-ui,sans-serif;
-  --mono:ui-monospace,"SF Mono",Menlo,monospace;
-  --maxw:1200px; --measure:68ch; --r:14px; --r-sm:9px;
+  /* spacing scale (4/8) */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px; --s9:96px; --s10:128px;
+  /* surfaces & ink */
+  --paper:#FBF8F2;
+  --paper-2:#F3EEE3;
+  --ink:#221F1A;
+  --ink-2:#4A453C;
+  --ink-3:#736C5E;
+  --line:#E2DACB;
+  --line-2:#D2C8B4;
+  --card:#FFFFFF;
+  /* semantic risk palette */
+  --red:#B42318; --red-bg:#FBEAE8; --red-line:#F0C2BC;
+  --amber:#9A5B0B; --amber-bg:#FBF0E0; --amber-line:#EFD3A8;
+  --blue:#1F5C99; --blue-bg:#E7F0F8; --blue-line:#BFD7EC;
+  --green:#2E6B43; --green-bg:#E6F1E9; --green-line:#BEDCC6;
+  --violet:#6B3FA0; --violet-bg:#F0E9F7; --violet-line:#D8C8EC;
+  /* type */
+  --serif:"Fraunces",Georgia,serif;
+  --sans:"Inter",system-ui,sans-serif;
+  --maxw:1180px; --measure:66ch;
+  --shadow:0 1px 2px rgba(34,31,26,.04),0 8px 28px rgba(34,31,26,.06);
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
-.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
-.prose{max-width:var(--measure)}
-h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.1;letter-spacing:-.02em;color:var(--ink)}
-h2{font-size:clamp(28px,3.4vw,40px);margin:0 0 .5rem}
-h3{font-size:20px;margin:0 0 .35rem}
-p{margin:0 0 1rem}
-a{color:var(--accent)}
-.lede{font-size:clamp(18px,2vw,21px);color:var(--ink-soft);line-height:1.55}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:500;margin:0 0 .8rem;display:flex;align-items:center;gap:9px}
-.eyebrow::before{content:"";width:22px;height:1.5px;background:var(--accent)}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:17px;overflow-x:hidden}
+@media (max-width:640px){body{font-size:16px}}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.12;letter-spacing:-.01em}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s5)}
+.measure{max-width:var(--measure)}
+.eyebrow{font-family:var(--sans);font-weight:600;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
 
-#nav{position:sticky;top:0;z-index:40;background:rgba(247,246,251,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-#nav .wrap{display:flex;align-items:center;gap:22px;height:56px;padding-right:160px}
-#nav .brand{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.01em;margin-right:auto}
-#nav .brand span{color:var(--accent)}
-#nav a.lnk{color:var(--ink-soft);text-decoration:none;font-size:13.5px;font-weight:500}
-#nav a.lnk:hover{color:var(--accent)}
-@media(max-width:820px){#nav a.lnk{display:none}}
+/* ---------- nav ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(251,248,242,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:var(--s5);height:54px}
+.nav .brand{font-family:var(--serif);font-weight:600;font-size:1rem;letter-spacing:-.01em;white-space:nowrap}
+.nav .links{display:flex;gap:var(--s5);margin-left:auto;overflow-x:auto}
+.nav .links a{color:var(--ink-2);font-size:.84rem;font-weight:500;white-space:nowrap}
+.nav .links a:hover{color:var(--ink);text-decoration:none}
+@media (max-width:880px){.nav .links{display:none}}
 
-.hero{padding:74px 0 56px;border-bottom:1px solid var(--line)}
-.hero h1{font-size:clamp(40px,7vw,80px);font-weight:700;letter-spacing:-.03em;margin:0 0 1.1rem}
-.hero h1 em{font-style:normal;color:var(--accent)}
-.hero .lede{max-width:60ch}
-.hero-stats{display:flex;flex-wrap:wrap;gap:34px;margin-top:30px}
-.hero-stats .s .n{font-family:var(--display);font-size:30px;font-weight:600;color:var(--ink)}
-.hero-stats .s .l{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint)}
+/* ---------- hero ---------- */
+.hero{padding:var(--s9) 0 var(--s8);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero .wrap{position:relative;z-index:2}
+.hero h1{font-size:clamp(2.5rem,6vw,4.4rem);font-weight:600;max-width:16ch}
+.hero .lede{font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--ink-2);margin-top:var(--s5);max-width:54ch;line-height:1.45}
+.hero .meta{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);margin-top:var(--s6)}
+.hero .meta .m{display:flex;flex-direction:column;gap:2px;padding-right:var(--s5);border-right:1px solid var(--line-2)}
+.hero .meta .m:last-child{border-right:none}
+.hero .meta .k{font-size:1.5rem;font-family:var(--serif);font-weight:600;line-height:1}
+.hero .meta .l{font-size:.78rem;color:var(--ink-3);letter-spacing:.02em}
+.hero-bands{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;opacity:.5}
+.hero-bands span{flex:1}
+.hero-bands span:nth-child(1){background:linear-gradient(90deg,transparent 60%,var(--red-bg))}
+.hero-bands span:nth-child(2){background:linear-gradient(90deg,transparent 66%,var(--amber-bg))}
+.hero-bands span:nth-child(3){background:linear-gradient(90deg,transparent 72%,var(--blue-bg))}
+.hero-bands span:nth-child(4){background:linear-gradient(90deg,transparent 78%,var(--green-bg))}
 
-section{padding:64px 0}
-.band{background:var(--paper-2)}
-.band-dark{background:var(--band);color:#e7e4f0}
-.band-dark h2,.band-dark h3{color:#fbfaff}
-.band-dark .lede{color:#bcb6cf}
-.band-dark .eyebrow{color:#a99cf5}
-.band-dark .eyebrow::before{background:#a99cf5}
+/* ---------- sections ---------- */
+section{padding:var(--s9) 0}
+.band{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.band-ink{background:var(--ink);color:var(--paper)}
+.band-ink h2{color:#fff}
+.band-ink .ink-2{color:#C9C2B4}
+.sec-head{margin-bottom:var(--s7)}
+.sec-head h2{font-size:clamp(1.8rem,3.6vw,2.7rem);max-width:18ch}
+.sec-head p{color:var(--ink-2);margin-top:var(--s4);max-width:var(--measure);font-size:1.06rem}
+.num{font-family:var(--sans);font-weight:700;font-size:.8rem;color:var(--ink-3);letter-spacing:.1em}
 
-.bigidea{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
-@media(max-width:820px){.bigidea{grid-template-columns:1fr;gap:28px}}
-.model-card{background:#241f33;border:1px solid #393150;border-radius:var(--r);padding:30px 32px;position:relative}
-.model-card blockquote{margin:0;font-family:var(--display);font-size:23px;font-weight:500;line-height:1.35;color:#fbfaff}
-.model-card .sub{font-size:14px;color:#bcb6cf;margin-top:14px}
+/* big idea callout */
+.bigidea{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--s8);align-items:center}
+.bigidea>div{min-width:0}
+@media (max-width:860px){.bigidea{grid-template-columns:1fr;gap:var(--s6)}}
+.bigidea .pull{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.25;font-weight:500}
+.bigidea .pull em{font-style:normal;background:linear-gradient(transparent 62%,var(--amber-line) 62%);padding:0 2px}
+.bigidea p{color:var(--ink-2);margin-top:var(--s5)}
+.flip{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6);box-shadow:var(--shadow)}
+.flip .row{display:flex;align-items:center;flex-wrap:wrap;gap:var(--s2) var(--s4);padding:var(--s3) 0;border-bottom:1px dashed var(--line)}
+.flip .arrow{flex:1;min-width:0;font-size:.9rem}
+.flip .row:last-child{border-bottom:none}
+.flip .tool{font-weight:600;flex:0 0 38%}
+.flip .arrow{color:var(--ink-3)}
+.flip .tier{margin-left:auto;font-size:.8rem;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap}
 
-/* risk pyramid (centerpiece) */
-.pyramid-wrap{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
-@media(max-width:820px){.pyramid-wrap{grid-template-columns:1fr;gap:24px}}
-.pyramid{display:flex;flex-direction:column;gap:8px;align-items:center}
-.tier{width:100%;border:none;cursor:pointer;border-radius:10px;padding:16px 18px;text-align:left;color:#fff;font-family:var(--sans);transition:transform .15s,box-shadow .15s,opacity .15s;position:relative}
-.tier:hover{transform:translateY(-2px)}
-.tier .tn{font-family:var(--display);font-weight:600;font-size:17px;display:flex;justify-content:space-between;align-items:center}
-.tier .td{font-size:12.5px;opacity:.92;margin-top:2px}
-.tier .pct{font-family:var(--mono);font-size:11px;opacity:.85;font-weight:400}
-.tier[data-id=prohibited]{background:var(--prohibited);width:52%}
-.tier[data-id=high]{background:var(--high);width:68%}
-.tier[data-id=limited]{background:var(--limited);width:84%}
-.tier[data-id=minimal]{background:var(--minimal);width:100%}
-.tier.sel{box-shadow:0 0 0 3px var(--paper),0 0 0 5px currentColor}
-.tier.dim{opacity:.4}
-.pyramid-axis{font-family:var(--mono);font-size:11px;color:var(--ink-faint);display:flex;justify-content:space-between;width:100%;margin-top:4px}
-.tier-detail{background:var(--card);border:1px solid var(--line-strong);border-radius:var(--r);padding:26px 28px;min-height:280px}
-.tier-detail .badge{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;padding:4px 10px;border-radius:100px;margin-bottom:12px}
-.tier-detail h3{font-size:25px;margin:0 0 .4rem}
-.tier-detail .rule{font-size:14px;color:var(--ink-soft);margin:0 0 16px}
-.tier-detail .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);margin:14px 0 7px}
-.tier-detail ul{margin:0;padding-left:18px}
-.tier-detail li{font-size:14px;color:var(--ink);margin-bottom:5px}
+/* ---------- risk pyramid ---------- */
+.pyramid{display:flex;flex-direction:column;gap:var(--s3);max-width:760px;margin:0 auto}
+.tier-row{border-radius:12px;border:1px solid;overflow:hidden;transition:transform .15s ease}
+.tier-row button.tier-head{width:100%;display:flex;align-items:center;gap:var(--s4);padding:var(--s5) var(--s5);background:transparent;border:none;cursor:pointer;text-align:left;font-family:inherit}
+.tier-row .tag{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:#fff;white-space:nowrap}
+.tier-row .tname{font-family:var(--serif);font-size:1.22rem;font-weight:600}
+.tier-row .tsub{font-size:.86rem;color:var(--ink-2);margin-top:2px}
+.tier-row .chev{margin-left:auto;color:var(--ink-3);transition:transform .2s;flex:0 0 auto}
+.tier-row[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.tier-row .body{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 var(--s5)}
+.tier-row[aria-expanded="true"] .body{max-height:640px;padding-bottom:var(--s5)}
+.tier-row .body ul{margin:0 0 0 var(--s4);color:var(--ink-2);font-size:.95rem}
+.tier-row .body li{margin:var(--s2) 0}
+.tier-row .body .note{font-size:.82rem;color:var(--ink-3);margin-top:var(--s3);font-style:italic}
+/* widths to evoke a pyramid */
+.tw1{width:62%} .tw2{width:78%} .tw3{width:90%} .tw4{width:100%}
+@media (max-width:680px){.tw1,.tw2,.tw3,.tw4{width:100%}}
+.t-prohibited{background:var(--red-bg);border-color:var(--red-line)}
+.t-prohibited .tag{background:var(--red)} .t-prohibited .tname{color:var(--red)}
+.t-high{background:var(--amber-bg);border-color:var(--amber-line)}
+.t-high .tag{background:var(--amber)} .t-high .tname{color:var(--amber)}
+.t-limited{background:var(--blue-bg);border-color:var(--blue-line)}
+.t-limited .tag{background:var(--blue)} .t-limited .tname{color:var(--blue)}
+.t-minimal{background:var(--green-bg);border-color:var(--green-line)}
+.t-minimal .tag{background:var(--green)} .t-minimal .tname{color:var(--green)}
+.pyr-axis{display:flex;justify-content:space-between;max-width:760px;margin:var(--s4) auto 0;font-size:.76rem;color:var(--ink-3);letter-spacing:.04em}
 
-/* classify demo */
-.demo{background:var(--card);border:1px solid var(--line-strong);border-radius:var(--r);overflow:hidden}
-.demo-head{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,rgba(91,78,224,.05),transparent)}
-.demo-head .ic{color:var(--accent)}
-.demo-head h3{margin:0;font-size:16px;font-family:var(--display)}
-.demo-head .hint{margin-left:auto;font-size:12.5px;color:var(--ink-faint);font-family:var(--mono)}
-.demo-body{padding:22px}
-.chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}
-.chip{font-size:13.5px;font-family:var(--sans);font-weight:500;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);border-radius:100px;padding:8px 14px;cursor:pointer;transition:.15s}
-.chip:hover{border-color:var(--accent);color:var(--accent)}
-.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-.classout{display:flex;gap:16px;align-items:center;padding:16px 18px;border-radius:var(--r-sm);background:var(--paper-2);min-height:64px}
-.classout .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;background:var(--line-strong)}
-.classout .ct{font-family:var(--display);font-weight:600;font-size:16px}
-.classout .cw{font-size:13.5px;color:var(--ink-soft)}
-.classout.empty .ct{color:var(--ink-faint);font-weight:500}
+/* ---------- classifier demo ---------- */
+.demo{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.demo-top{padding:var(--s6) var(--s6) var(--s5);border-bottom:1px solid var(--line)}
+.demo-top .eyebrow{color:var(--violet)}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media (max-width:760px){.demo-grid{grid-template-columns:1fr}}
+.demo-cases{padding:var(--s5) var(--s6);display:flex;flex-direction:column;gap:var(--s2);border-right:1px solid var(--line)}
+@media (max-width:760px){.demo-cases{border-right:none;border-bottom:1px solid var(--line)}}
+.demo-cases button{text-align:left;font-family:inherit;font-size:.92rem;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:var(--s3) var(--s4);cursor:pointer;transition:all .14s;line-height:1.35}
+.demo-cases button:hover{border-color:var(--line-2);background:#fff}
+.demo-cases button[aria-pressed="true"]{border-color:var(--ink);background:#fff;box-shadow:0 0 0 1px var(--ink)}
+.demo-result{padding:var(--s6);display:flex;flex-direction:column;justify-content:center;min-height:280px}
+.demo-result .placeholder{color:var(--ink-3);font-size:.95rem}
+.verdict-tag{display:inline-flex;align-items:center;gap:8px;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px;color:#fff;align-self:flex-start}
+.verdict h3{font-size:1.5rem;margin:var(--s4) 0 var(--s2)}
+.verdict p{color:var(--ink-2);font-size:.97rem}
+.verdict .why{margin-top:var(--s4);padding:var(--s4);border-radius:10px;font-size:.9rem;border:1px solid}
 
-/* two-up cards */
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-@media(max-width:680px){.duo{grid-template-columns:1fr}}
-.ucard{border:1px solid var(--line-strong);border-radius:var(--r);padding:24px 26px;background:var(--card)}
-.ucard .k{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);font-weight:600}
-.ucard h3{font-size:19px;margin:.5rem 0 .4rem;font-family:var(--display)}
-.ucard p{font-size:14.5px;color:var(--ink-soft);margin:0}
+/* ---------- generic cards / lists ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--s4)}
+.banlist{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+@media (max-width:760px){.banlist{grid-template-columns:1fr}}
+.ban{display:flex;gap:var(--s4);padding:var(--s4) var(--s5);background:var(--red-bg);border:1px solid var(--red-line);border-radius:12px}
+.ban .ix{font-family:var(--serif);font-weight:600;color:var(--red);font-size:1.1rem;flex:0 0 auto;width:26px}
+.ban .bt{font-weight:600;font-size:.96rem;color:var(--ink)}
+.ban .bd{font-size:.86rem;color:var(--ink-2);margin-top:2px}
 
-/* fines */
-.fines{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px}
-@media(max-width:760px){.fines{grid-template-columns:1fr}}
-.fine{background:#241f33;border:1px solid #393150;border-radius:var(--r);padding:22px 24px;border-top:3px solid}
-.fine.t1{border-top-color:var(--prohibited)}
-.fine.t2{border-top-color:var(--high)}
-.fine.t3{border-top-color:var(--limited)}
-.fine .amt{font-family:var(--display);font-size:clamp(24px,3vw,32px);color:#fbfaff;line-height:1.05;margin-bottom:8px}
-.fine .amt small{font-size:14px;color:#a99cf5;font-weight:400}
-.fine .fl{font-size:13.5px;color:#bcb6cf;line-height:1.45}
+/* high-risk filter table */
+.hr-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.hr-domains{display:flex;flex-wrap:wrap;gap:var(--s2);padding:var(--s5) var(--s6);border-bottom:1px solid var(--line);background:var(--paper)}
+.hr-domains button{font-family:inherit;font-size:.84rem;font-weight:500;padding:7px 13px;border-radius:999px;border:1px solid var(--line-2);background:#fff;color:var(--ink-2);cursor:pointer;transition:all .14s}
+.hr-domains button:hover{border-color:var(--amber);color:var(--amber)}
+.hr-domains button[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:#fff}
+.hr-body{padding:var(--s6)}
+.hr-item{padding:var(--s4) 0;border-bottom:1px solid var(--line)}
+.hr-item:last-child{border-bottom:none}
+.hr-item h4{font-size:1.05rem;color:var(--amber);display:flex;align-items:center;gap:var(--s3)}
+.hr-item p{color:var(--ink-2);font-size:.93rem;margin-top:var(--s2)}
+.hr-reqs{margin-top:var(--s6);padding-top:var(--s6);border-top:2px solid var(--line)}
+.reqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--s3);margin-top:var(--s4)}
+.req{padding:var(--s4);border:1px solid var(--amber-line);background:var(--amber-bg);border-radius:10px}
+.req .rt{font-weight:600;font-size:.92rem;color:var(--ink)}
+.req .rd{font-size:.82rem;color:var(--ink-2);margin-top:2px}
 
-/* timeline before/after */
-.tl{position:relative;padding-left:30px;margin-top:8px}
-.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line-strong)}
-.tl .ev{position:relative;padding:0 0 24px 10px}
-.tl .ev::before{content:"";position:absolute;left:-29px;top:3px;width:13px;height:13px;border-radius:50%;background:var(--card);border:2.5px solid var(--accent)}
-.tl .ev.done::before{background:var(--accent);border-color:var(--accent)}
-.tl .ev.here::before{border-color:var(--minimal);background:var(--minimal-soft);box-shadow:0 0 0 4px var(--minimal-soft)}
-.tl .ev .t{font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:600;letter-spacing:.03em}
-.tl .ev.here .t{color:var(--minimal)}
-.tl .ev h3{font-size:16.5px;margin:.15rem 0 .25rem;font-family:var(--display)}
-.tl .ev p{font-size:14px;color:var(--ink-soft);margin:0;max-width:62ch}
-.moved{display:inline-block;font-size:12px;font-family:var(--mono);background:var(--high-soft);color:#8a5310;border-radius:5px;padding:2px 7px;margin-left:6px}
-.was{text-decoration:line-through;color:var(--ink-faint)}
-.herepill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;color:var(--minimal);background:var(--minimal-soft);border-radius:100px;padding:3px 10px;margin-left:8px}
+/* GPAI */
+.gpai-cols{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+@media (max-width:760px){.gpai-cols{grid-template-columns:1fr}}
+.gpai-card{border:1px solid var(--violet-line);background:var(--violet-bg);border-radius:14px;padding:var(--s6)}
+.gpai-card.sys{background:var(--card);border-color:var(--line)}
+.gpai-card h3{color:var(--violet);font-size:1.25rem;display:flex;align-items:center;gap:var(--s3)}
+.gpai-card ul{margin:var(--s4) 0 0 var(--s4);color:var(--ink-2);font-size:.93rem}
+.gpai-card li{margin:var(--s2) 0}
+.gpai-card .badge{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--violet);padding:3px 9px;border-radius:999px}
+.flops{margin-top:var(--s5);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6);box-shadow:var(--shadow)}
+.flops .read{display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;margin:var(--s4) 0}
+.flops .read .big{font-family:var(--serif);font-size:2rem;font-weight:600}
+.flops input[type=range]{width:100%;accent-color:var(--violet);height:6px}
+.flops .scale{display:flex;justify-content:space-between;font-size:.72rem;color:var(--ink-3);margin-top:var(--s2)}
+.flops .out{margin-top:var(--s4);padding:var(--s4);border-radius:10px;font-size:.92rem;font-weight:500;border:1px solid;transition:all .2s}
+.out-no{background:var(--violet-bg);border-color:var(--violet-line);color:var(--violet)}
+.out-yes{background:var(--red-bg);border-color:var(--red-line);color:var(--red)}
+
+/* who's on the hook */
+.who{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+@media (max-width:760px){.who{grid-template-columns:1fr}}
+.who-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6);box-shadow:var(--shadow)}
+.who-card .role{font-family:var(--serif);font-size:1.3rem;font-weight:600}
+.who-card .tagrole{font-size:.78rem;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em}
+.who-card p{color:var(--ink-2);font-size:.93rem;margin-top:var(--s3)}
+.reach{margin-top:var(--s5);background:var(--ink);color:var(--paper);border-radius:14px;padding:var(--s6)}
+.reach h3{color:#fff;font-size:1.2rem}
+.reach p{color:#C9C2B4;margin-top:var(--s3);font-size:.95rem}
+
+/* penalties */
+.pen-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4)}
+@media (max-width:760px){.pen-tiers{grid-template-columns:1fr}}
+.pen{border-radius:14px;padding:var(--s6);border:1px solid;color:var(--paper)}
+.pen .amt{font-family:var(--serif);font-size:2.1rem;font-weight:600;line-height:1}
+.pen .pct{font-size:.95rem;opacity:.92;margin-top:var(--s2)}
+.pen .pl{font-weight:600;margin-top:var(--s4);font-size:.98rem}
+.pen .pd{font-size:.85rem;opacity:.9;margin-top:var(--s2)}
+.pen1{background:#8E1B12;border-color:#6e150e}
+.pen2{background:#7A4709;border-color:#5e3707}
+.pen3{background:#3D3A33;border-color:#2c2a25}
+.calc{margin-top:var(--s5);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:var(--s6);box-shadow:var(--shadow)}
+.calc label{font-size:.85rem;font-weight:600;color:var(--ink-2)}
+.calc .inrow{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s3);flex-wrap:wrap}
+.calc input[type=number]{font-family:var(--sans);font-size:1rem;padding:10px 12px;border:1px solid var(--line-2);border-radius:8px;width:180px;background:var(--paper)}
+.calc select{font-family:var(--sans);font-size:.95rem;padding:10px 12px;border:1px solid var(--line-2);border-radius:8px;background:var(--paper)}
+.calc .result{margin-top:var(--s5);display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+@media (max-width:600px){.calc .result{grid-template-columns:1fr}}
+.calc .rc{padding:var(--s4);border-radius:10px;border:1px solid var(--line)}
+.calc .rc .rl{font-size:.78rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.calc .rc .rv{font-family:var(--serif);font-size:1.5rem;font-weight:600;margin-top:4px}
+.calc .rc.win{border-color:var(--red-line);background:var(--red-bg)}
+.calc .rc.win .rv{color:var(--red)}
+
+/* timeline */
+.tl{position:relative;margin-top:var(--s6);padding-left:var(--s6)}
+.tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line-2)}
+.tl-item{position:relative;padding:0 0 var(--s7) var(--s6)}
+.tl-item::before{content:"";position:absolute;left:-2px;top:4px;width:22px;height:22px;border-radius:50%;background:var(--card);border:3px solid var(--ink-3)}
+.tl-item.done::before{background:var(--green);border-color:var(--green)}
+.tl-item.now::before{background:var(--amber);border-color:var(--amber);box-shadow:0 0 0 5px var(--amber-bg)}
+.tl-item.future::before{background:var(--card);border-color:var(--line-2)}
+.tl-date{font-family:var(--serif);font-size:1.15rem;font-weight:600}
+.tl-status{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin-left:var(--s3);vertical-align:middle}
+.st-done{background:var(--green-bg);color:var(--green)}
+.st-now{background:var(--amber-bg);color:var(--amber)}
+.st-future{background:var(--paper-2);color:var(--ink-3)}
+.tl-item p{color:var(--ink-2);font-size:.95rem;margin-top:var(--s2);max-width:60ch}
+.tl-item .defer{margin-top:var(--s3);font-size:.85rem;background:var(--blue-bg);border:1px solid var(--blue-line);border-radius:8px;padding:var(--s3) var(--s4);color:var(--ink-2)}
+.tl-item .defer b{color:var(--blue)}
 
 /* quiz */
-.quiz{max-width:760px;margin:0 auto}
-.q{background:var(--card);border:1px solid var(--line-strong);border-radius:var(--r);padding:22px 24px;margin-bottom:16px}
-.q .qq{font-weight:600;font-size:17px;margin-bottom:14px}
-.q .opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--paper);border-radius:var(--r-sm);padding:12px 15px;margin-bottom:9px;cursor:pointer;font-family:var(--sans);font-size:15px;color:var(--ink);transition:.12s}
-.q .opt:hover{border-color:var(--accent)}
-.q .opt:disabled{cursor:default}
-.q .opt.correct{border-color:var(--minimal);background:var(--minimal-soft)}
-.q .opt.wrong{border-color:var(--prohibited);background:var(--prohibited-soft)}
-.q .why{font-size:14px;color:var(--ink-soft);margin-top:6px;padding:11px 14px;background:var(--paper-2);border-radius:var(--r-sm);display:none}
-.q .why.show{display:block}
-.q .why b{color:var(--ink)}
-#score{text-align:center;font-family:var(--display);font-size:21px;margin-top:8px;min-height:30px}
+.quiz{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:var(--s7) var(--s6)}
+.q{margin-bottom:var(--s7)}
+.q:last-of-type{margin-bottom:var(--s5)}
+.q .qq{font-family:var(--serif);font-size:1.2rem;font-weight:600;display:flex;gap:var(--s3)}
+.q .qq .qn{color:var(--violet)}
+.q .opts{margin-top:var(--s4);display:flex;flex-direction:column;gap:var(--s2)}
+.q .opts button{text-align:left;font-family:inherit;font-size:.95rem;padding:var(--s3) var(--s4);border:1px solid var(--line-2);border-radius:10px;background:var(--paper);cursor:pointer;transition:all .12s;color:var(--ink)}
+.q .opts button:hover:not(:disabled){border-color:var(--ink-3)}
+.q .opts button:disabled{cursor:default}
+.q .opts button.correct{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
+.q .opts button.wrong{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.q .exp{margin-top:var(--s3);font-size:.9rem;color:var(--ink-2);padding:var(--s3) var(--s4);background:var(--paper-2);border-radius:8px;border-left:3px solid var(--violet);display:none}
+.q .exp.show{display:block}
+.score{font-family:var(--serif);font-size:1.3rem;font-weight:600;text-align:center;padding:var(--s5);border-radius:12px;background:var(--paper-2);display:none}
+.score.show{display:block}
 
-footer{background:var(--band);color:#c8c2da;padding:56px 0 40px;font-size:14px}
-footer h3{color:#fff;font-size:18px;font-family:var(--display)}
-footer a{color:#a99cf5}
-.srclist{columns:2;column-gap:34px;margin:14px 0 0;padding:0;list-style:none}
-@media(max-width:620px){.srclist{columns:1}}
-.srclist li{margin:0 0 9px;break-inside:avoid;font-size:13.5px;line-height:1.4}
-.disclaimer{margin-top:28px;padding-top:20px;border-top:1px solid #393150;font-size:12.5px;color:#928caa;max-width:80ch}
+/* sources / footer */
+.src{font-size:.9rem;color:var(--ink-2)}
+.src li{margin:var(--s2) 0;list-style:none}
+.foot{padding:var(--s7) 0;border-top:1px solid var(--line);color:var(--ink-3);font-size:.85rem}
+.disclaimer{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:var(--s5);font-size:.9rem;color:var(--ink-2);margin-top:var(--s6)}
 
+/* reveal */
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
 .reveal.in{opacity:1;transform:none}
-@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
-.icon{width:20px;height:20px;display:inline-block;vertical-align:-4px}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+.callout{background:var(--blue-bg);border:1px solid var(--blue-line);border-left:4px solid var(--blue);border-radius:10px;padding:var(--s5);margin-top:var(--s6)}
+.callout .ct{font-weight:600;color:var(--blue);font-size:.9rem;text-transform:uppercase;letter-spacing:.05em}
+.callout p{font-size:.95rem;color:var(--ink-2);margin-top:var(--s2)}
 </style>
 </head>
 <body data-review-toggle>
 
-<nav id="nav"><div class="wrap">
-  <span class="brand">EU AI Act<span>.</span></span>
-  <a class="lnk" href="#idea">The idea</a>
-  <a class="lnk" href="#tiers">Risk tiers</a>
-  <a class="lnk" href="#classify">Classify</a>
-  <a class="lnk" href="#gpai">GPAI</a>
-  <a class="lnk" href="#fines">Fines</a>
-  <a class="lnk" href="#timeline">Timeline</a>
-  <a class="lnk" href="#quiz">Quiz</a>
-</div></nav>
-
-<header class="hero"><div class="wrap">
-  <p class="eyebrow">Regulation (EU) 2024/1689 · in force since 1 Aug 2024</p>
-  <h1>The EU AI Act,<br><em>explained.</em></h1>
-  <p class="lede">The world's first comprehensive AI law looks sprawling, but it rests on one idea: rules scale with <em>risk</em>. Here's the whole shape in one read — the four tiers, the duties, the fines, and the 2026 timeline after the Digital Omnibus reshuffled the deadlines.</p>
-  <div class="hero-stats">
-    <div class="s"><div class="n">4</div><div class="l">Risk tiers</div></div>
-    <div class="s"><div class="n">€35M</div><div class="l">Top fine / 7% turnover</div></div>
-    <div class="s"><div class="n">2024&rarr;2028</div><div class="l">Phasing in</div></div>
+<nav class="nav">
+  <div class="wrap">
+    <span class="brand">EU AI Act · Explained</span>
+    <div class="links">
+      <a href="#idea">The big idea</a>
+      <a href="#pyramid">Risk tiers</a>
+      <a href="#classify">Classify it</a>
+      <a href="#banned">Banned uses</a>
+      <a href="#highrisk">High-risk</a>
+      <a href="#gpai">General-purpose AI</a>
+      <a href="#penalties">Penalties</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#quiz">Quiz</a>
+    </div>
   </div>
-</div></header>
+</nav>
+
+<header class="hero">
+  <div class="hero-bands" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="wrap">
+    <p class="eyebrow">A practical breakdown</p>
+    <h1>How the EU AI Act works</h1>
+    <p class="lede">The world's first comprehensive law for artificial intelligence. The trick to understanding it: it doesn't regulate the technology — it regulates what you <em>do</em> with it, and the rules scale with the risk.</p>
+    <div class="meta">
+      <div class="m"><span class="k">2024</span><span class="l">In force since 1 Aug</span></div>
+      <div class="m"><span class="k">4</span><span class="l">Risk tiers</span></div>
+      <div class="m"><span class="k">€35M</span><span class="l">Top fine, or 7% of turnover</span></div>
+      <div class="m"><span class="k">2025–28</span><span class="l">Phasing in</span></div>
+    </div>
+  </div>
+</header>
 
 <!-- BIG IDEA -->
-<section id="idea" class="band-dark"><div class="wrap">
-  <div class="bigidea">
-    <div>
-      <p class="eyebrow">The one idea to hold onto</p>
-      <h2>It regulates the use,<br>not the technology.</h2>
-      <p class="lede">The Act almost never asks "is this AI?" It asks "what is this AI <em>used for</em>, and how much could that hurt someone?" The riskier the use, the stricter the rules — from light-touch transparency all the way to an outright ban.</p>
-      <p style="color:#bcb6cf;max-width:54ch">So the same underlying model can be unregulated in a video game and heavily controlled in a hiring tool. Find the <b style="color:#fff">use case</b>, find its <b style="color:#fff">risk tier</b>, and you know the obligations.</p>
-    </div>
-    <div class="model-card">
-      <blockquote>"A spam filter and a system that decides who gets bail can use the same AI — the law treats them completely differently, because the stakes are."</blockquote>
-      <div class="sub">That's the whole framework: four tiers of risk, four levels of obligation.</div>
+<section id="idea">
+  <div class="wrap">
+    <div class="bigidea reveal">
+      <div>
+        <p class="num">THE MENTAL MODEL</p>
+        <p class="pull">The Act is a <em>sorting machine</em>. Every AI system gets dropped in by its risk, and the weight of the rules matches the tier it lands in.</p>
+        <p>Most people expect a law that says "here are the rules for AI." The EU AI Act is built differently. It asks one question about each system — <strong>how much risk does this particular use create for people's rights and safety?</strong> — and sorts it into one of four tiers. Unacceptable uses are banned outright. High-risk uses carry heavy obligations. Limited-risk uses just need to be transparent. Everything else is free.</p>
+        <p>This is why the <em>same</em> piece of technology can sit in totally different tiers. A face-matching model is minimal-risk when it unlocks your phone, high-risk when it screens job applicants, and outright banned when it scrapes the open web to build a surveillance database.</p>
+      </div>
+      <div class="flip" aria-label="Same technology, different risk tiers depending on use">
+        <p class="eyebrow" style="margin-bottom:var(--s3)">Same tech · different use · different tier</p>
+        <div class="row"><span class="tool">Face recognition</span><span class="arrow">unlocking your phone</span><span class="tier" style="background:var(--green-bg);color:var(--green)">Minimal</span></div>
+        <div class="row"><span class="tool">Face recognition</span><span class="arrow">screening job applicants</span><span class="tier" style="background:var(--amber-bg);color:var(--amber)">High-risk</span></div>
+        <div class="row"><span class="tool">Face recognition</span><span class="arrow">scraping the web for a DB</span><span class="tier" style="background:var(--red-bg);color:var(--red)">Banned</span></div>
+        <div class="row"><span class="tool">A chatbot</span><span class="arrow">answering FAQs</span><span class="tier" style="background:var(--blue-bg);color:var(--blue)">Limited</span></div>
+      </div>
     </div>
   </div>
-</div></section>
+</section>
 
-<!-- RISK TIERS (centerpiece) -->
-<section id="tiers"><div class="wrap">
-  <p class="eyebrow">The framework · click a tier</p>
-  <h2>Four tiers of risk.</h2>
-  <p class="lede prose" style="margin-bottom:28px">Every AI system lands in one of four tiers. The higher the risk, the heavier the rules — and the narrower the band of systems that fall in it.</p>
-  <div class="pyramid-wrap">
-    <div>
-      <div class="pyramid" id="pyramid"></div>
-      <div class="pyramid-axis"><span>&uarr; more restricted, fewer systems</span><span>more common &darr;</span></div>
+<!-- PYRAMID -->
+<section id="pyramid" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">01 — THE FOUR TIERS</p>
+      <h2>The risk pyramid</h2>
+      <p>The fewer the systems in a tier, the heavier its rules. A tiny number of uses are banned at the top; the vast majority of everyday AI sits unregulated at the bottom. Click any tier to open it.</p>
     </div>
-    <div class="tier-detail" id="tierDetail"></div>
+    <div class="pyramid reveal" id="pyr"></div>
+    <div class="pyr-axis reveal"><span>↑ Fewer systems · heavier rules</span><span>More systems · lighter rules ↓</span></div>
+    <div class="callout reveal">
+      <p class="ct">One more track, running alongside</p>
+      <p>General-purpose AI models — the large models like GPT, Gemini or Llama that power many products — are governed by their <strong>own separate set of rules</strong>, not the pyramid. We cover those <a href="#gpai">further down</a>.</p>
+    </div>
   </div>
-</div></section>
+</section>
 
 <!-- CLASSIFY DEMO -->
-<section id="classify" class="band"><div class="wrap">
-  <p class="eyebrow">Try it</p>
-  <h2>Where would it land?</h2>
-  <p class="lede prose" style="margin-bottom:24px">Tap an AI use and see which tier the Act drops it into — and why.</p>
-  <div class="demo">
-    <div class="demo-head">
-      <svg class="ic icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="6" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
-      <h3>Risk classifier</h3>
-      <span class="hint">pick a use</span>
+<section id="classify">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">02 — TRY IT YOURSELF</p>
+      <h2>Which tier does it land in?</h2>
+      <p>The whole Act turns on classification. Pick a real-world AI use below and see where the sorting machine drops it — and why.</p>
     </div>
-    <div class="demo-body">
-      <div class="chips" id="scenChips"></div>
-      <div class="classout empty" id="classOut"><span class="dot"></span><div><div class="ct">Pick an AI use above</div><div class="cw">The classifier shows its tier and the reason.</div></div></div>
+    <div class="demo reveal">
+      <div class="demo-top">
+        <p class="eyebrow">Interactive · the classifier</p>
+      </div>
+      <div class="demo-grid">
+        <div class="demo-cases" id="caseList" role="group" aria-label="Choose an AI use case"></div>
+        <div class="demo-result" id="caseResult">
+          <p class="placeholder">← Pick a use case to classify it.</p>
+        </div>
+      </div>
     </div>
   </div>
-</div></section>
+</section>
+
+<!-- BANNED -->
+<section id="banned" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">03 — UNACCEPTABLE RISK</p>
+      <h2>The eight banned uses</h2>
+      <p>At the top of the pyramid, a short list of practices is prohibited outright across the EU — no compliance path, no exceptions for most. These are uses seen as a clear threat to people's rights. (Article 5.)</p>
+    </div>
+    <div class="banlist reveal" id="banList"></div>
+    <div class="callout reveal">
+      <p class="ct">The narrow exception</p>
+      <p>Real-time facial recognition in public by police is banned <em>by default</em>, but narrowly allowed for things like searching for a missing child or preventing an imminent terror attack — and only with a fundamental-rights assessment and judicial sign-off.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HIGH RISK -->
+<section id="highrisk">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">04 — HIGH RISK</p>
+      <h2>High-risk: where most of the law lives</h2>
+      <p>These systems are allowed, but heavily regulated — the bulk of the Act is about them. A use is high-risk if it's a safety component of a regulated product, or if it falls into one of eight sensitive areas (Annex III). Filter the areas, then see what providers must actually do.</p>
+    </div>
+    <div class="hr-wrap reveal">
+      <div class="hr-domains" id="hrDomains" role="group" aria-label="Filter high-risk areas"></div>
+      <div class="hr-body">
+        <div id="hrList"></div>
+        <div class="hr-reqs">
+          <p class="num" style="color:var(--amber)">IF IT'S HIGH-RISK, THE PROVIDER MUST…</p>
+          <div class="reqgrid" id="hrReqs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- GPAI -->
-<section id="gpai"><div class="wrap">
-  <p class="eyebrow">A parallel track</p>
-  <h2>General-purpose AI gets its own rules.</h2>
-  <p class="lede prose" style="margin-bottom:24px">Foundation models (think large language models) don't fit neatly into a single use, so the Act regulates them separately — by capability, with the European Commission's new <b>AI Office</b> as the direct enforcer.</p>
-  <div class="duo">
-    <div class="ucard">
-      <span class="k">All GPAI models</span>
-      <h3>Baseline transparency</h3>
-      <p>Technical documentation, a summary of training data, and a policy to respect EU copyright. In force since 2 August 2025.</p>
+<section id="gpai" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">05 — GENERAL-PURPOSE AI</p>
+      <h2>The parallel track: general-purpose models</h2>
+      <p>The big foundation models don't fit the use-based pyramid — one model can be put to a thousand uses. So they get their own rules, in two layers: a baseline for <em>every</em> GPAI model, plus extra duties for the most powerful ones that pose "systemic risk."</p>
     </div>
-    <div class="ucard">
-      <span class="k">Systemic-risk GPAI</span>
-      <h3>The most capable models</h3>
-      <p>The largest models carry extra duties: model evaluations, adversarial testing, incident reporting, and cybersecurity — because their reach makes failures systemic.</p>
+    <div class="gpai-cols reveal">
+      <div class="gpai-card">
+        <h3>Every GPAI model</h3>
+        <ul>
+          <li>Keep <strong>technical documentation</strong> of how the model was built, trained and tested.</li>
+          <li>Give downstream developers the <strong>info they need</strong> to build on it compliantly.</li>
+          <li>Have a policy to <strong>respect EU copyright</strong> law.</li>
+          <li>Publish a <strong>summary of the training data</strong> used.</li>
+        </ul>
+        <p style="font-size:.84rem;color:var(--ink-3);margin-top:var(--s4)">Free & open-licence models only owe the last two — unless they hit systemic risk.</p>
+      </div>
+      <div class="gpai-card sys">
+        <h3><span class="badge">+ systemic risk</span></h3>
+        <ul>
+          <li>Run <strong>model evaluations</strong> and <strong>adversarial testing</strong> (red-teaming).</li>
+          <li>Assess and <strong>mitigate systemic risks</strong> at their source.</li>
+          <li><strong>Track and report serious incidents</strong> to the EU AI Office.</li>
+          <li>Ensure strong <strong>cybersecurity</strong> for the model and its weights.</li>
+        </ul>
+        <p style="font-size:.84rem;color:var(--ink-3);margin-top:var(--s4)">These stack on top of the baseline — systemic-risk models owe both sets.</p>
+      </div>
+    </div>
+    <div class="flops reveal">
+      <p class="num" style="color:var(--violet)">WHAT COUNTS AS "SYSTEMIC RISK"? — DRAG TO EXPLORE</p>
+      <p style="font-size:.92rem;color:var(--ink-2);margin-top:var(--s3)">The headline trigger is raw training compute. A model is presumed to pose systemic risk once the compute used to train it crosses <strong>10<sup>25</sup> floating-point operations (FLOP)</strong>.</p>
+      <div class="read"><span class="big" id="flopVal">10²⁵</span><span style="color:var(--ink-3)">FLOP of training compute</span></div>
+      <input type="range" id="flopSlider" min="22" max="27" step="0.1" value="25" aria-label="Training compute in powers of ten">
+      <div class="scale"><span>10²²</span><span>10²³</span><span>10²⁴</span><span>10²⁵</span><span>10²⁶</span><span>10²⁷</span></div>
+      <div class="out out-no" id="flopOut">Below the threshold — baseline GPAI rules apply, but not the systemic-risk duties.</div>
+      <p style="font-size:.8rem;color:var(--ink-3);margin-top:var(--s3)">The compute figure is the legal presumption; the Commission can also designate a model systemic on other grounds. Threshold illustrative of the rule, not a precise model ranking.</p>
     </div>
   </div>
-</div></section>
+</section>
 
-<!-- FINES -->
-<section id="fines" class="band-dark"><div class="wrap">
-  <p class="eyebrow">Article 99 · what it costs</p>
-  <h2>Fines scale with both the breach and the company.</h2>
-  <p class="lede" style="max-width:64ch;margin-bottom:26px">Three tiers, each "the greater of" a fixed cap or a percentage of worldwide annual turnover — except for SMEs and startups, who pay the <em>lower</em> of the two as a proportionality safeguard.</p>
-  <div class="fines">
-    <div class="fine t1"><div class="amt">&euro;35M <small>/ 7%</small></div><div class="fl">For the <b style="color:#fff">prohibited practices</b> in Article 5 — the bright-line bans.</div></div>
-    <div class="fine t2"><div class="amt">&euro;15M <small>/ 3%</small></div><div class="fl">For most <b style="color:#fff">other breaches</b> — high-risk duties, GPAI obligations.</div></div>
-    <div class="fine t3"><div class="amt">&euro;7.5M <small>/ 1%</small></div><div class="fl">For supplying <b style="color:#fff">incorrect or misleading information</b> to authorities.</div></div>
+<!-- WHO -->
+<section id="who">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">06 — WHO'S ON THE HOOK</p>
+      <h2>Providers, deployers — and why location barely matters</h2>
+      <p>The Act splits responsibility by role. Most of the weight falls on whoever <em>builds</em> the system, but the organisation that <em>uses</em> it has duties too.</p>
+    </div>
+    <div class="who reveal">
+      <div class="who-card">
+        <p class="tagrole">Provider</p>
+        <p class="role">The one who builds it</p>
+        <p>Develops the AI system (or has it built) and puts it on the market under their name. Carries the <strong>bulk of the obligations</strong> — risk management, documentation, testing, conformity assessment, registration.</p>
+      </div>
+      <div class="who-card">
+        <p class="tagrole">Deployer</p>
+        <p class="role">The one who uses it</p>
+        <p>Uses an AI system in a professional capacity (a hospital, a bank, an HR team). Lighter duties: use it as instructed, keep <strong>human oversight</strong>, monitor it, and — for some uses — inform the people affected.</p>
+      </div>
+    </div>
+    <div class="reach reveal">
+      <h3>It reaches beyond Europe's borders</h3>
+      <p>Like the GDPR, the Act applies extraterritorially. If your AI system's <strong>output is used in the EU</strong> — even if your company sits in the US or anywhere else — you're in scope. That's why a law passed in Brussels shapes how AI is built worldwide.</p>
+    </div>
   </div>
-</div></section>
+</section>
+
+<!-- PENALTIES -->
+<section id="penalties" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">07 — PENALTIES</p>
+      <h2>What it costs to get it wrong</h2>
+      <p>Fines are tiered to match the severity of the breach, and — crucially — calculated as the <strong>higher</strong> of a fixed sum or a percentage of global annual turnover. For large companies, the percentage is what bites.</p>
+    </div>
+    <div class="pen-tiers reveal">
+      <div class="pen pen1">
+        <div class="amt">€35M</div><div class="pct">or 7% of worldwide turnover</div>
+        <div class="pl">Using a banned practice</div>
+        <div class="pd">The most serious breach — deploying one of the prohibited AI uses.</div>
+      </div>
+      <div class="pen pen2">
+        <div class="amt">€15M</div><div class="pct">or 3% of worldwide turnover</div>
+        <div class="pl">Breaking high-risk rules</div>
+        <div class="pd">Most other obligation breaches — by providers or deployers of high-risk systems.</div>
+      </div>
+      <div class="pen pen3">
+        <div class="amt">€7.5M</div><div class="pct">or 1% of worldwide turnover</div>
+        <div class="pl">Giving false information</div>
+        <div class="pd">Supplying incorrect or misleading information to authorities.</div>
+      </div>
+    </div>
+    <div class="calc reveal">
+      <p class="num">DO THE MATH — THE "WHICHEVER IS HIGHER" CATCH</p>
+      <div class="inrow" style="margin-top:var(--s4)">
+        <label for="turnover">Company global turnover (€):</label>
+        <input type="number" id="turnover" value="900000000" min="0" step="1000000">
+        <label for="breach">Breach:</label>
+        <select id="breach">
+          <option value="0.07-35000000">Banned practice (7% / €35M)</option>
+          <option value="0.03-15000000">High-risk breach (3% / €15M)</option>
+          <option value="0.01-7500000">False info (1% / €7.5M)</option>
+        </select>
+      </div>
+      <div class="result" id="calcResult"></div>
+      <p style="font-size:.8rem;color:var(--ink-3);margin-top:var(--s4)">For SMEs and start-ups, the rule flips to whichever is <em>lower</em>, to keep fines proportionate. Figures are statutory caps, not automatic penalties.</p>
+    </div>
+  </div>
+</section>
 
 <!-- TIMELINE -->
-<section id="timeline"><div class="wrap">
-  <div style="display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:start">
-    <div>
-      <p class="eyebrow">The 2026 timeline</p>
-      <h2>Phasing in — and reshuffled.</h2>
-      <p class="prose" style="color:var(--ink-soft)">The Act took force in 2024 but applies in waves. In 2026 the <b>Digital Omnibus</b> pushed several high-risk deadlines back while keeping the bans and transparency rules on schedule.</p>
-      <p class="prose" style="color:var(--ink-faint);font-size:14px">Struck-through dates are the originals; the chips show where the Omnibus moved them.</p>
+<section id="timeline">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">08 — THE ROLLOUT</p>
+      <h2>It arrives in waves, not all at once</h2>
+      <p>The Act entered into force in August 2024, but its rules switch on in stages over several years — banned uses first, the heaviest high-risk duties last.</p>
     </div>
-    <div class="tl">
-      <div class="ev done"><div class="t">2 Feb 2025</div><h3>Prohibited practices banned</h3><p>The Article 5 bans (social scoring, untargeted face-scraping, most public biometric ID) became enforceable.</p></div>
-      <div class="ev done"><div class="t">2 Aug 2025</div><h3>GPAI model rules</h3><p>Obligations for general-purpose AI models took effect, enforced by the AI Office.</p></div>
-      <div class="ev here"><div class="t">June 2026</div><h3>You are here <span class="herepill">now</span></h3><p>Bans and GPAI rules are live; the Digital Omnibus was approved by Parliament on 16 June 2026, with Council adoption expected 29 June.</p></div>
-      <div class="ev"><div class="t">2 Aug 2026</div><h3>Transparency duties (Article 50)</h3><p>Chatbots and AI-generated content must be disclosed. <span class="moved">not delayed</span></p></div>
-      <div class="ev"><div class="t">2 Dec 2026</div><h3>New ban + output watermarking</h3><p>A new prohibition on non-consensual intimate imagery, plus machine-readable marking of generative-AI output.</p></div>
-      <div class="ev"><div class="t">2 Dec 2027 <span class="moved">moved from <span class="was">2 Aug 2026</span></span></div><h3>High-risk duties (Annex III)</h3><p>Stand-alone high-risk systems — hiring, credit, education, law enforcement — must fully comply.</p></div>
-      <div class="ev"><div class="t">2 Aug 2028 <span class="moved">moved from <span class="was">2 Aug 2027</span></span></div><h3>High-risk in regulated products (Annex I)</h3><p>AI embedded as a safety component in products already under EU safety law.</p></div>
+    <div class="tl reveal" id="timeline-list"></div>
+    <div class="disclaimer reveal">
+      <strong>A moving target.</strong> In May 2026, EU institutions reached a provisional "Digital Omnibus" agreement to <em>postpone</em> the heaviest high-risk deadlines (Annex III high-risk to Dec 2027; product-embedded high-risk to Aug 2028) and simplify some rules. As of this writing it is agreed but not yet formally adopted, so dates below marked "proposed deferral" may still shift. Always check the official timeline before relying on a date.
     </div>
   </div>
-</div></section>
+</section>
 
 <!-- QUIZ -->
-<section id="quiz" class="band"><div class="wrap">
-  <p class="eyebrow" style="justify-content:center">Test yourself</p>
-  <h2 style="text-align:center;margin-bottom:1.6rem">Did it stick?</h2>
-  <div class="quiz" id="quiz"></div>
-  <div id="score"></div>
-</div></section>
+<section id="quiz" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="num">09 — TEST YOURSELF</p>
+      <h2>Did it click?</h2>
+      <p>Five quick questions. You get instant feedback and the <em>why</em> behind each answer.</p>
+    </div>
+    <div class="quiz reveal" id="quizBox"></div>
+  </div>
+</section>
 
-<footer><div class="wrap">
-  <h3>Sources &amp; further reading</h3>
-  <p style="color:#aaa3c0;max-width:64ch">Every load-bearing figure here is drawn from the regulation and current (2026) official and legal guidance.</p>
-  <ul class="srclist">
-    <li><a href="https://artificialintelligenceact.eu/article/99/" target="_blank" rel="noopener">Article 99 — Penalties (AI Act text)</a></li>
-    <li><a href="https://artificialintelligenceact.eu/article/6/" target="_blank" rel="noopener">Article 6 — Classification of high-risk systems</a></li>
-    <li><a href="https://ai-act-service-desk.ec.europa.eu/en/ai-act/timeline/timeline-implementation-eu-ai-act" target="_blank" rel="noopener">European Commission — AI Act implementation timeline</a></li>
-    <li><a href="https://www.gibsondunn.com/eu-ai-act-omnibus-agreement-postponed-high-risk-deadlines-and-other-key-changes/" target="_blank" rel="noopener">Gibson Dunn — Digital Omnibus: postponed deadlines</a></li>
-    <li><a href="https://www.hoganlovells.com/en/publications/eu-legislators-agree-to-delay-for-highrisk-ai-rules" target="_blank" rel="noopener">Hogan Lovells — delay for high-risk AI rules</a></li>
-    <li><a href="https://www.ibm.com/think/topics/eu-ai-act" target="_blank" rel="noopener">IBM — What is the EU AI Act?</a></li>
-  </ul>
-  <p class="disclaimer">Educational explainer, not legal advice. The AI Act is implemented through delegated acts, harmonised standards, and guidance that continue to evolve; the Digital Omnibus amendments were approved by the European Parliament on 16 June 2026 with Council adoption expected shortly after, so confirm the latest dates before relying on them. The risk classifier is a simplified illustration, not a legal determination.</p>
-</div></footer>
+<!-- SOURCES -->
+<section id="sources">
+  <div class="wrap measure">
+    <p class="num">SOURCES</p>
+    <h2 style="font-size:1.6rem;margin:var(--s3) 0 var(--s5)">Where this comes from</h2>
+    <ul class="src">
+      <li>· <a href="https://artificialintelligenceact.eu/high-level-summary/">High-level summary of the AI Act</a> — Future of Life Institute (risk tiers, prohibited list, Annex III, GPAI duties)</li>
+      <li>· <a href="https://artificialintelligenceact.eu/implementation-timeline/">Implementation Timeline</a> — artificialintelligenceact.eu</li>
+      <li>· <a href="https://artificialintelligenceact.eu/article/5/">Article 5 — Prohibited AI Practices</a> &amp; <a href="https://artificialintelligenceact.eu/article/99/">Article 99 — Penalties</a></li>
+      <li>· <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai">European Commission — AI Act regulatory framework</a></li>
+      <li>· <a href="https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/">Council of the EU — Digital Omnibus provisional agreement (7 May 2026)</a></li>
+    </ul>
+    <div class="disclaimer">
+      This is an educational explainer, not legal advice. The EU AI Act is long and evolving; specific obligations depend on facts and on guidance still being issued. Consult the official text and qualified counsel for compliance decisions.
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap measure">
+    Built as a plain-language guide to Regulation (EU) 2024/1689. Facts verified against EU and Future of Life Institute primary sources, June 2026.
+  </div>
+</footer>
 
 <script>
-var TIERS=[
-  {id:"prohibited",name:"Unacceptable",tag:"Banned",cssvar:"--prohibited",rule:"Prohibited outright (Article 5). No compliance path — these uses simply may not be deployed in the EU.",ex:["Government social scoring","Subliminal or manipulative techniques that cause harm","Untargeted scraping of faces to build recognition databases","Real-time remote biometric ID in public (narrow law-enforcement exceptions)","Emotion recognition at work or school"]},
-  {id:"high",name:"High-risk",tag:"Heavily regulated",cssvar:"--high",rule:"Allowed, but only with strict controls and a conformity assessment before going to market.",ex:["Hiring &amp; CV-screening tools","Credit scoring &amp; access to essential services","Education: admissions and grading","Law enforcement &amp; migration","Safety components in regulated products","Duties: risk management, data governance, human oversight, logging, accuracy &amp; cybersecurity"]},
-  {id:"limited",name:"Limited risk",tag:"Transparency only",cssvar:"--limited",rule:"Allowed with transparency duties — people must know when they're dealing with AI.",ex:["Chatbots must disclose they're AI","Deepfakes &amp; AI media must be labelled","AI-generated text on matters of public interest must be flagged"]},
-  {id:"minimal",name:"Minimal risk",tag:"No obligations",cssvar:"--minimal",rule:"The vast majority of AI. No special obligations under the Act — voluntary codes encouraged.",ex:["Spam filters","AI in video games","Inventory &amp; recommendation systems","Most everyday business AI"]}
-];
-var SCEN=[
-  {label:"CV-screening tool that ranks job applicants",tier:"high",why:"Employment decisions are explicitly high-risk — it needs human oversight, documentation, and bias controls."},
-  {label:"Customer-service chatbot",tier:"limited",why:"Allowed, but it must clearly disclose that the user is talking to an AI."},
-  {label:"Government scoring citizens' trustworthiness",tier:"prohibited",why:"Social scoring by authorities is a bright-line ban under Article 5."},
-  {label:"Email spam filter",tier:"minimal",why:"Low stakes — no obligations under the Act beyond voluntary good practice."},
-  {label:"Real-time face recognition in public for police",tier:"prohibited",why:"Real-time remote biometric ID in public is banned, save narrow, pre-authorised exceptions."},
-  {label:"AI that grades university exams",tier:"high",why:"Access to education is a high-risk use — accuracy, oversight, and appeal routes are required."},
-  {label:"Deepfake video generator",tier:"limited",why:"Permitted, but its output must be labelled as artificially generated."},
-  {label:"Enemy AI in a video game",tier:"minimal",why:"No meaningful risk to rights — minimal-risk, no obligations."}
-];
-var QUIZ=[
-  {q:"What does the AI Act primarily regulate?",opts:["The type of algorithm used","How risky the use of the AI is","Only AI built inside the EU"],a:1,why:"The Act is <b>risk-based</b> — the same model can be unregulated or banned depending on what it's used for."},
-  {q:"A government system that scores citizens' social trustworthiness is…",opts:["High-risk but allowed with controls","Prohibited outright","Minimal risk"],a:1,why:"Social scoring by public authorities is an <b>Article 5 prohibited practice</b> — banned, no compliance path."},
-  {q:"A customer-service chatbot is generally…",opts:["High-risk","Limited risk — must disclose it's AI","Prohibited"],a:1,why:"Chatbots are <b>limited risk</b>: allowed, but they must tell users they're interacting with an AI."},
-  {q:"The maximum fine — for prohibited practices — is up to…",opts:["€35M or 7% of global turnover","€10M or 2%","€1M flat"],a:0,why:"Article 99 sets the top tier at <b>€35M or 7%</b> of worldwide annual turnover, whichever is higher (lower of the two for SMEs)."},
-  {q:"What did the 2026 Digital Omnibus mainly do?",opts:["Repealed the AI Act","Delayed several high-risk deadlines (e.g. Annex III to Dec 2027)","Banned all general-purpose AI"],a:1,why:"It pushed <b>high-risk</b> compliance dates back (Annex III to 2 Dec 2027) while keeping the bans and transparency rules on schedule."}
+/* ---------------- DATA ---------------- */
+const tiers=[
+ {cls:'t-prohibited',w:'tw1',tag:'Tier 1',name:'Unacceptable — Banned',sub:'A clear threat to rights. Prohibited outright.',
+  body:['Social scoring of people by behaviour or traits','Manipulative or exploitative systems that cause harm','Untargeted scraping of faces to build recognition databases','Emotion recognition at work or school','Most real-time facial recognition in public by police'],
+  note:'8 categories in total — see "The eight banned uses" below.'},
+ {cls:'t-high',w:'tw2',tag:'Tier 2',name:'High risk — Regulated',sub:'Allowed, but with heavy obligations. Most of the Act.',
+  body:['Used in hiring, credit, education, essential services, law enforcement, migration, justice…','…or as a safety part of a regulated product (medical devices, machinery, cars)','Provider must do risk management, data governance, documentation, human oversight, testing, registration'],
+  note:'Roughly 8 sensitive areas listed in Annex III.'},
+ {cls:'t-limited',w:'tw3',tag:'Tier 3',name:'Limited risk — Transparency',sub:'Just be honest that it’s AI.',
+  body:['Chatbots must tell users they’re talking to a machine','AI-generated images, audio and video (deepfakes) must be labelled','Synthetic content must be machine-readable as AI-generated'],
+  note:'Light-touch: disclosure, not heavy compliance.'},
+ {cls:'t-minimal',w:'tw4',tag:'Tier 4',name:'Minimal risk — Free',sub:'No special obligations. The vast majority of AI.',
+  body:['Spam filters, recommendation engines, AI in video games','Inventory and logistics optimisation','The bulk of AI products on the market today'],
+  note:'Providers may still voluntarily follow codes of conduct.'}
 ];
 
-/* pyramid + detail */
-(function(){
-  var py=document.getElementById("pyramid"), det=document.getElementById("tierDetail");
-  function color(t){return getComputedStyle(document.documentElement).getPropertyValue(t.cssvar).trim();}
-  function show(i){
-    var t=TIERS[i], c=color(t);
-    Array.prototype.forEach.call(py.children,function(b,j){b.classList.toggle("sel",j===i);b.classList.toggle("dim",j!==i);b.style.color=color(TIERS[j]);});
-    det.innerHTML='<span class="badge" style="background:'+c+'22;color:'+c+'">'+t.tag+'</span>'+
-      '<h3 style="color:'+c+'">'+t.name+'</h3><p class="rule">'+t.rule+'</p>'+
-      '<div class="lbl">Examples</div><ul>'+t.ex.map(function(e){return "<li>"+e+"</li>";}).join("")+'</ul>';
-  }
-  TIERS.forEach(function(t,i){
-    var b=document.createElement("button"); b.className="tier"; b.type="button"; b.dataset.id=t.id;
-    b.innerHTML='<div class="tn">'+t.name+'<span class="pct">'+t.tag+'</span></div>';
-    b.onclick=function(){show(i);}; py.appendChild(b);
-  });
-  show(0);
-})();
+const cases=[
+ {t:'AI that screens and ranks job applicants',v:'high',title:'High risk',why:'Employment decisions are an Annex III area. Hiring tools shape people’s livelihoods, so they carry the full high-risk obligations.',c:'amber'},
+ {t:'A social-scoring system rating citizens by behaviour',v:'banned',title:'Banned',why:'General-purpose social scoring by public or private actors is a prohibited practice under Article 5 — no compliance path.',c:'red'},
+ {t:'A customer-service chatbot on a website',v:'limited',title:'Limited risk',why:'Allowed, but it must clearly tell users they are interacting with an AI, not a human. That’s the transparency tier.',c:'blue'},
+ {t:'A spam filter in your email',v:'minimal',title:'Minimal risk',why:'No special obligations. The overwhelming majority of AI — including spam filters — sits in the free, unregulated tier.',c:'green'},
+ {t:'AI judging creditworthiness for a loan',v:'high',title:'High risk',why:'Access to essential private services like credit is an Annex III area. (Fraud-detection is carved out, but scoring who gets a loan is in.)',c:'amber'},
+ {t:'Scraping the web to build a face database',v:'banned',title:'Banned',why:'Untargeted scraping of facial images from the internet or CCTV to build a recognition database is explicitly prohibited.',c:'red'},
+ {t:'An AI image generator (deepfake tool)',v:'limited',title:'Limited risk',why:'Permitted, but the output must be labelled as AI-generated and be machine-readable as synthetic content.',c:'blue'},
+ {t:'AI recommending songs in a music app',v:'minimal',title:'Minimal risk',why:'A recommendation engine creates little risk to rights or safety, so it falls in the minimal-risk tier with no special duties.',c:'green'}
+];
 
-/* classify */
-(function(){
-  var chips=document.getElementById("scenChips"), out=document.getElementById("classOut");
-  function tierOf(id){for(var i=0;i<TIERS.length;i++){if(TIERS[i].id===id)return TIERS[i];}}
-  SCEN.forEach(function(s){
-    var c=document.createElement("button"); c.className="chip"; c.type="button"; c.textContent=s.label;
-    c.onclick=function(){
-      Array.prototype.forEach.call(chips.children,function(x){x.classList.remove("on");}); c.classList.add("on");
-      var t=tierOf(s.tier), col=getComputedStyle(document.documentElement).getPropertyValue(t.cssvar).trim();
-      out.className="classout"; out.style.background=col+"14";
-      out.innerHTML='<span class="dot" style="background:'+col+'"></span><div><div class="ct" style="color:'+col+'">'+t.name+'</div><div class="cw">'+s.why+'</div></div>';
-    };
-    chips.appendChild(c);
-  });
-})();
+const banned=[
+ ['1','Manipulation & deception','Subliminal or deceptive techniques that distort behaviour and cause harm.'],
+ ['2','Exploiting vulnerabilities','Targeting age, disability or hardship to distort behaviour and cause harm.'],
+ ['3','Social scoring','Rating people by social behaviour or traits, leading to unfair treatment.'],
+ ['4','Predictive policing of individuals','Predicting crime risk based solely on profiling or personality.'],
+ ['5','Face-database scraping','Building facial-recognition databases by untargeted scraping of web/CCTV images.'],
+ ['6','Emotion recognition at work/school','Inferring emotions in workplaces or schools (bar medical/safety reasons).'],
+ ['7','Sensitive biometric categorisation','Inferring race, politics, religion, sexual orientation, etc. from biometrics.'],
+ ['8','Live public face recognition by police','Real-time remote biometric ID in public — banned but for narrow exceptions.']
+];
 
-/* quiz */
-(function(){
-  var box=document.getElementById("quiz"), score=document.getElementById("score"), answered=0, right=0;
-  QUIZ.forEach(function(item,qi){
-    var el=document.createElement("div"); el.className="q";
-    var opts=item.opts.map(function(o,oi){return '<button class="opt" type="button" data-q="'+qi+'" data-o="'+oi+'">'+o+'</button>';}).join("");
-    el.innerHTML='<div class="qq">'+(qi+1)+". "+item.q+'</div>'+opts+'<div class="why" id="why'+qi+'"></div>';
-    box.appendChild(el);
-  });
-  box.addEventListener("click",function(e){
-    var b=e.target.closest(".opt"); if(!b) return;
-    var qi=+b.dataset.q, oi=+b.dataset.o, item=QUIZ[qi], parent=b.parentNode;
-    if(parent.dataset.done) return; parent.dataset.done="1";
-    Array.prototype.forEach.call(parent.querySelectorAll(".opt"),function(o){
-      o.disabled=true; var idx=+o.dataset.o;
-      if(idx===item.a) o.classList.add("correct");
-      if(idx===oi && oi!==item.a) o.classList.add("wrong");
-    });
-    var why=document.getElementById("why"+qi);
-    why.innerHTML=(oi===item.a?"<b>Correct. </b>":"<b>Not quite. </b>")+item.why; why.classList.add("show");
-    answered++; if(oi===item.a) right++;
-    if(answered===QUIZ.length) score.textContent="You scored "+right+" / "+QUIZ.length+(right===QUIZ.length?" — flawless.":right>=3?" — solid grasp.":" — worth a re-skim.");
-  });
-})();
+const hrAreas=[
+ {k:'Biometrics',t:'Biometrics (non-banned)',d:'Remote identification, emotion recognition, and biometric categorisation that aren’t outright prohibited.'},
+ {k:'Infrastructure',t:'Critical infrastructure',d:'Safety components running water, gas, electricity, heating, road traffic and digital infrastructure.'},
+ {k:'Education',t:'Education & training',d:'Deciding admissions, evaluating learning outcomes, or monitoring students during exams.'},
+ {k:'Employment',t:'Employment & workers',d:'Recruitment, filtering applications, promotion, termination, and performance monitoring.'},
+ {k:'Services',t:'Essential services',d:'Eligibility for benefits, creditworthiness, insurance pricing, and emergency-call triage.'},
+ {k:'Law',t:'Law enforcement',d:'Victim-risk assessment, polygraphs, evidence reliability, and profiling in investigations.'},
+ {k:'Migration',t:'Migration & borders',d:'Polygraphs, risk assessments, and examining visa or asylum applications.'},
+ {k:'Justice',t:'Justice & democracy',d:'Helping interpret and apply the law, or influencing elections and voting behaviour.'}
+];
 
-/* reveal (self-healing) */
-(function(){
-  var wraps=document.querySelectorAll("section > .wrap");
-  function revealAll(){wraps.forEach(function(w){w.classList.add("in");});}
-  if(!("IntersectionObserver" in window)){return;}
-  wraps.forEach(function(w){w.classList.add("reveal");});
-  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{threshold:.08,rootMargin:"0px 0px -8% 0px"});
-  wraps.forEach(function(e){io.observe(e);});
-  setTimeout(revealAll,1400);
-  window.addEventListener("load",function(){setTimeout(revealAll,400);});
-})();
+const hrReqs=[
+ ['Risk management','A system to find and reduce risks across the whole lifecycle.'],
+ ['Data governance','Training data that’s relevant, representative and as error-free as possible.'],
+ ['Technical documentation','Records that prove compliance to regulators.'],
+ ['Record-keeping','Automatic logging of events for traceability.'],
+ ['Instructions for use','Clear info so deployers can use it compliantly.'],
+ ['Human oversight','Designed so a person can intervene and override.'],
+ ['Accuracy & cybersecurity','Robust, accurate and secure by design.'],
+ ['Quality management','An organisational system to keep it all compliant.']
+];
+
+const quiz=[
+ {q:'What does the EU AI Act primarily regulate?',
+  opts:['The AI technology itself','How AI is used, by risk level','Only large language models','AI made by European companies'],
+  a:1,why:'The Act is risk- and use-based: the same technology can be minimal-risk or banned depending on what it’s used for.'},
+ {q:'A company uses AI to rank job applicants. Which tier?',
+  opts:['Minimal — no rules','Limited — just disclose','High risk — full obligations','Banned'],
+  a:2,why:'Employment is an Annex III area, so hiring tools are high-risk and carry the heaviest set of obligations.'},
+ {q:'Which of these is outright banned?',
+  opts:['A customer-service chatbot','General social scoring of citizens','A high-risk hiring tool','An AI spam filter'],
+  a:1,why:'Social scoring is one of the eight prohibited practices under Article 5 — there’s no compliance path for it.'},
+ {q:'What’s the maximum fine for using a banned practice?',
+  opts:['€7.5M or 1% of turnover','€15M or 3% of turnover','€35M or 7% of turnover','€100M flat'],
+  a:2,why:'Banned-practice breaches carry the top fine: €35M or 7% of global annual turnover, whichever is higher.'},
+ {q:'Your company is in the US. When does the Act apply to you?',
+  opts:['Never — it’s EU-only','When your system’s output is used in the EU','Only if you have an EU office','Only for GPAI models'],
+  a:1,why:'The Act applies extraterritorially: if your AI’s output is used in the EU, you’re in scope wherever you’re based.'}
+];
+
+const timeline=[
+ {d:'Aug 2024',s:'done',l:'In force',p:'The Act enters into force. Nothing applies yet — the clock starts on a staged rollout.'},
+ {d:'Feb 2025',s:'done',l:'Live',p:'The banned practices and AI-literacy duties become enforceable — the first rules with teeth.'},
+ {d:'Aug 2025',s:'done',l:'Live',p:'Rules for general-purpose AI models, the governance structure (the EU AI Office), and the penalty regime switch on.'},
+ {d:'Aug 2026',s:'now',l:'Now-ish',p:'Originally the date most high-risk obligations and Annex III rules applied.',defer:'Proposed deferral: under the May 2026 Digital Omnibus, Annex III high-risk duties move to <b>2 December 2027</b>.'},
+ {d:'Aug 2027',s:'future',l:'Upcoming',p:'High-risk AI embedded in regulated products (medical devices, machinery, vehicles) must fully comply.',defer:'Proposed deferral: product-embedded high-risk duties may move to <b>2 August 2028</b>.'},
+ {d:'2027–30',s:'future',l:'Later',p:'Remaining transition deadlines: pre-existing GPAI models, public-authority systems and large-scale EU IT systems are brought into full compliance.'}
+];
+
+/* ---------------- RENDER ---------------- */
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+// pyramid
+const pyr=document.getElementById('pyr');
+tiers.forEach((t,i)=>{
+ const row=el('div','tier-row '+t.cls+' '+t.w);row.setAttribute('aria-expanded','false');
+ const head=el('button','tier-head');head.setAttribute('aria-label','Toggle '+t.name);
+ head.innerHTML='<span class="tag">'+t.tag+'</span><span><span class="tname">'+t.name+'</span><div class="tsub">'+t.sub+'</div></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>';
+ const body=el('div','body','<ul>'+t.body.map(b=>'<li>'+b+'</li>').join('')+'</ul><div class="note">'+t.note+'</div>');
+ head.onclick=()=>{const open=row.getAttribute('aria-expanded')==='true';row.setAttribute('aria-expanded',open?'false':'true');};
+ row.appendChild(head);row.appendChild(body);pyr.appendChild(row);
+});
+
+// classifier
+const cmap={red:['var(--red)','var(--red-bg)','var(--red-line)'],amber:['var(--amber)','var(--amber-bg)','var(--amber-line)'],blue:['var(--blue)','var(--blue-bg)','var(--blue-line)'],green:['var(--green)','var(--green-bg)','var(--green-line)']};
+const caseList=document.getElementById('caseList');const caseResult=document.getElementById('caseResult');
+cases.forEach((c,i)=>{
+ const b=el('button',null,c.t);b.setAttribute('aria-pressed','false');
+ b.onclick=()=>{
+  caseList.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));
+  b.setAttribute('aria-pressed','true');
+  const col=cmap[c.c];
+  caseResult.innerHTML='<span class="verdict-tag" style="background:'+col[0]+'">'+c.title+'</span>'+
+   '<div class="verdict"><h3 style="color:'+col[0]+'">'+c.t+'</h3>'+
+   '<div class="why" style="background:'+col[1]+';border-color:'+col[2]+';color:var(--ink-2)"><strong style="color:'+col[0]+'">Why: </strong>'+c.why+'</div></div>';
+ };
+ caseList.appendChild(b);
+});
+
+// banned
+const banListEl=document.getElementById('banList');
+banned.forEach(b=>{banListEl.appendChild(el('div','ban','<div class="ix">'+b[0]+'</div><div><div class="bt">'+b[1]+'</div><div class="bd">'+b[2]+'</div></div>'));});
+
+// high-risk
+const hrDomains=document.getElementById('hrDomains');const hrList=document.getElementById('hrList');const hrReqsEl=document.getElementById('hrReqs');
+function renderHR(filter){
+ hrList.innerHTML='';
+ hrAreas.filter(a=>!filter||a.k===filter).forEach(a=>{
+  hrList.appendChild(el('div','hr-item','<h4><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l9 4v6c0 5-3.8 8.5-9 10-5.2-1.5-9-5-9-10V6z"/></svg>'+a.t+'</h4><p>'+a.d+'</p>'));
+ });
+}
+const allBtn=el('button',null,'All areas');allBtn.setAttribute('aria-pressed','true');
+allBtn.onclick=()=>{hrDomains.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));allBtn.setAttribute('aria-pressed','true');renderHR(null);};
+hrDomains.appendChild(allBtn);
+hrAreas.forEach(a=>{const b=el('button',null,a.k);b.setAttribute('aria-pressed','false');
+ b.onclick=()=>{hrDomains.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');renderHR(a.k);};
+ hrDomains.appendChild(b);});
+renderHR(null);
+hrReqs.forEach(r=>{hrReqsEl.appendChild(el('div','req','<div class="rt">'+r[0]+'</div><div class="rd">'+r[1]+'</div>'));});
+
+// flops slider
+const flopSlider=document.getElementById('flopSlider');const flopVal=document.getElementById('flopVal');const flopOut=document.getElementById('flopOut');
+const sup={'-':'⁻',0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'};
+function toSup(n){return String(n).split('').map(c=>sup[c]||c).join('');}
+function updFlop(){
+ const v=parseFloat(flopSlider.value);
+ const disp=v%1===0?String(v):v.toFixed(1);
+ flopVal.textContent='10'+toSup(disp);
+ if(v>=25){flopOut.className='out out-yes';flopOut.innerHTML='<strong>Systemic risk.</strong> At or above 10²⁵ FLOP, the model is presumed systemic — evaluations, red-teaming, incident reporting and cybersecurity duties all kick in.';}
+ else{flopOut.className='out out-no';flopOut.innerHTML='Below the threshold — baseline GPAI rules apply, but not the extra systemic-risk duties.';}
+}
+flopSlider.oninput=updFlop;updFlop();
+
+// penalty calc
+const turnover=document.getElementById('turnover');const breach=document.getElementById('breach');const calcResult=document.getElementById('calcResult');
+function fmt(n){if(n>=1e9)return '€'+(n/1e9).toFixed(2).replace(/\.00$/,'')+'B';if(n>=1e6)return '€'+(n/1e6).toFixed(1).replace(/\.0$/,'')+'M';return '€'+n.toLocaleString();}
+function calc(){
+ const [pct,fixed]=breach.value.split('-').map(Number);
+ const t=Math.max(0,Number(turnover.value)||0);
+ const pctVal=t*pct;const fixedVal=fixed;const win=Math.max(pctVal,fixedVal);
+ calcResult.innerHTML=
+  '<div class="rc'+(pctVal>=fixedVal?' win':'')+'"><div class="rl">'+(pct*100)+'% of turnover</div><div class="rv">'+fmt(pctVal)+'</div></div>'+
+  '<div class="rc'+(fixedVal>pctVal?' win':'')+'"><div class="rl">Fixed cap</div><div class="rv">'+fmt(fixedVal)+'</div></div>'+
+  '<div class="rc win" style="grid-column:1/-1"><div class="rl">Maximum fine — whichever is higher</div><div class="rv">'+fmt(win)+'</div></div>';
+}
+turnover.oninput=calc;breach.onchange=calc;calc();
+
+// timeline
+const tlEl=document.getElementById('timeline-list');
+timeline.forEach(t=>{
+ const item=el('div','tl-item '+t.s);
+ item.innerHTML='<span class="tl-date">'+t.d+'</span><span class="tl-status st-'+t.s+'">'+t.l+'</span><p>'+t.p+'</p>'+(t.defer?'<div class="defer">'+t.defer+'</div>':'');
+ tlEl.appendChild(item);
+});
+
+// quiz
+const quizEl=document.getElementById('quizBox');let answered=0,correct=0;
+quiz.forEach((q,qi)=>{
+ const block=el('div','q');
+ block.innerHTML='<div class="qq"><span class="qn">'+(qi+1)+'.</span><span>'+q.q+'</span></div>';
+ const opts=el('div','opts');
+ q.opts.forEach((o,oi)=>{
+  const b=el('button',null,o);
+  b.onclick=()=>{
+   if(block.dataset.done)return;block.dataset.done='1';answered++;
+   opts.querySelectorAll('button').forEach((x,xi)=>{x.disabled=true;if(xi===q.a)x.classList.add('correct');});
+   if(oi===q.a)correct++;else b.classList.add('wrong');
+   exp.classList.add('show');
+   if(answered===quiz.length){scoreEl.classList.add('show');scoreEl.textContent='You got '+correct+' of '+quiz.length+' right. '+(correct===quiz.length?'Nailed it — you understand how the Act sorts and scales.':(correct>=3?'Solid grasp of the risk-tier model.':'Worth another scroll up — the pyramid is the key idea.'));}
+  };
+  opts.appendChild(b);
+ });
+ const exp=el('div','exp','<strong>Why:</strong> '+q.why);
+ block.appendChild(opts);block.appendChild(exp);quizEl.appendChild(block);
+});
+const scoreEl=el('div','score');quizEl.appendChild(scoreEl);
+
+// reveal
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
+setTimeout(()=>document.querySelectorAll('.reveal').forEach(e=>e.classList.add('in')),2500);
 </script>
+
+<!-- ============================================================
+     Review \u0026 edit overlay — review-mode.js (inlined for gallery)
+     Activates via ?edit or <body data-review-toggle>.
+     ============================================================ -->
 <script>
 /* =====================================================================
    review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
