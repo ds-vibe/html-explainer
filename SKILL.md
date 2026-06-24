@@ -205,6 +205,12 @@ not deliver until all pass:
 - [ ] **Canvas/WebGL demos auto-initialize on load.** Any `<canvas>` must render its first frame on
       `DOMContentLoaded` or `window.onload` — never require a click/hover to show the first frame.
       Check: does `getContext()` and the first draw call happen inside a load-time listener?
+- [ ] **SVG viewBox has padding around all content.** SVGs clip to their viewBox by default — any
+      `<text>` whose ascender or descender falls outside the viewBox is silently cropped. Default:
+      add at least 16px padding on all sides beyond your content bounds, e.g.
+      `viewBox="-16 -16 [w+32] [h+32]"`. Also check that adjacent labels at the same y-level don't
+      overlap — estimate each label's width as `font-size × char-count × 0.6` and verify no two
+      share an x-range.
 - [ ] **Visual variety & a learnable semantic language** — sections don't all look identical (vary
       the treatment — not every section a full-width band); color carries meaning consistently.
 - [ ] **Containment, unique IDs & rendered widgets** *(critical with no browser)*. Interactive
@@ -226,7 +232,7 @@ not deliver until all pass:
 - [ ] **Review & edit overlay inlined** — `review-mode.js` is in the page by default (with `<body
       data-review-toggle>`) unless the user opted out; the "Review & edit" launcher should appear.
 
-> **STOP — you must take a screenshot before declaring done.** In Claude Code: `node scripts/shoot.mjs file://<absolute-path-to-assembled.html> <outDir>` then Read every image. Specifically look for: blank sections, empty canvas elements, clipped text, zero-height containers. If any are found, fix and re-screenshot. Do NOT hand over the file until you have seen the screenshots and found no major visual bugs. Skipping this is the #1 reason builds ship broken.
+> **STOP — you must take a screenshot before declaring done.** In Claude Code: `node scripts/shoot.mjs file://<absolute-path-to-assembled.html> <outDir>` then Read every image. Specifically look for: blank sections, empty canvas elements, **SVG text cut off at diagram edges** (viewBox clipping), **overlapping SVG labels** (two labels at the same y-level whose x-ranges collide), clipped text in general, zero-height containers. If any are found, fix and re-screenshot. Do NOT hand over the file until you have seen the screenshots and found no major visual bugs. Skipping this is the #1 reason builds ship broken.
 
 Then run the look-and-fix loop:
 1. **Render it for real and look.** Headless-browser screenshot — desktop *and* mobile — including
