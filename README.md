@@ -36,11 +36,14 @@ Built with this skill, hosted on GitHub Pages — each is a self-contained `.htm
 
 | Explainer | Format | Live |
 |---|---|---|
+| How a microwave heats food | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/microwave.html) |
+| How transistors work | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/transistors.html) |
+| How GPS finds you | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/gps.html) |
+| How blockchain works | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/blockchain.html) |
 | How RAG works | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/rag.html) |
-| How special relativity works | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/special-relativity.html) |
+| How encryption works | scrolling page + BYOK chatbot | [open](https://ds-vibe.github.io/html-explainer/examples/encryption.html) |
 | The EU AI Act | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ai-act.html) |
 | The CCPA | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ccpa.html) |
-| How encryption works | scrolling page + BYOK chatbot | [open](https://ds-vibe.github.io/html-explainer/examples/encryption.html) |
 
 Source lives in [`examples/`](./examples).
 
@@ -66,14 +69,22 @@ git clone https://github.com/ds-vibe/html-explainer ~/.claude/skills/html-explai
 
 It loads automatically when a request matches (e.g. "make an interactive explainer about X").
 
-**Claude desktop / web app** — zip the skill files (`SKILL.md`, `scripts/`, `reference/`) and
-upload them under **Settings → Capabilities → Skills**, then start a fresh chat.
+> **Heads up — the first build takes a few minutes.** For the quality loop, Claude Code renders
+> the page in a headless browser, so on the *first* run it installs Playwright + Chromium (a
+> one-time ~100–200 MB download). It's fully automatic — nothing to set up — but that first run is
+> slow while it downloads; every run after is fast. (The Claude **app** skips all of this — it has
+> no render step.)
 
-**Screenshot helper** (optional, for the quality loop):
+**Claude desktop / web app** — download the prebuilt
+[`html-explainer-skill.zip`](https://github.com/ds-vibe/html-explainer/releases/latest) and upload
+it under **Settings → Capabilities → Skills**, then start a fresh chat. (Or zip the skill files —
+`SKILL.md`, `scripts/`, `reference/` — yourself.)
+
+**Manual rendering** (optional — the quality loop already does this for you):
 
 ```bash
-npm install && npx playwright install chromium
 node scripts/shoot.mjs "file:///path/to/page.html" /tmp/shots
+# first time only, if you haven't run a build yet: npx playwright install chromium
 ```
 
 ## License
