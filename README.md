@@ -43,7 +43,7 @@ Built with this skill, hosted on GitHub Pages — each is a self-contained `.htm
 | How encryption works | scrolling page + BYOK chatbot | [open](https://ds-vibe.github.io/html-explainer/examples/encryption.html) |
 | The EU AI Act | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ai-act.html) |
 | The CCPA | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ccpa.html) |
-| How Gutenberg's press changed the world | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/gutenberg.html) |
+| The machine that multiplied ideas (Gutenberg's press) | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/gutenberg.html) |
 
 Source lives in [`examples/`](./examples).
 
