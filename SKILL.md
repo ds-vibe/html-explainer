@@ -47,9 +47,11 @@ blanks. What matters most:
 
 ## Phase 0 — Research & sharpen (before any HTML)
 
-- **Get the facts first.** Don't plan or write load-bearing facts (dates, numbers, current state,
-  anything past your cutoff) from memory. Ground in the user's provided material and/or web-search
-  / fetch primary sources and verify. A confident-but-wrong fact destroys the explainer's reason to exist.
+- **Get the facts first — but only research if the topic needs it.** A confident-but-wrong fact destroys the explainer's reason to exist. But unnecessary research wastes 2–3 minutes on topics you already know cold. Before searching, ask: is this topic **settled** or **possibly dynamic**?
+  - **Settled** — the topic is well-understood, stable, and your training data is authoritative. No research needed; go straight to Phase 1. Examples: how airplanes fly, how DNA replication works, how compound interest works, the French Revolution.
+  - **Possibly dynamic** — the topic involves anything that changes: current legislation or amendments, a specific company/product, market data, recent events, regulatory status, anything post-cutoff, or a niche area where your training may be incomplete. Research before building.
+  - This fork applies to **any domain** — a science topic can be dynamic (a new treatment, a recent discovery), and a legal topic can be settled (the US Constitution's original text). Judge the topic, not the category.
+  - **Cap research at 2–3 fetches.** One authoritative primary source + at most 1–2 cross-checks. Stop there — more searches rarely change the content and burn minutes.
 - **The six must-ask axes (from the gate above), in detail.** Present each as a **clickable option
   menu** where the environment offers one (cowork, the app); otherwise list them in one message.
   Recommend a default for each (one click); cover all six, never collapse to one or two:
@@ -82,6 +84,8 @@ blanks. What matters most:
   form (e.g. Explainer Studio), the answers arrive with the brief — honor them, don't re-interview.
   A normal chat with a person (including the Claude app) is **NOT** this case: ask the must-ask set.
 - Collect a **source list** as you go; every non-obvious claim should be traceable.
+
+> **Once the interview is answered: think, then immediately write the file. Do NOT output your architecture plan, section order, design token choices, or any "Phase 1/2 thinking" as chat text. All planning happens silently. The next thing after the interview response must be a Write call.**
 
 ## Phase 1 — Architecture for learning (sequence before you style)
 
@@ -163,6 +167,15 @@ blanks. What matters most:
   repo), create the file and hand over its path/link. Only with genuinely no file-creation capability
   may you fall back to one fenced code block — and say so. (This is also what makes Phase 4's render
   and the review overlay possible.)
+- **Hybrid build path (use this by default in Claude Code).** Write a raw HTML file — your page's
+  content, CSS, and bespoke JS only. Do **not** inline `review-mode.js` or `chat-dock.js`. Then run
+  the assembler to inject them:
+  ```
+  node ~/dev/html-explainer-hybrid/hybrid/assemble.mjs <raw-file.html> [--chat] -o <output.html>
+  ```
+  Pass `--chat` when the user requested an AI chat dock. The assembler adds `data-review-toggle`,
+  injects the overlay and (optionally) chat-dock, validates unique IDs, and flags escaping issues.
+  This keeps the raw file ~600 lines instead of ~1200, cutting generation time roughly in half.
 - Build the **centerpiece first**, then supporting sections, then polish.
 - **Accessibility & responsive are not optional:** semantic HTML, keyboard-operable controls,
   sufficient contrast, alt text, a real mobile layout (test it — Phase 4).
