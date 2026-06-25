@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How Vaccines Work — An Interactive Primer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* ============================ TOKENS ============================ */
+:root{
+  --paper:#fbfaf7;      /* page ground */
+  --paper-2:#ffffff;    /* card */
+  --cream:#f3efe6;      /* alt band */
+  --ink:#16202e;        /* primary ink */
+  --ink-2:#3e4858;      /* secondary ink */
+  --ink-faint:#7c8693;  /* tertiary */
+  --blue:#1f5e9e;       /* clinical primary */
+  --blue-deep:#143b63;
+  --blue-mid:#3f86c8;
+  --blue-soft:#e7f0f8;
+  --blue-line:#bcd5ec;
+  --red:#bf463a;        /* pathogen / danger */
+  --red-soft:#fbe9e6;
+  --red-line:#eebfb8;
+  --green:#2e7d5b;      /* immunity / protected */
+  --green-soft:#e4f1ea;
+  --green-line:#b3d8c4;
+  --amber:#c1862a;      /* warn / warm */
+  --amber-soft:#f7efdf;
+  --line:#e6e1d6;
+  --line-strong:#d3ccbd;
+  --serif:'Newsreader',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px;
+  --sp-6:32px; --sp-7:48px; --sp-8:64px;
+  --shadow:0 1px 2px rgba(20,30,46,.05), 0 8px 28px rgba(20,30,46,.06);
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{
+  font-family:var(--sans); color:var(--ink); background:var(--paper);
+  -webkit-font-smoothing:antialiased; overflow:hidden;
+}
+h1,h2,h3{font-family:var(--serif); font-weight:500; letter-spacing:-.01em; margin:0}
+.slide h1:focus,.slide h2:focus{outline:none} /* programmatic focus target, not a tab stop */
+p{margin:0}
+button{font-family:var(--sans); cursor:pointer}
+em{font-style:italic}
+
+/* ============================ DECK SHELL ============================ */
+.deck{position:fixed; inset:0; overflow:hidden}
+.track{display:flex; height:100%; width:max-content;
+  transition:transform .58s cubic-bezier(.66,0,.2,1); will-change:transform}
+.slide{position:relative; width:100vw; height:100vh; overflow-y:auto; overflow-x:hidden;
+  padding:64px clamp(28px,5vw,80px) 88px; display:flex; flex-direction:column; justify-content:center}
+.slide::-webkit-scrollbar{width:8px}
+.slide::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px}
+.wrap{width:100%; max-width:1180px; margin:0 auto}
+.slide.dark{background:var(--blue-deep); color:#eaf1f8}
+.slide.alt{background:var(--cream)}
+
+/* ---- top brand bar ---- */
+.brandbar{position:fixed; top:0; left:0; right:0; height:50px; z-index:30;
+  display:flex; align-items:center; gap:14px; padding:0 clamp(20px,4vw,40px);
+  background:linear-gradient(var(--paper),rgba(251,250,247,0)); pointer-events:none}
+.brandbar .mark{display:flex; align-items:center; gap:9px; font-family:var(--sans);
+  font-weight:600; font-size:.74rem; letter-spacing:.13em; text-transform:uppercase; color:var(--blue)}
+.brandbar .mark svg{width:18px; height:18px; display:block}
+.brandbar .ctx{font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
+  color:var(--ink-faint); text-transform:uppercase}
+body.on-dark .brandbar .ctx{color:#9db4cc}
+body.on-dark .brandbar{background:linear-gradient(var(--blue-deep),rgba(20,59,99,0))}
+
+/* ---- bottom nav ---- */
+.progress-rail{position:fixed; left:0; right:0; bottom:0; height:3px; background:transparent; z-index:31}
+.progress-fill{height:100%; width:0; background:var(--blue); transition:width .4s ease}
+.navbar{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:32;
+  display:flex; align-items:center; gap:10px; background:var(--paper-2);
+  border:1px solid var(--line-strong); border-radius:999px; padding:6px 8px; box-shadow:var(--shadow)}
+.nav-btn{width:34px; height:34px; border-radius:999px; border:1px solid var(--line-strong);
+  background:var(--paper-2); color:var(--ink-2); display:grid; place-items:center; transition:.15s}
+.nav-btn:hover:not(:disabled){background:var(--blue); color:#fff; border-color:var(--blue)}
+.nav-btn:disabled{opacity:.32; cursor:default}
+.nav-btn svg{width:17px; height:17px}
+.dots{display:flex; gap:7px; align-items:center; padding:0 6px}
+.dot{width:8px; height:8px; border-radius:999px; border:none; background:var(--line-strong); padding:0; transition:.2s}
+.dot[aria-current="true"]{background:var(--blue); transform:scale(1.35)}
+.counter{font-family:var(--mono); font-size:.74rem; color:var(--ink-faint); padding:0 8px; min-width:46px; text-align:center}
+.counter b{color:var(--ink)}
+.jump-btn{font-size:.74rem; font-weight:600; color:var(--ink-2); background:transparent;
+  border:none; border-left:1px solid var(--line); padding:4px 12px 4px 14px; border-radius:0}
+.jump-btn:hover{color:var(--blue)}
+.jump-menu{position:fixed; bottom:70px; left:50%; transform:translateX(-50%) translateY(8px);
+  z-index:40; background:var(--paper-2); border:1px solid var(--line-strong); border-radius:14px;
+  box-shadow:0 16px 48px rgba(20,30,46,.18); padding:8px; width:min(420px,90vw);
+  max-height:60vh; overflow-y:auto; opacity:0; pointer-events:none; transition:.18s}
+.jump-menu.open{opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0)}
+.jump-item{display:flex; gap:12px; align-items:baseline; width:100%; text-align:left;
+  background:transparent; border:none; border-radius:9px; padding:8px 12px; color:var(--ink-2); font-size:.86rem}
+.jump-item:hover,.jump-item[aria-current="true"]{background:var(--blue-soft); color:var(--blue-deep)}
+.jump-item .n{font-family:var(--mono); font-size:.72rem; color:var(--ink-faint); width:22px}
+.jump-item[aria-current="true"] .n{color:var(--blue)}
+.hint{position:fixed; bottom:64px; left:50%; transform:translateX(-50%); z-index:29;
+  font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); transition:opacity .6s; pointer-events:none}
+.kbd{display:inline-block; border:1px solid var(--line-strong); border-bottom-width:2px; border-radius:5px;
+  padding:1px 6px; font-family:var(--mono); font-size:.72em; color:var(--ink-2); background:var(--paper-2)}
+
+/* ============================ TYPE & SHARED ============================ */
+.eyebrow{font-family:var(--mono); font-size:.72rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--blue); font-weight:500; margin-bottom:var(--sp-4); display:flex; align-items:center; gap:10px}
+.eyebrow .rule{height:1px; width:34px; background:var(--blue-line)}
+.slide.dark .eyebrow{color:#7fb4e0} .slide.dark .eyebrow .rule{background:#33597e}
+h1.title{font-size:clamp(2.6rem,5.4vw,4.3rem); line-height:1.02; letter-spacing:-.025em}
+h2.head{font-size:clamp(1.9rem,3.6vw,2.9rem); line-height:1.06}
+.lead{font-size:clamp(1.04rem,1.5vw,1.22rem); line-height:1.55; color:var(--ink-2); max-width:62ch}
+.slide.dark .lead{color:#c2d4e6}
+.body{font-size:1rem; line-height:1.6; color:var(--ink-2); max-width:60ch}
+.body+.body{margin-top:var(--sp-4)}
+strong{color:var(--ink); font-weight:600}
+.slide.dark strong{color:#fff}
+.two-col{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.08fr); gap:clamp(28px,4.4vw,68px); align-items:center}
+.chips{display:flex; flex-wrap:wrap; gap:10px; margin-top:var(--sp-6)}
+.chip{display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:.72rem;
+  letter-spacing:.04em; color:var(--ink-2); background:var(--paper-2); border:1px solid var(--line-strong);
+  border-radius:999px; padding:6px 13px}
+.chip .pin{width:7px; height:7px; border-radius:999px; background:var(--blue)}
+.chip.g .pin{background:var(--green)} .chip.r .pin{background:var(--red)} .chip.a .pin{background:var(--amber)}
+
+.card{background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow)}
+.figframe{background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:var(--shadow); padding:clamp(16px,2.4vw,30px)}
+.figframe svg{width:100%; height:auto; display:block}
+.figcap{font-family:var(--mono); font-size:.7rem; letter-spacing:.04em; color:var(--ink-faint);
+  margin-top:var(--sp-3); text-align:center}
+
+text{font-family:'Inter',system-ui,sans-serif}
+.sv-lbl{font-family:'Inter',system-ui,sans-serif; font-size:13px; font-weight:600; fill:#16202e}
+.sv-sub{font-family:'IBM Plex Mono',monospace; font-size:10.5px; fill:#7c8693}
+
+/* buttons */
+.btn{display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:.88rem;
+  border-radius:9px; padding:10px 18px; border:1px solid transparent; transition:.15s}
+.btn-primary{background:var(--blue); color:#fff; border-color:var(--blue)}
+.btn-primary:hover{background:var(--blue-deep); border-color:var(--blue-deep)}
+.btn-ghost{background:transparent; color:var(--ink-2); border-color:var(--line-strong)}
+.btn-ghost:hover{border-color:var(--blue); color:var(--blue)}
+.btn:disabled{opacity:.4; cursor:default}
+.btn svg{width:16px; height:16px}
+
+/* ============================ SLIDE 1 — TITLE ============================ */
+.hero-meta{display:flex; align-items:center; gap:14px; margin-bottom:var(--sp-5);
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; color:var(--ink-faint); text-transform:uppercase}
+.hero-meta .dotsep{width:4px; height:4px; border-radius:9px; background:var(--line-strong)}
+.title-insight{margin-top:var(--sp-5); padding-left:var(--sp-5); border-left:3px solid var(--blue);
+  font-family:var(--serif); font-style:italic; font-size:clamp(1.15rem,1.7vw,1.42rem); line-height:1.4; color:var(--ink-2); max-width:32ch}
+
+/* ============================ SLIDE 5 — TYPE CARDS ============================ */
+.type-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:var(--sp-4); margin-top:var(--sp-6)}
+.tcard{background:var(--paper-2); border:1px solid var(--line); border-top:3px solid var(--tc,var(--blue));
+  border-radius:12px; padding:var(--sp-5) var(--sp-4) var(--sp-4); box-shadow:var(--shadow); display:flex; flex-direction:column}
+.tcard .glyph{height:74px; display:grid; place-items:center; margin-bottom:var(--sp-3)}
+.tcard .glyph svg{width:auto; height:74px}
+.tcard h3{font-size:1.16rem; margin-bottom:2px}
+.tcard .tkind{font-family:var(--mono); font-size:.64rem; letter-spacing:.08em; text-transform:uppercase; color:var(--tc,var(--blue)); margin-bottom:var(--sp-3)}
+.tcard p{font-size:.84rem; line-height:1.5; color:var(--ink-2)}
+.tcard .trow{margin-top:var(--sp-3); padding-top:var(--sp-3); border-top:1px solid var(--line); display:flex; flex-direction:column; gap:7px}
+.tcard .tr{display:flex; gap:8px; font-size:.78rem; line-height:1.4}
+.tcard .tr .tk{font-family:var(--mono); font-size:.6rem; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--ink-faint); width:38px; flex:none; padding-top:2px; font-weight:600}
+.tcard .tr.plus .tk{color:var(--green)} .tcard .tr.minus .tk{color:var(--red)}
+.eg{font-family:var(--mono); font-size:.68rem; color:var(--ink-faint); margin-top:var(--sp-4); padding-top:var(--sp-3); border-top:1px dashed var(--line-strong)}
+
+/* ============================ SLIDE 7 — HERD IMMUNITY ============================ */
+.herd-layout{display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:clamp(24px,3vw,44px); align-items:start; margin-top:var(--sp-5)}
+.grid-frame{background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
+.pop-grid{display:grid; gap:3px; width:100%}
+.cell{aspect-ratio:1; border-radius:3px; background:#dcd6c9; transition:background .14s, transform .14s}
+.cell.vax{background:var(--blue)}
+.cell.sus{background:#dcd6c9}
+.cell.inf{background:var(--red)}
+.cell.seed{background:var(--red); box-shadow:0 0 0 2px var(--ink); position:relative; z-index:1}
+.cell.spent{background:#a99c91}
+.grid-legend{display:flex; flex-wrap:wrap; gap:16px; margin-top:14px; font-size:.76rem; color:var(--ink-2)}
+.grid-legend span{display:inline-flex; align-items:center; gap:7px}
+.lg-sw{width:13px; height:13px; border-radius:3px; display:inline-block}
+.ctrl-card{background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:var(--sp-5)}
+.preset-row{display:flex; gap:8px; margin-bottom:var(--sp-5)}
+.preset{flex:1; text-align:center; font-size:.82rem; font-weight:600; padding:9px 6px; border-radius:9px;
+  border:1px solid var(--line-strong); background:var(--paper-2); color:var(--ink-2); line-height:1.2}
+.preset small{display:block; font-family:var(--mono); font-size:.62rem; font-weight:400; color:var(--ink-faint); margin-top:3px}
+.preset[aria-pressed="true"]{background:var(--blue); border-color:var(--blue); color:#fff}
+.preset[aria-pressed="true"] small{color:#cfe2f4}
+.slider-wrap{margin-bottom:var(--sp-5)}
+.slider-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px}
+.slider-top .lab{font-size:.78rem; color:var(--ink-2); font-weight:500}
+.slider-top .val{font-family:var(--serif); font-size:1.7rem; color:var(--blue-deep); line-height:1}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:6px;
+  background:linear-gradient(var(--blue),var(--blue)) no-repeat, #e3ddd0; background-size:75% 100%; outline:none; cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+  background:#fff; border:2px solid var(--blue); box-shadow:0 1px 4px rgba(0,0,0,.2); cursor:pointer}
+input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; background:#fff; border:2px solid var(--blue); cursor:pointer}
+.thresh-line{display:flex; justify-content:space-between; font-family:var(--mono); font-size:.68rem; color:var(--ink-faint); margin-top:7px}
+.thresh-line b{color:var(--ink)}
+.readout{border-top:1px solid var(--line); padding-top:var(--sp-4); margin-bottom:var(--sp-5)}
+.re-row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px}
+.re-row .k{font-size:.78rem; color:var(--ink-2)}
+.re-row .v{font-family:var(--mono); font-weight:600; color:var(--ink); font-size:.95rem}
+.verdict{border-radius:10px; padding:12px 14px; font-size:.84rem; line-height:1.45}
+.verdict.safe{background:var(--green-soft); border:1px solid var(--green-line)}
+.verdict.danger{background:var(--red-soft); border:1px solid var(--red-line)}
+.verdict .vt{font-weight:700; display:flex; align-items:center; gap:7px; margin-bottom:4px}
+.verdict.safe .vt{color:var(--green)} .verdict.danger .vt{color:var(--red)}
+.verdict .vt svg{width:16px; height:16px; flex:none}
+.herd-actions{display:flex; gap:10px; margin-top:var(--sp-5)}
+
+/* ============================ SLIDE 8 — MYTHS ============================ */
+.myth-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-4); margin-top:var(--sp-6)}
+.myth{background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:var(--sp-5); box-shadow:var(--shadow)}
+.myth .claim{display:flex; gap:10px; align-items:flex-start; margin-bottom:var(--sp-4); padding-bottom:var(--sp-4); border-bottom:1px solid var(--line)}
+.myth .xmark{flex:none; width:26px; height:26px; border-radius:999px; background:var(--red-soft); display:grid; place-items:center}
+.myth .xmark svg{width:14px; height:14px; stroke:var(--red); fill:none}
+.myth .claim p{font-size:.92rem; font-weight:600; color:var(--ink-2); line-height:1.35; font-style:italic}
+.myth .fix{display:flex; gap:10px; align-items:flex-start}
+.myth .ckmark{flex:none; width:26px; height:26px; border-radius:999px; background:var(--green-soft); display:grid; place-items:center}
+.myth .ckmark svg{width:14px; height:14px; stroke:var(--green); fill:none}
+.myth .fix p{font-size:.86rem; line-height:1.5; color:var(--ink-2)}
+
+/* ============================ SLIDE 9 — PIPELINE ============================ */
+.pipe{display:grid; grid-template-columns:repeat(4,1fr); gap:var(--sp-3); margin-top:var(--sp-6)}
+.phase{position:relative; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:var(--sp-5) var(--sp-4); box-shadow:var(--shadow)}
+.phase .pnum{font-family:var(--mono); font-size:.68rem; letter-spacing:.08em; color:var(--blue); text-transform:uppercase; margin-bottom:6px}
+.phase h3{font-size:1.05rem; margin-bottom:8px}
+.phase .pcount{font-family:var(--serif); font-size:1.5rem; color:var(--blue-deep); line-height:1}
+.phase .pcap{font-family:var(--mono); font-size:.62rem; color:var(--ink-faint); margin-bottom:10px; text-transform:uppercase; letter-spacing:.04em}
+.phase p{font-size:.82rem; line-height:1.45; color:var(--ink-2)}
+.phase .bar{height:6px; border-radius:6px; background:var(--blue-soft); margin:12px 0; overflow:hidden}
+.phase .bar i{display:block; height:100%; background:var(--blue)}
+
+/* ============================ SLIDE 10 — TIMELINE ============================ */
+.tl{position:relative; margin-top:var(--sp-5); padding-left:6px}
+.tl-line{position:absolute; left:13px; top:6px; bottom:6px; width:2px; background:var(--blue-line)}
+.tl-item{position:relative; padding-left:46px; padding-bottom:var(--sp-6)}
+.tl-item:last-child{padding-bottom:0}
+.tl-node{position:absolute; left:5px; top:2px; width:18px; height:18px; border-radius:999px;
+  background:var(--paper); border:3px solid var(--blue); z-index:1}
+.tl-item.win .tl-node{background:var(--green); border-color:var(--green)}
+.tl-yr{font-family:var(--mono); font-size:.82rem; font-weight:600; color:var(--blue); margin-bottom:3px}
+.tl-item.win .tl-yr{color:var(--green)}
+.tl-item h3{font-size:1.12rem; margin-bottom:4px}
+.tl-item p{font-size:.88rem; line-height:1.5; color:var(--ink-2); max-width:64ch}
+
+/* ============================ STEP-THROUGH (slide 3) ============================ */
+.step-flow{margin-top:var(--sp-5)}
+.flow-svg-wrap{background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:clamp(16px,2vw,26px)}
+.fl-node{transition:opacity .3s}
+.fl-dim{opacity:.26}
+.step-panel{display:flex; gap:var(--sp-4); align-items:stretch; margin-top:var(--sp-4)}
+.step-text{flex:1; background:var(--blue-soft); border:1px solid var(--blue-line); border-radius:12px; padding:var(--sp-4) var(--sp-5); min-height:92px}
+.step-text .sn{font-family:var(--mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--blue); margin-bottom:5px}
+.step-text h3{font-size:1.12rem; margin-bottom:4px}
+.step-text p{font-size:.88rem; line-height:1.5; color:var(--ink-2)}
+.step-nav{display:flex; gap:8px; flex:none; align-items:center}
+.step-dots{display:flex; gap:6px; justify-content:center; margin-top:var(--sp-4)}
+.step-dot{width:9px; height:9px; border-radius:999px; background:var(--line-strong); border:none; padding:0; cursor:pointer}
+.step-dot[aria-current="true"]{background:var(--blue); transform:scale(1.3)}
+
+/* ============================ QUIZ ============================ */
+.quiz-card{max-width:680px; margin:var(--sp-6) auto 0; background:var(--paper-2); border:1px solid var(--line);
+  border-radius:var(--radius); box-shadow:var(--shadow); padding:clamp(24px,3vw,40px)}
+.quiz-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--sp-4)}
+.quiz-prog{font-family:var(--mono); font-size:.72rem; color:var(--ink-faint); letter-spacing:.06em}
+.quiz-score{font-family:var(--mono); font-size:.72rem; color:var(--ink-2)}
+.qbar{height:5px; border-radius:6px; background:var(--cream); overflow:hidden; margin-bottom:var(--sp-5)}
+.qbar i{display:block; height:100%; background:var(--blue); transition:width .35s}
+.qq{font-family:var(--serif); font-size:1.32rem; line-height:1.3; margin-bottom:var(--sp-5)}
+.qopts{display:flex; flex-direction:column; gap:10px}
+.qopt{display:flex; gap:12px; align-items:flex-start; text-align:left; background:var(--paper-2);
+  border:1px solid var(--line-strong); border-radius:10px; padding:13px 16px; font-size:.94rem; color:var(--ink); transition:.13s}
+.qopt:hover:not(:disabled){border-color:var(--blue); background:var(--blue-soft)}
+.qopt .mk{flex:none; width:22px; height:22px; border-radius:999px; border:1.5px solid var(--line-strong);
+  font-family:var(--mono); font-size:.72rem; display:grid; place-items:center; color:var(--ink-faint); margin-top:1px}
+.qopt:disabled{cursor:default}
+.qopt.correct{border-color:var(--green); background:var(--green-soft)}
+.qopt.correct .mk{background:var(--green); border-color:var(--green); color:#fff}
+.qopt.wrong{border-color:var(--red); background:var(--red-soft)}
+.qopt.wrong .mk{background:var(--red); border-color:var(--red); color:#fff}
+.qfb{margin-top:var(--sp-5); border-radius:10px; padding:14px 16px; font-size:.88rem; line-height:1.5; display:none}
+.qfb.show{display:block}
+.qfb.right{background:var(--green-soft); border:1px solid var(--green-line); color:var(--ink-2)}
+.qfb.wrongfb{background:var(--amber-soft); border:1px solid #e6cf9c; color:var(--ink-2)}
+.qfb b{color:var(--ink)}
+.qfoot{display:flex; justify-content:flex-end; margin-top:var(--sp-5)}
+.quiz-done{text-align:center; padding:var(--sp-6) 0}
+.quiz-done .qscore{font-family:var(--serif); font-size:3.4rem; color:var(--blue-deep); line-height:1}
+.quiz-done p{margin:var(--sp-4) auto 0; max-width:42ch; color:var(--ink-2); line-height:1.5}
+
+/* sources */
+.src-list{display:grid; grid-template-columns:1fr; gap:var(--sp-3); margin-top:var(--sp-5); padding:0}
+.src-list li{font-size:.84rem; line-height:1.5; color:#c2d4e6; list-style:none}
+.src-list .sn{font-family:var(--mono); color:#7fb4e0; margin-right:7px}
+.src-list em{color:#eaf1f8}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width:880px){
+  .slide{padding:60px 22px 96px; justify-content:flex-start}
+  .two-col,.herd-layout{grid-template-columns:1fr; gap:24px}
+  .type-grid{grid-template-columns:repeat(2,1fr)}
+  .myth-grid{grid-template-columns:1fr}
+  .pipe{grid-template-columns:1fr 1fr}
+  .herd-layout .ctrl-card{order:-1}
+  .step-panel{flex-direction:column; align-items:stretch}
+  .step-nav{justify-content:flex-end}
+  h1.title{font-size:clamp(2.2rem,9vw,3rem)}
+  .brandbar .ctx{display:none}
+  .two-col > div[style*="sticky"]{position:static !important}
+}
+@media (max-width:560px){
+  .dots{display:none}
+  .jump-btn{padding:4px 10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .track{transition:none}
+}
+</style>
+<style>/* assembler: keep launcher clear of deck chrome */ body #rv-launch{top:64px;right:16px}</style>
+</head>
+<body data-review-toggle>
+
+<!-- ===================== BRAND BAR ===================== -->
+<div class="brandbar">
+  <span class="mark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/><path d="M9 11h6M12 8v6" stroke-width="1.4"/></svg>
+    Vaccine Primer
+  </span>
+  <span class="ctx" id="brandCtx">Slide 1 / 12 &middot; The core idea</span>
+</div>
+
+<!-- ===================== DECK ===================== -->
+<div class="deck" data-deck>
+<div class="track" id="track">
+
+<!-- ============ SLIDE 1 — TITLE ============ -->
+<section class="slide" aria-label="How vaccines work" data-ctx="The core idea">
+  <div class="wrap two-col">
+    <div>
+      <div class="hero-meta">
+        <span>Immunology</span><span class="dotsep"></span><span>Newcomer primer</span><span class="dotsep"></span><span>12 slides</span>
+      </div>
+      <h1 class="title">How Vaccines<br>Work</h1>
+      <p class="lead" style="margin-top:20px">A vaccine is a <strong>controlled rehearsal</strong>. It lets your immune system build a lasting memory of a threat &mdash; without the danger of the real infection.</p>
+      <div class="title-insight">Train for the fight in advance, so the real one is over before it begins.</div>
+      <div class="chips">
+        <span class="chip"><span class="pin"></span>Antigens &amp; antibodies</span>
+        <span class="chip g"><span class="pin"></span>Memory cells</span>
+        <span class="chip a"><span class="pin"></span>Herd immunity demo</span>
+      </div>
+    </div>
+    <div class="figframe">
+      <svg viewBox="-16 -16 540 372" role="img" aria-label="Schematic: an antigen activates a B-cell, which produces antibodies and a memory cell">
+        <defs>
+          <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9aa3ae"/></marker>
+        </defs>
+        <line x1="92" y1="118" x2="168" y2="118" stroke="#c8c1b3" stroke-width="2" marker-end="url(#ah)"/>
+        <line x1="270" y1="118" x2="346" y2="80" stroke="#c8c1b3" stroke-width="2" marker-end="url(#ah)"/>
+        <line x1="270" y1="118" x2="350" y2="224" stroke="#c8c1b3" stroke-width="2" marker-end="url(#ah)"/>
+
+        <!-- 1. antigen -->
+        <g>
+          <circle cx="48" cy="118" r="30" fill="#fbe9e6" stroke="#bf463a" stroke-width="2"/>
+          <path d="M48 96 v-12 M48 152 v12 M26 118 h-12 M70 118 h12 M33 103 l-8 -8 M63 103 l8 -8 M33 133 l-8 8 M63 133 l8 8" stroke="#bf463a" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="48" cy="118" r="11" fill="#bf463a"/>
+          <text x="48" y="180" text-anchor="middle" class="sv-lbl">Antigen</text>
+          <text x="48" y="197" text-anchor="middle" class="sv-sub">marker of the threat</text>
+        </g>
+
+        <!-- 2. B-cell -->
+        <g>
+          <circle cx="218" cy="118" r="40" fill="#e7f0f8" stroke="#1f5e9e" stroke-width="2.4"/>
+          <circle cx="218" cy="118" r="17" fill="#bcd5ec"/>
+          <path d="M218 78 v-10 M192 92 l-7 -7 M244 92 l7 -7 M178 118 h-10 M258 118 h10" stroke="#1f5e9e" stroke-width="2.2" stroke-linecap="round"/>
+          <text x="218" y="190" text-anchor="middle" class="sv-lbl">B-cell</text>
+          <text x="218" y="207" text-anchor="middle" class="sv-sub">recognises &amp; activates</text>
+        </g>
+
+        <!-- 3a antibodies -->
+        <g>
+          <g transform="translate(392,62)"><path d="M0 18 L-13 0 M0 18 L13 0 M0 18 L0 40" stroke="#1f5e9e" stroke-width="3.4" stroke-linecap="round" fill="none"/></g>
+          <g transform="translate(426,86)"><path d="M0 18 L-13 0 M0 18 L13 0 M0 18 L0 40" stroke="#1f5e9e" stroke-width="3.4" stroke-linecap="round" fill="none"/></g>
+          <g transform="translate(372,98)"><path d="M0 18 L-13 0 M0 18 L13 0 M0 18 L0 40" stroke="#3f86c8" stroke-width="3.4" stroke-linecap="round" fill="none"/></g>
+          <text x="400" y="176" text-anchor="middle" class="sv-lbl">Antibodies</text>
+          <text x="400" y="193" text-anchor="middle" class="sv-sub">neutralise now</text>
+        </g>
+
+        <!-- 3b memory cell -->
+        <g>
+          <circle cx="404" cy="250" r="32" fill="#e4f1ea" stroke="#2e7d5b" stroke-width="2.4"/>
+          <path d="M404 236 v28 M390 250 h28" stroke="#2e7d5b" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="404" cy="250" r="13" fill="none" stroke="#2e7d5b" stroke-width="1.6" stroke-dasharray="3 3"/>
+          <text x="404" y="306" text-anchor="middle" class="sv-lbl">Memory cell</text>
+          <text x="404" y="323" text-anchor="middle" class="sv-sub">remembers for years</text>
+        </g>
+      </svg>
+      <p class="figcap">Fig. 1 &mdash; One exposure, two outcomes: antibodies for the moment, memory for the future.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 — THE SPEED PROBLEM ============ -->
+<section class="slide alt" aria-label="The immune system's speed problem" data-ctx="The speed problem">
+  <div class="wrap two-col">
+    <div>
+      <div class="eyebrow"><span class="rule"></span>The problem</div>
+      <h2 class="head">A first encounter is a slow fight</h2>
+      <p class="body" style="margin-top:18px">Meet a new pathogen and your immune system starts from scratch. It has to find the few cells that happen to recognise this exact invader, then multiply them. That ramp-up takes <strong>one to two weeks</strong>.</p>
+      <p class="body">Meanwhile the pathogen doubles every few hours. By the time antibodies arrive in force, you have already been sick &mdash; and for a dangerous disease, &ldquo;already sick&rdquo; can be too late.</p>
+      <div class="chips">
+        <span class="chip r"><span class="pin"></span>Pathogen load &mdash; rises in hours</span>
+        <span class="chip"><span class="pin"></span>Antibodies &mdash; lag by days</span>
+      </div>
+    </div>
+    <div class="figframe">
+      <svg viewBox="-46 -28 626 376" role="img" aria-label="Timeline: pathogen load rises within days while the antibody response lags one to two weeks behind, overlapping a window of illness">
+        <rect x="95" y="6" width="200" height="294" fill="#fbe9e6" opacity=".6"/>
+        <text x="195" y="-2" text-anchor="middle" class="sv-sub" fill="#bf463a" style="font-weight:600; font-size:11px">you feel sick</text>
+        <line x1="0" y1="300" x2="556" y2="300" stroke="#c8c1b3" stroke-width="1.5"/>
+        <line x1="0" y1="300" x2="0" y2="6" stroke="#c8c1b3" stroke-width="1.5"/>
+        <text x="278" y="336" text-anchor="middle" class="sv-sub">Days since exposure</text>
+        <text x="-34" y="153" text-anchor="middle" class="sv-sub" transform="rotate(-90 -34 153)">Level in the body</text>
+        <g class="sv-sub" fill="#7c8693">
+          <text x="0" y="318" text-anchor="middle">0</text>
+          <text x="139" y="318" text-anchor="middle">4</text>
+          <text x="278" y="318" text-anchor="middle">7</text>
+          <text x="417" y="318" text-anchor="middle">11</text>
+          <text x="556" y="318" text-anchor="middle">14</text>
+        </g>
+        <path d="M0 296 C 60 290, 95 210, 150 72 C 185 -6, 232 20, 272 122 C 322 246, 410 292, 556 298" fill="none" stroke="#bf463a" stroke-width="3"/>
+        <path d="M0 300 C 150 300, 212 296, 272 250 C 332 200, 420 96, 556 58" fill="none" stroke="#1f5e9e" stroke-width="3"/>
+        <circle cx="150" cy="72" r="4" fill="#bf463a"/><text x="150" y="60" text-anchor="middle" class="sv-lbl" fill="#bf463a">Pathogen load</text>
+        <circle cx="498" cy="68" r="4" fill="#1f5e9e"/><text x="498" y="56" text-anchor="end" class="sv-lbl" fill="#1f5e9e">Antibody response</text>
+        <line x1="150" y1="128" x2="272" y2="128" stroke="#7c8693" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <text x="211" y="120" text-anchor="middle" class="sv-sub">the lag</text>
+      </svg>
+      <p class="figcap">Fig. 2 &mdash; The defence peaks days after the danger does. Illustrative shape.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 — HOW A PATHOGEN IS RECOGNISED ============ -->
+<section class="slide" aria-label="How the body recognises a pathogen" data-ctx="The natural response">
+  <div class="wrap">
+    <div class="eyebrow"><span class="rule"></span>The natural response &mdash; step through it</div>
+    <h2 class="head">From invader to antibody, step by step</h2>
+    <div class="step-flow">
+      <div class="flow-svg-wrap">
+        <svg viewBox="-16 -16 1040 224" role="img" aria-label="Flow: antigen to antigen-presenting cell to helper T-cell to B-cell, then to plasma cells and memory cells">
+          <defs>
+            <marker id="ah2" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9aa3ae"/></marker>
+          </defs>
+          <line x1="116" y1="92" x2="200" y2="92" stroke="#cdc6b8" stroke-width="2" marker-end="url(#ah2)"/>
+          <line x1="332" y1="92" x2="416" y2="92" stroke="#cdc6b8" stroke-width="2" marker-end="url(#ah2)"/>
+          <line x1="548" y1="92" x2="632" y2="92" stroke="#cdc6b8" stroke-width="2" marker-end="url(#ah2)"/>
+          <line x1="764" y1="92" x2="844" y2="58" stroke="#cdc6b8" stroke-width="2" marker-end="url(#ah2)"/>
+          <line x1="764" y1="92" x2="848" y2="146" stroke="#cdc6b8" stroke-width="2" marker-end="url(#ah2)"/>
+
+          <g class="fl-node" data-fl="0">
+            <circle cx="74" cy="92" r="32" fill="#fbe9e6" stroke="#bf463a" stroke-width="2"/>
+            <circle cx="74" cy="92" r="11" fill="#bf463a"/>
+            <path d="M74 64v-8M74 120v8M42 92h-8M106 92h8" stroke="#bf463a" stroke-width="2.2" stroke-linecap="round"/>
+            <text x="74" y="156" text-anchor="middle" class="sv-lbl">Antigen</text>
+          </g>
+          <g class="fl-node" data-fl="1">
+            <circle cx="290" cy="92" r="32" fill="#f3efe6" stroke="#7c8693" stroke-width="2"/>
+            <path d="M290 70l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z" fill="#c1862a"/>
+            <text x="290" y="156" text-anchor="middle" class="sv-lbl">Presenting cell</text>
+          </g>
+          <g class="fl-node" data-fl="2">
+            <circle cx="506" cy="92" r="32" fill="#f7efdf" stroke="#c1862a" stroke-width="2"/>
+            <text x="506" y="100" text-anchor="middle" style="font-family:Newsreader,serif; font-size:24px; font-weight:600" fill="#c1862a">T</text>
+            <text x="506" y="156" text-anchor="middle" class="sv-lbl">Helper T-cell</text>
+          </g>
+          <g class="fl-node" data-fl="3">
+            <circle cx="722" cy="92" r="32" fill="#e7f0f8" stroke="#1f5e9e" stroke-width="2.2"/>
+            <circle cx="722" cy="92" r="13" fill="#bcd5ec"/>
+            <text x="722" y="156" text-anchor="middle" class="sv-lbl">B-cell</text>
+          </g>
+          <g class="fl-node" data-fl="4">
+            <g transform="translate(912,28)"><path d="M0 16 L-11 0 M0 16 L11 0 M0 16 L0 34" stroke="#1f5e9e" stroke-width="3" stroke-linecap="round" fill="none"/></g>
+            <g transform="translate(946,40)"><path d="M0 16 L-11 0 M0 16 L11 0 M0 16 L0 34" stroke="#3f86c8" stroke-width="3" stroke-linecap="round" fill="none"/></g>
+            <text x="930" y="20" text-anchor="middle" class="sv-lbl">Antibodies</text>
+          </g>
+          <g class="fl-node" data-fl="4">
+            <circle cx="912" cy="146" r="26" fill="#e4f1ea" stroke="#2e7d5b" stroke-width="2.2"/>
+            <path d="M912 134v24M900 146h24" stroke="#2e7d5b" stroke-width="2.4" stroke-linecap="round"/>
+            <text x="912" y="194" text-anchor="middle" class="sv-lbl">Memory cells</text>
+          </g>
+        </svg>
+      </div>
+      <div class="step-panel">
+        <div class="step-text">
+          <div class="sn" id="stepSn">Step 1 of 5</div>
+          <h3 id="stepTitle">A foreign marker appears</h3>
+          <p id="stepBody">Every pathogen carries <strong>antigens</strong> &mdash; molecular shapes on its surface the body reads as &ldquo;not me.&rdquo; This is the fingerprint the whole response is built around.</p>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" id="stepPrev" aria-label="Previous step" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button class="btn btn-primary" id="stepNext">Next step <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+      </div>
+      <div class="step-dots" id="stepDots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4 — WHAT A VACCINE DOES ============ -->
+<section class="slide alt" aria-label="What a vaccine does" data-ctx="The rehearsal">
+  <div class="wrap">
+    <div class="eyebrow"><span class="rule"></span>The key move</div>
+    <h2 class="head">Same memory, none of the illness</h2>
+    <p class="lead" style="margin-top:14px">A vaccine shows the immune system a <strong>harmless facsimile</strong> of the threat &mdash; a fragment, a blueprint, or a weakened copy. The body runs the full recognition drill and files away memory cells, but never meets the live, dangerous pathogen.</p>
+    <div class="figframe" style="margin-top:28px">
+      <svg viewBox="-16 -16 1040 296" role="img" aria-label="Two parallel paths reaching the same memory cells: a real infection passes through illness, a vaccine skips it">
+        <defs>
+          <marker id="ah3" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9aa3ae"/></marker>
+        </defs>
+        <text x="0" y="34" class="sv-lbl" fill="#bf463a" style="font-size:14px">Real infection</text>
+        <rect x="0" y="48" width="150" height="60" rx="10" fill="#fbe9e6" stroke="#bf463a" stroke-width="1.6"/>
+        <text x="75" y="74" text-anchor="middle" class="sv-lbl">Live pathogen</text>
+        <text x="75" y="92" text-anchor="middle" class="sv-sub">multiplies in you</text>
+        <rect x="222" y="48" width="150" height="60" rx="10" fill="#bf463a"/>
+        <text x="297" y="74" text-anchor="middle" class="sv-lbl" fill="#fff">Illness &amp; risk</text>
+        <text x="297" y="92" text-anchor="middle" class="sv-sub" fill="#f3d2cd">days of danger</text>
+        <rect x="444" y="48" width="150" height="60" rx="10" fill="#e7f0f8" stroke="#1f5e9e" stroke-width="1.6"/>
+        <text x="519" y="74" text-anchor="middle" class="sv-lbl">Immune response</text>
+        <text x="519" y="92" text-anchor="middle" class="sv-sub">antibodies fight back</text>
+        <line x1="150" y1="78" x2="216" y2="78" stroke="#e0a59c" stroke-width="2" marker-end="url(#ah3)"/>
+        <line x1="372" y1="78" x2="438" y2="78" stroke="#e0a59c" stroke-width="2" marker-end="url(#ah3)"/>
+
+        <text x="0" y="186" class="sv-lbl" fill="#1f5e9e" style="font-size:14px">Vaccine</text>
+        <rect x="0" y="200" width="150" height="60" rx="10" fill="#e7f0f8" stroke="#1f5e9e" stroke-width="1.6"/>
+        <text x="75" y="226" text-anchor="middle" class="sv-lbl">Harmless copy</text>
+        <text x="75" y="244" text-anchor="middle" class="sv-sub">fragment or blueprint</text>
+        <rect x="222" y="200" width="150" height="60" rx="10" fill="#f3efe6" stroke="#b6ad9b" stroke-width="1.6" stroke-dasharray="5 4"/>
+        <text x="297" y="226" text-anchor="middle" class="sv-lbl" fill="#9aa3ae">No illness</text>
+        <text x="297" y="244" text-anchor="middle" class="sv-sub">step skipped</text>
+        <rect x="444" y="200" width="150" height="60" rx="10" fill="#e7f0f8" stroke="#1f5e9e" stroke-width="1.6"/>
+        <text x="519" y="226" text-anchor="middle" class="sv-lbl">Immune response</text>
+        <text x="519" y="244" text-anchor="middle" class="sv-sub">same drill, safely</text>
+        <line x1="150" y1="230" x2="216" y2="230" stroke="#bcd5ec" stroke-width="2" marker-end="url(#ah3)"/>
+        <line x1="372" y1="230" x2="438" y2="230" stroke="#bcd5ec" stroke-width="2" marker-end="url(#ah3)"/>
+
+        <line x1="594" y1="78" x2="700" y2="138" stroke="#b3d8c4" stroke-width="2" marker-end="url(#ah3)"/>
+        <line x1="594" y1="230" x2="700" y2="170" stroke="#b3d8c4" stroke-width="2" marker-end="url(#ah3)"/>
+        <rect x="712" y="118" width="296" height="72" rx="12" fill="#e4f1ea" stroke="#2e7d5b" stroke-width="2"/>
+        <circle cx="754" cy="154" r="20" fill="#fff" stroke="#2e7d5b" stroke-width="2"/>
+        <path d="M754 144v20M744 154h20" stroke="#2e7d5b" stroke-width="2.4" stroke-linecap="round"/>
+        <text x="800" y="150" class="sv-lbl" fill="#205c43">Memory cells</text>
+        <text x="800" y="170" class="sv-sub" fill="#2e7d5b">protection, ready for next time</text>
+      </svg>
+      <p class="figcap">Fig. 3 &mdash; Both routes end at the same place. Only one charges admission in illness.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5 — FOUR VACCINE TYPES ============ -->
+<section class="slide" aria-label="The four main vaccine types" data-ctx="Four vaccine designs">
+  <div class="wrap">
+    <div class="eyebrow"><span class="rule"></span>Four ways to show the facsimile</div>
+    <h2 class="head">The four main vaccine types</h2>
+    <p class="lead" style="margin-top:12px">They differ in <em>what</em> they show the immune system &mdash; from a whole weakened microbe down to a single set of instructions. More of the real thing means a stronger response, but a higher bar for safety and storage.</p>
+    <div class="type-grid">
+      <div class="tcard" style="--tc:#bf463a">
+        <div class="glyph">
+          <svg viewBox="0 0 90 74"><circle cx="45" cy="37" r="26" fill="#fbe9e6" stroke="#bf463a" stroke-width="2"/><circle cx="45" cy="37" r="9" fill="#bf463a" opacity=".6"/><path d="M45 11v-5M45 68v5M19 37h-5M71 37h5M27 19l-4-4M63 19l4-4M27 55l-4 4M63 55l4 4" stroke="#bf463a" stroke-width="2" stroke-linecap="round" opacity=".7"/></svg>
+        </div>
+        <div class="tkind">Whole &middot; living</div>
+        <h3>Live-attenuated</h3>
+        <p>A living microbe weakened so it can&rsquo;t cause disease, but still &ldquo;looks&rdquo; fully real to the body.</p>
+        <div class="trow">
+          <div class="tr plus"><span class="tk">Strong</span><span>One or two doses give long, robust immunity.</span></div>
+          <div class="tr minus"><span class="tk">But</span><span>Needs cold storage; not for weakened immune systems.</span></div>
+        </div>
+        <div class="eg">MMR &middot; chickenpox</div>
+      </div>
+      <div class="tcard" style="--tc:#7c5cbf">
+        <div class="glyph">
+          <svg viewBox="0 0 90 74"><circle cx="45" cy="37" r="26" fill="#efe9f7" stroke="#7c5cbf" stroke-width="2"/><circle cx="45" cy="37" r="9" fill="#7c5cbf" opacity=".5"/><path d="M33 25l24 24M57 25l-24 24" stroke="#7c5cbf" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="tkind">Whole &middot; killed</div>
+        <h3>Inactivated</h3>
+        <p>The whole microbe, killed by heat or chemicals. Present in full, but completely unable to replicate.</p>
+        <div class="trow">
+          <div class="tr plus"><span class="tk">Safe</span><span>Stable and safe even for fragile patients.</span></div>
+          <div class="tr minus"><span class="tk">But</span><span>Weaker memory &mdash; usually needs boosters.</span></div>
+        </div>
+        <div class="eg">polio (IPV) &middot; hepatitis A</div>
+      </div>
+      <div class="tcard" style="--tc:#c1862a">
+        <div class="glyph">
+          <svg viewBox="0 0 90 74"><circle cx="45" cy="40" r="22" fill="none" stroke="#d8cdb6" stroke-width="2" stroke-dasharray="4 5"/><path d="M45 14l5 10 11 1-8 8 2 11-10-6-10 6 2-11-8-8 11-1z" fill="#f7efdf" stroke="#c1862a" stroke-width="2"/></svg>
+        </div>
+        <div class="tkind">Just a piece</div>
+        <h3>Subunit / protein</h3>
+        <p>Only the one telltale fragment &mdash; a surface protein &mdash; with the rest of the microbe left out entirely.</p>
+        <div class="trow">
+          <div class="tr plus"><span class="tk">Clean</span><span>Very few side effects; well tolerated.</span></div>
+          <div class="tr minus"><span class="tk">But</span><span>Often needs an adjuvant and boosters.</span></div>
+        </div>
+        <div class="eg">HPV &middot; whooping cough</div>
+      </div>
+      <div class="tcard" style="--tc:#1f5e9e">
+        <div class="glyph">
+          <svg viewBox="0 0 90 74"><circle cx="45" cy="37" r="26" fill="#e7f0f8" stroke="#1f5e9e" stroke-width="2"/><path d="M31 50c6-7 6-19 0-26M45 50c6-7 6-19 0-26M59 50c6-7 6-19 0-26" fill="none" stroke="#1f5e9e" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="tkind">Just the blueprint</div>
+        <h3>mRNA</h3>
+        <p>No microbe at all &mdash; just instructions telling your own cells to make the telltale protein themselves.</p>
+        <div class="trow">
+          <div class="tr plus"><span class="tk">Fast</span><span>Redesigned in days; only the code changes.</span></div>
+          <div class="tr minus"><span class="tk">But</span><span>Needs cold storage; newest of the four.</span></div>
+        </div>
+        <div class="eg">COVID-19 (Pfizer, Moderna)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6 — mRNA SPECIFICALLY ============ -->
+<section class="slide dark" aria-label="How mRNA vaccines work" data-ctx="The mRNA design">
+  <div class="wrap two-col">
+    <div>
+      <div class="eyebrow"><span class="rule"></span>A closer look</div>
+      <h2 class="head" style="color:#fff">mRNA: hand over the recipe, not the dish</h2>
+      <p class="lead" style="margin-top:18px">A fatty bubble &mdash; a <strong>lipid nanoparticle</strong> &mdash; ferries a short strand of mRNA into a cell. Ribosomes read it like any other message and build one harmless protein: the pathogen&rsquo;s &ldquo;spike.&rdquo; The immune system sees the spike and trains against it.</p>
+      <p class="body" style="color:#c2d4e6; margin-top:16px">Because only the genetic code changes between targets, a new candidate can be designed in <strong>days</strong> &mdash; the manufacturing stays the same.</p>
+      <div class="card" style="margin-top:22px; background:rgba(255,255,255,.06); border-color:#33597e; padding:18px 20px">
+        <div style="display:flex; gap:12px; align-items:flex-start">
+          <span style="flex:none; width:30px; height:30px; border-radius:8px; background:#e4f1ea; display:grid; place-items:center">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#2e7d5b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </span>
+          <div>
+            <p style="font-weight:600; color:#fff; font-size:.92rem; margin-bottom:3px">It cannot alter your DNA</p>
+            <p style="font-size:.85rem; line-height:1.55; color:#c2d4e6">mRNA never enters the nucleus, where your DNA lives. It works briefly in the cytoplasm and is broken down within days. Your cells have no machinery to write it back into your genome.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="figframe" style="background:rgba(255,255,255,.05); border-color:#33597e">
+        <svg viewBox="-16 -16 540 416" role="img" aria-label="A lipid nanoparticle delivers mRNA into the cytoplasm, where a ribosome makes a spike protein; the nucleus holding DNA stays sealed and separate">
+          <defs><marker id="ahw" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7fb4e0"/></marker></defs>
+          <rect x="0" y="60" width="508" height="320" rx="40" fill="#1c4a78" stroke="#3f86c8" stroke-width="2"/>
+          <text x="20" y="92" class="sv-sub" fill="#9db4cc" style="font-size:11px">CELL &middot; CYTOPLASM</text>
+
+          <circle cx="392" cy="250" r="74" fill="#143b63" stroke="#7fb4e0" stroke-width="2"/>
+          <circle cx="392" cy="250" r="74" fill="none" stroke="#7fb4e0" stroke-width="6" opacity=".22"/>
+          <path d="M360 234c14 8 30-8 44 2c12 8 6 22 18 26" fill="none" stroke="#7fb4e0" stroke-width="2.2" stroke-linecap="round" opacity=".8"/>
+          <path d="M358 266c14 8 30-8 44 2" fill="none" stroke="#7fb4e0" stroke-width="2.2" stroke-linecap="round" opacity=".8"/>
+          <text x="392" y="342" text-anchor="middle" class="sv-lbl" fill="#cfe2f4">Nucleus &middot; your DNA</text>
+          <text x="392" y="359" text-anchor="middle" class="sv-sub" fill="#7fb4e0">sealed &mdash; mRNA never enters</text>
+
+          <g transform="translate(98,122)">
+            <circle r="38" fill="#0f2f50" stroke="#7fb4e0" stroke-width="2"/>
+            <circle r="38" fill="none" stroke="#bcd5ec" stroke-width="1" stroke-dasharray="3 4"/>
+            <g fill="#7fb4e0"><circle cx="0" cy="-38" r="4"/><circle cx="27" cy="-27" r="4"/><circle cx="38" cy="0" r="4"/><circle cx="27" cy="27" r="4"/><circle cx="0" cy="38" r="4"/><circle cx="-27" cy="27" r="4"/><circle cx="-38" cy="0" r="4"/><circle cx="-27" cy="-27" r="4"/></g>
+            <path d="M-15 7c8-9 8-21 0-28M0 7c8-9 8-21 0-28M15 7c8-9 8-21 0-28" fill="none" stroke="#9fd0a0" stroke-width="2.6" stroke-linecap="round"/>
+          </g>
+          <text x="98" y="186" text-anchor="middle" class="sv-lbl" fill="#cfe2f4">Lipid nanoparticle</text>
+          <text x="98" y="203" text-anchor="middle" class="sv-sub" fill="#9db4cc">carries the mRNA in</text>
+
+          <line x1="142" y1="156" x2="190" y2="244" stroke="#7fb4e0" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#ahw)"/>
+
+          <g transform="translate(150,284)">
+            <ellipse cx="0" cy="0" rx="28" ry="22" fill="#c1862a" opacity=".9"/>
+            <path d="M-44 6h88" stroke="#9fd0a0" stroke-width="2.6" stroke-linecap="round"/>
+            <text x="0" y="46" text-anchor="middle" class="sv-sub" fill="#9db4cc">ribosome reads mRNA</text>
+          </g>
+          <line x1="178" y1="272" x2="232" y2="206" stroke="#7fb4e0" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#ahw)"/>
+          <g transform="translate(252,178)">
+            <path d="M0 28 L0 4 M0 4 L-10 -8 M0 4 L10 -8 M0 4 L0 -14" stroke="#9fd0a0" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+            <circle cx="0" cy="-14" r="5" fill="#9fd0a0"/>
+            <text x="0" y="52" text-anchor="middle" class="sv-lbl" fill="#cfe2f4">Spike protein</text>
+            <text x="0" y="69" text-anchor="middle" class="sv-sub" fill="#9db4cc">shown to immune system</text>
+          </g>
+        </svg>
+        <p class="figcap" style="color:#9db4cc">Fig. 4 &mdash; The instructions stay in the cytoplasm; the nucleus is never touched.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7 — HERD IMMUNITY (CENTERPIECE) ============ -->
+<section class="slide alt" aria-label="Interactive: herd immunity" data-ctx="Interactive &middot; herd immunity">
+  <div class="wrap">
+    <div class="eyebrow"><span class="rule"></span>Interactive &mdash; the centerpiece</div>
+    <h2 class="head">Herd immunity: when transmission hits a wall</h2>
+    <p class="lead" style="margin-top:12px">Vaccinate enough people and a pathogen runs out of new hosts before it can spread &mdash; protecting even those who aren&rsquo;t immune. Drag the slider, then release an outbreak and watch the chains die out.</p>
+
+    <div class="herd-layout">
+      <div>
+        <div class="grid-frame">
+          <div class="pop-grid" id="popGrid" aria-label="Population grid: each square is a person"></div>
+          <div class="grid-legend">
+            <span><i class="lg-sw" style="background:#1f5e9e"></i>Vaccinated</span>
+            <span><i class="lg-sw" style="background:#dcd6c9"></i>Susceptible</span>
+            <span><i class="lg-sw" style="background:#bf463a"></i>Infected</span>
+            <span><i class="lg-sw" style="background:#a99c91"></i>Recovered</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ctrl-card">
+        <div class="preset-row" role="group" aria-label="Disease preset">
+          <button class="preset" id="presetMeasles" aria-pressed="true">Measles<small>R&#8320; = 15</small></button>
+          <button class="preset" id="presetFlu" aria-pressed="false">Seasonal flu<small>R&#8320; = 2</small></button>
+        </div>
+
+        <div class="slider-wrap">
+          <div class="slider-top">
+            <span class="lab">Population vaccinated</span>
+            <span class="val" id="vaxVal">75%</span>
+          </div>
+          <input type="range" id="vaxSlider" min="0" max="100" value="75" aria-label="Percent of population vaccinated" />
+          <div class="thresh-line"><span>0%</span><span>Threshold: <b id="threshLab">93%</b></span><span>100%</span></div>
+        </div>
+
+        <div class="readout">
+          <div class="re-row"><span class="k">Basic reproduction R&#8320;</span><span class="v" id="r0Out">15.0</span></div>
+          <div class="re-row"><span class="k">Effective R&#8331; (with vaccine)</span><span class="v" id="reOut">3.75</span></div>
+        </div>
+
+        <div class="verdict danger" id="verdict">
+          <div class="vt" id="verdictTitle"></div>
+          <p id="verdictBody"></p>
+        </div>
+
+        <div class="herd-actions">
+          <button class="btn btn-primary" id="runOutbreak">Release outbreak</button>
+          <button class="btn btn-ghost" id="resetGrid">Reset</button>
+        </div>
+      </div>
+    </div>
+    <p class="figcap" style="text-align:left; max-width:none; margin-top:16px">R&#8331; = R&#8320; &times; (1 &minus; vaccinated). Threshold = 1 &minus; 1/R&#8320;. The grid is an illustrative simulation of transmission spreading through susceptible neighbours.</p>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8 — MISCONCEPTIONS ============ -->
+<section class="slide" aria-label="Common misconceptions" data-ctx="Common myths">
+  <div class="wrap">
+    <div class="eyebrow"><span class="rule"></span>Setting the record straight</div>
+    <h2 class="head">Three persistent myths</h2>
+    <div class="myth-grid">
+      <div class="myth">
+        <div class="claim">
+          <span class="xmark"><svg viewBox="0 0 24 24" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+          <p>&ldquo;Vaccines give you the disease they&rsquo;re meant to prevent.&rdquo;</p>
+        </div>
+        <div class="fix">
+          <span class="ckmark"><svg viewBox="0 0 24 24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <p>Most vaccines contain no living pathogen at all &mdash; only a fragment or a blueprint. A sore arm or mild fever is the immune system <em>training</em>, not the disease.</p>
+        </div>
+      </div>
+      <div class="myth">
+        <div class="claim">
+          <span class="xmark"><svg viewBox="0 0 24 24" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+          <p>&ldquo;Natural immunity is always better than a vaccine.&rdquo;</p>
+        </div>
+        <div class="fix">
+          <span class="ckmark"><svg viewBox="0 0 24 24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <p>Both build the same memory cells. But earning natural immunity means surviving the illness first &mdash; with all of its risks. A vaccine grants the memory without the gamble.</p>
+        </div>
+      </div>
+      <div class="myth">
+        <div class="claim">
+          <span class="xmark"><svg viewBox="0 0 24 24" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+          <p>&ldquo;Too many vaccines overwhelm a child&rsquo;s immune system.&rdquo;</p>
+        </div>
+        <div class="fix">
+          <span class="ckmark"><svg viewBox="0 0 24 24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <p>A child meets thousands of new antigens every day from food, dust, and air. The handful in a vaccine schedule is a rounding error against that constant, ordinary load.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9 — HOW A VACCINE IS TESTED ============ -->
+<section class="slide alt" aria-label="How a vaccine is tested" data-ctx="The safety pipeline">
+  <div class="wrap">
+    <div class="eyebrow"><span class="rule"></span>Before it reaches an arm</div>
+    <h2 class="head">Every vaccine runs a gauntlet</h2>
+    <p class="lead" style="margin-top:12px">Approval sits at the end of a years-long pipeline that scales up from a few volunteers to tens of thousands, with independent review at each gate. Even after rollout, the monitoring never stops.</p>
+    <div class="pipe">
+      <div class="phase">
+        <div class="pnum">Phase I</div>
+        <h3>Safety</h3>
+        <div class="bar"><i style="width:8%"></i></div>
+        <div class="pcount">20&ndash;100</div>
+        <div class="pcap">healthy volunteers</div>
+        <p>Is it safe at all, and at what dose? Watch closely for any adverse reactions.</p>
+      </div>
+      <div class="phase">
+        <div class="pnum">Phase II</div>
+        <h3>Response</h3>
+        <div class="bar"><i style="width:24%"></i></div>
+        <div class="pcount">Several&nbsp;100s</div>
+        <div class="pcap">broader group</div>
+        <p>Does it trigger the immune response we expect, and hold up across ages?</p>
+      </div>
+      <div class="phase">
+        <div class="pnum">Phase III</div>
+        <h3>Efficacy</h3>
+        <div class="bar"><i style="width:100%"></i></div>
+        <div class="pcount">10,000s</div>
+        <div class="pcap">randomised trial</div>
+        <p>Does it actually prevent disease versus a placebo, and are rarer effects caught?</p>
+      </div>
+      <div class="phase">
+        <div class="pnum">Phase IV</div>
+        <h3>Surveillance</h3>
+        <div class="bar"><i style="width:100%; background:var(--green)"></i></div>
+        <div class="pcount">Millions</div>
+        <div class="pcap">after approval</div>
+        <p>Ongoing real-world monitoring catches anything too rare to see in a trial.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10 — WHAT VACCINES ACCOMPLISHED ============ -->
+<section class="slide" aria-label="What vaccines have accomplished" data-ctx="The track record">
+  <div class="wrap two-col" style="align-items:start">
+    <div style="position:sticky; top:8px">
+      <div class="eyebrow"><span class="rule"></span>The track record</div>
+      <h2 class="head">From rehearsal to results</h2>
+      <p class="body" style="margin-top:18px">The model pays off at the scale of whole populations. When enough people carry the memory, diseases that once defined childhood &mdash; and killed at enormous scale &mdash; retreat, and in one case vanish entirely.</p>
+      <div class="chips">
+        <span class="chip g"><span class="pin"></span>1 disease eradicated worldwide</span>
+        <span class="chip"><span class="pin"></span>Millions of deaths prevented yearly</span>
+      </div>
+    </div>
+    <div class="tl">
+      <div class="tl-line"></div>
+      <div class="tl-item win">
+        <div class="tl-node"></div>
+        <div class="tl-yr">1980</div>
+        <h3>Smallpox eradicated</h3>
+        <p>After a global vaccination campaign, the WHO declared smallpox gone &mdash; the only human disease ever erased from the planet. It once killed roughly 3 in 10 of those it infected.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-node"></div>
+        <div class="tl-yr">1988 &rarr; today</div>
+        <h3>Polio pushed to the brink</h3>
+        <p>Cases of wild poliovirus have fallen by more than 99% since 1988 &mdash; from an estimated 350,000 a year to a few dozen, confined to a shrinking handful of regions.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-node"></div>
+        <div class="tl-yr">2000s</div>
+        <h3>Measles deaths collapse</h3>
+        <p>Widespread measles vaccination has prevented tens of millions of deaths since 2000 &mdash; though the disease rebounds quickly wherever coverage slips below its high threshold.</p>
+      </div>
+      <div class="tl-item win">
+        <div class="tl-node"></div>
+        <div class="tl-yr">2020</div>
+        <h3>mRNA arrives at scale</h3>
+        <p>COVID-19 mRNA vaccines went from genetic sequence to authorised shots in under a year &mdash; proof that the &ldquo;hand over the recipe&rdquo; design can move at the speed of an outbreak.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11 — QUIZ ============ -->
+<section class="slide" aria-label="Knowledge check" data-ctx="Knowledge check">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center"><span class="rule"></span>Test yourself<span class="rule"></span></div>
+    <h2 class="head" style="text-align:center">Did the rehearsal stick?</h2>
+    <div class="quiz-card">
+      <div id="quizBody">
+        <div class="quiz-top">
+          <span class="quiz-prog" id="quizProg">Question 1 of 4</span>
+          <span class="quiz-score" id="quizScore">Score: 0</span>
+        </div>
+        <div class="qbar"><i id="qbarFill" style="width:0%"></i></div>
+        <p class="qq" id="qQ">Question</p>
+        <div class="qopts" id="qOpts"></div>
+        <div class="qfb" id="qFb"></div>
+        <div class="qfoot"><button class="btn btn-primary" id="qNext" style="display:none">Next question</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12 — RECAP & SOURCES ============ -->
+<section class="slide dark" aria-label="Recap and sources" data-ctx="Recap &amp; sources">
+  <div class="wrap two-col" style="align-items:start">
+    <div>
+      <div class="eyebrow"><span class="rule"></span>The whole idea, in one line</div>
+      <h2 class="head" style="color:#fff">A rehearsal, not a risk</h2>
+      <p class="lead" style="margin-top:18px; color:#c2d4e6">A vaccine shows your immune system a safe preview of a threat. It builds the same memory a real infection would &mdash; antibodies for now, memory cells for later &mdash; and skips the illness entirely. Multiply that across a population and transmission itself hits a wall.</p>
+      <div class="card" style="margin-top:24px; background:rgba(255,255,255,.06); border-color:#33597e; padding:18px 20px">
+        <p style="font-size:.82rem; line-height:1.6; color:#9db4cc">Vaccines are settled, well-established science. This primer simplifies for a newcomer; specific schedules and recommendations are clinical decisions &mdash; ask a healthcare provider for those.</p>
+      </div>
+    </div>
+    <div>
+      <div class="eyebrow" style="color:#7fb4e0"><span class="rule" style="background:#33597e"></span>Where this comes from</div>
+      <ul class="src-list">
+        <li><span class="sn">[1]</span>World Health Organization &mdash; <em>How do vaccines work?</em>, plus smallpox and polio eradication data.</li>
+        <li><span class="sn">[2]</span>U.S. CDC &mdash; <em>Understanding How Vaccines Work</em>; the immune system and vaccine types.</li>
+        <li><span class="sn">[3]</span>U.S. NIH / NIAID &mdash; vaccine types and the mRNA platform.</li>
+        <li><span class="sn">[4]</span>The History of Vaccines (College of Physicians of Philadelphia) &mdash; clinical trial phases.</li>
+        <li><span class="sn">[5]</span>Standard immunology references for R&#8320; and herd-immunity thresholds (measles, influenza).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</div><!-- /track -->
+</div><!-- /deck -->
+
+<!-- ===================== NAV ===================== -->
+<div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+<div class="navbar">
+  <button class="nav-btn" id="prevBtn" aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <div class="dots" id="dots" role="tablist" aria-label="Slides"></div>
+  <span class="counter"><b id="cNow">1</b> / <span id="cTot">12</span></span>
+  <button class="nav-btn" id="nextBtn" aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+  <button class="jump-btn" id="jumpBtn" aria-haspopup="true" aria-expanded="false">Jump to slide</button>
+</div>
+<div class="jump-menu" id="jumpMenu" role="menu" aria-label="Jump to slide"></div>
+<div class="hint" id="hint"><span class="kbd">&larr;</span> <span class="kbd">&rarr;</span> arrows, swipe, or dots to navigate</div>
+
+<script>
+/* ============ DECK ENGINE ============ */
+(function(){
+  "use strict";
+  var track=document.getElementById('track');
+  var slides=Array.prototype.slice.call(track.children);
+  var N=slides.length, cur=0;
+  var dotsWrap=document.getElementById('dots');
+  var cNow=document.getElementById('cNow'), cTot=document.getElementById('cTot');
+  var prevBtn=document.getElementById('prevBtn'), nextBtn=document.getElementById('nextBtn');
+  var fill=document.getElementById('progressFill'), hint=document.getElementById('hint');
+  var brandCtx=document.getElementById('brandCtx');
+  var jumpBtn=document.getElementById('jumpBtn'), jumpMenu=document.getElementById('jumpMenu');
+  cTot.textContent=N;
+
+  for(var i=0;i<N;i++){(function(i){
+    var b=document.createElement('button');
+    b.className='dot'; b.setAttribute('role','tab');
+    b.setAttribute('aria-label','Slide '+(i+1)+': '+(slides[i].getAttribute('data-ctx')||''));
+    b.addEventListener('click',function(){go(i);});
+    dotsWrap.appendChild(b);
+    var mi=document.createElement('button');
+    mi.className='jump-item'; mi.setAttribute('role','menuitem');
+    mi.innerHTML='<span class="n">'+(i+1<10?'0':'')+(i+1)+'</span><span>'+(slides[i].getAttribute('data-ctx')||'Slide '+(i+1))+'</span>';
+    mi.addEventListener('click',function(){go(i); closeJump();});
+    jumpMenu.appendChild(mi);
+  })(i);}
+  var dots=Array.prototype.slice.call(dotsWrap.children);
+  var menuItems=Array.prototype.slice.call(jumpMenu.children);
+
+  function clamp(n){return Math.max(0,Math.min(N-1,n));}
+  function go(n,noHash){
+    cur=clamp(n);
+    track.style.transform='translateX(-'+(cur*100)+'vw)';
+    for(var i=0;i<N;i++){
+      dots[i].setAttribute('aria-current',i===cur?'true':'false');
+      menuItems[i].setAttribute('aria-current',i===cur?'true':'false');
+    }
+    cNow.textContent=cur+1;
+    fill.style.width=((cur+1)/N*100)+'%';
+    prevBtn.disabled=cur===0; nextBtn.disabled=cur===N-1;
+    document.body.classList.toggle('on-dark',slides[cur].classList.contains('dark'));
+    brandCtx.innerHTML='Slide '+(cur+1)+' / '+N+' &middot; '+(slides[cur].getAttribute('data-ctx')||'');
+    if(!noHash){history.replaceState(null,'','#'+(cur+1));}
+    var h=slides[cur].querySelector('h1,h2');
+    if(h){h.setAttribute('tabindex','-1'); try{h.focus({preventScroll:true});}catch(e){} }
+    if(cur>0&&hint){hint.style.opacity='0';}
+  }
+  window.goToSlide=go;
+  function next(){go(cur+1);} function prev(){go(cur-1);}
+  nextBtn.addEventListener('click',next); prevBtn.addEventListener('click',prev);
+
+  document.addEventListener('keydown',function(e){
+    var t=e.target;
+    if(t.isContentEditable||t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT')return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'||(e.key===' '&&!e.shiftKey)){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'||(e.key===' '&&e.shiftKey)){e.preventDefault();prev();}
+    else if(e.key==='Home'){e.preventDefault();go(0);}
+    else if(e.key==='End'){e.preventDefault();go(N-1);}
+    else if(e.key==='Escape'){closeJump();}
+  });
+
+  var x0=null,y0=null;
+  track.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+  track.addEventListener('touchend',function(e){
+    if(x0===null)return;
+    var dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0;
+    if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.3){dx<0?next():prev();}
+    x0=null;y0=null;
+  },{passive:true});
+
+  function openJump(){jumpMenu.classList.add('open'); jumpBtn.setAttribute('aria-expanded','true');}
+  function closeJump(){jumpMenu.classList.remove('open'); jumpBtn.setAttribute('aria-expanded','false');}
+  jumpBtn.addEventListener('click',function(e){e.stopPropagation(); jumpMenu.classList.contains('open')?closeJump():openJump();});
+  document.addEventListener('click',function(e){ if(!jumpMenu.contains(e.target)&&e.target!==jumpBtn) closeJump(); });
+
+  function fromHash(){var s=parseInt((location.hash||'').replace('#',''),10); return (!isNaN(s)&&s>=1&&s<=N)?s-1:0;}
+  go(fromHash(),true);
+  window.addEventListener('hashchange',function(){go(fromHash(),true);});
+  setTimeout(function(){if(hint&&cur===0)hint.style.opacity='.9';},500);
+  setTimeout(function(){if(hint)hint.style.opacity='0';},9000);
+  window.reviewGoto=function(note){ if(note&&typeof note.slideIdx==='number')go(note.slideIdx); };
+})();
+
+/* ============ STEP-THROUGH (slide 3) ============ */
+(function(){
+  var steps=[
+    {t:"A foreign marker appears",b:"Every pathogen carries <strong>antigens</strong> &mdash; molecular shapes on its surface the body reads as &ldquo;not me.&rdquo; This is the fingerprint the whole response is built around."},
+    {t:"A scout raises the alarm",b:"An <strong>antigen-presenting cell</strong> engulfs the invader, chops it up, and displays a piece on its surface &mdash; carrying the evidence to the immune system&rsquo;s command cells."},
+    {t:"Helper T-cells coordinate",b:"A matching <strong>helper T-cell</strong> recognises the displayed fragment and sounds the call to arms, licensing the right B-cells to ramp up."},
+    {t:"B-cells are activated",b:"The <strong>B-cell</strong> whose receptor fits this exact antigen switches on and multiplies rapidly into an army of identical clones."},
+    {t:"Antibodies and memory",b:"Those clones become <strong>plasma cells</strong> pumping out antibodies to neutralise the threat now &mdash; and <strong>memory cells</strong> that linger for years, ready to respond in hours next time."}
+  ];
+  var nodes=Array.prototype.slice.call(document.querySelectorAll('.fl-node'));
+  var sn=document.getElementById('stepSn'), st=document.getElementById('stepTitle'), sb=document.getElementById('stepBody');
+  var prev=document.getElementById('stepPrev'), next=document.getElementById('stepNext');
+  var dotsWrap=document.getElementById('stepDots'); var idx=0;
+  var ICON_NEXT=' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  var ICON_REPLAY=' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>';
+  for(var i=0;i<steps.length;i++){(function(i){
+    var d=document.createElement('button'); d.className='step-dot'; d.setAttribute('aria-label','Step '+(i+1));
+    d.addEventListener('click',function(){idx=i;render();}); dotsWrap.appendChild(d);
+  })(i);}
+  var sdots=Array.prototype.slice.call(dotsWrap.children);
+  function render(){
+    sn.textContent='Step '+(idx+1)+' of '+steps.length;
+    st.textContent=steps[idx].t; sb.innerHTML=steps[idx].b;
+    nodes.forEach(function(n){ n.classList.toggle('fl-dim', parseInt(n.getAttribute('data-fl'),10)>idx); });
+    sdots.forEach(function(d,i){d.setAttribute('aria-current',i===idx?'true':'false');});
+    prev.disabled=idx===0;
+    next.innerHTML = (idx===steps.length-1 ? 'Replay'+ICON_REPLAY : 'Next step'+ICON_NEXT);
+  }
+  prev.addEventListener('click',function(){if(idx>0){idx--;render();}});
+  next.addEventListener('click',function(){ idx = idx>=steps.length-1 ? 0 : idx+1; render(); });
+  render();
+})();
+
+/* ============ HERD IMMUNITY DEMO (slide 7) ============ */
+(function(){
+  var COLS=20, ROWS=12, TOTAL=COLS*ROWS;
+  var grid=document.getElementById('popGrid');
+  grid.style.gridTemplateColumns='repeat('+COLS+',1fr)';
+  var cells=[];
+  for(var i=0;i<TOTAL;i++){var c=document.createElement('div'); c.className='cell'; grid.appendChild(c); cells.push(c);}
+
+  // stable shuffle -> a rank for each cell; the lowest-ranked vaxCount cells are "vaccinated"
+  var order=[]; for(var i=0;i<TOTAL;i++)order.push(i);
+  (function(){var s=20240625; function rnd(){s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff;}
+    for(var i=TOTAL-1;i>0;i--){var j=Math.floor(rnd()*(i+1)); var t=order[i]; order[i]=order[j]; order[j]=t;}})();
+  var vaxRank=[]; vaxRank.length=TOTAL;
+  for(var i=0;i<TOTAL;i++){vaxRank[order[i]]=i;}
+
+  var slider=document.getElementById('vaxSlider');
+  var vaxVal=document.getElementById('vaxVal'), threshLab=document.getElementById('threshLab');
+  var r0Out=document.getElementById('r0Out'), reOut=document.getElementById('reOut');
+  var verdict=document.getElementById('verdict'), vTitle=document.getElementById('verdictTitle'), vBody=document.getElementById('verdictBody');
+  var runBtn=document.getElementById('runOutbreak'), resetBtn=document.getElementById('resetGrid');
+  var pM=document.getElementById('presetMeasles'), pF=document.getElementById('presetFlu');
+  var R0=15, timer=null;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  var ICON_OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>';
+  var ICON_WARN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+
+  function vaxCount(){return Math.round(slider.value/100*TOTAL);}
+  function stopTimer(){if(timer){clearInterval(timer); timer=null;}}
+
+  function layout(){
+    stopTimer();
+    var k=vaxCount();
+    for(var i=0;i<TOTAL;i++){ cells[i].className='cell '+(vaxRank[i]<k?'vax':'sus'); }
+  }
+
+  function update(){
+    var v=+slider.value;
+    vaxVal.textContent=v+'%';
+    slider.style.backgroundSize=v+'% 100%';
+    var thresh=Math.max(0,(1-1/R0))*100;
+    threshLab.textContent=thresh.toFixed(0)+'%';
+    var Re=R0*(1-v/100);
+    r0Out.textContent=R0.toFixed(1);
+    reOut.textContent=Re.toFixed(2);
+    if(Re<1){
+      verdict.className='verdict safe';
+      vTitle.innerHTML=ICON_OK+'Outbreak fizzles';
+      vBody.innerHTML='Each case infects <strong>fewer than one</strong> other person on average ('+Re.toFixed(2)+'). Chains of transmission die out &mdash; herd immunity shields even the unvaccinated.';
+    }else{
+      verdict.className='verdict danger';
+      vTitle.innerHTML=ICON_WARN+'Epidemic spreads';
+      vBody.innerHTML='Each case still infects <strong>'+Re.toFixed(2)+'</strong> others on average. Above 1, the outbreak keeps finding new hosts.';
+    }
+    layout();
+  }
+
+  slider.addEventListener('input',update);
+
+  function setPreset(r0,measles){
+    R0=r0; pM.setAttribute('aria-pressed',measles?'true':'false'); pF.setAttribute('aria-pressed',measles?'false':'true');
+    update();
+  }
+  pM.addEventListener('click',function(){setPreset(15,true);});
+  pF.addEventListener('click',function(){setPreset(2,false);});
+
+  function neighbors(i){
+    var r=Math.floor(i/COLS), c=i%COLS, out=[];
+    if(r>0)out.push(i-COLS); if(r<ROWS-1)out.push(i+COLS);
+    if(c>0)out.push(i-1); if(c<COLS-1)out.push(i+1);
+    return out;
+  }
+
+  function runOutbreak(){
+    layout();
+    var k=vaxCount();
+    var beta=Math.min(1,R0/4); // per-susceptible-neighbour transmission prob; R0 ~= beta*4 contacts
+    var seed=-1, mid=Math.floor(TOTAL/2);
+    for(var d=0;d<TOTAL;d++){
+      var a=mid+d, b=mid-d;
+      if(a<TOTAL && vaxRank[a]>=k){seed=a;break;}
+      if(b>=0 && vaxRank[b]>=k){seed=b;break;}
+    }
+    if(seed<0){return;}
+    var infected={}, frontier=[seed];
+    cells[seed].className='cell seed'; infected[seed]=true;
+    var s=99991; function rnd(){s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff;}
+
+    function tick(){
+      var nextF=[];
+      for(var f=0;f<frontier.length;f++){
+        var node=frontier[f], nb=neighbors(node);
+        for(var n=0;n<nb.length;n++){
+          var m=nb[n];
+          if(infected[m]) continue;
+          if(vaxRank[m]<k) continue; // vaccinated: immune, blocks the chain
+          if(rnd()<beta){ infected[m]=true; nextF.push(m); cells[m].className='cell inf'; }
+        }
+        if(!cells[node].classList.contains('seed')) cells[node].className='cell spent';
+      }
+      frontier=nextF;
+      if(frontier.length===0){ stopTimer();
+        for(var i=0;i<TOTAL;i++){ if(infected[i]) cells[i].className='cell spent'; }
+      }
+    }
+    stopTimer();
+    if(reduce){ var guard=0; while(frontier.length && guard++<400){ tick(); } }
+    else { timer=setInterval(tick,150); }
+  }
+  runBtn.addEventListener('click',runOutbreak);
+  resetBtn.addEventListener('click',function(){update();});
+
+  update();
+})();
+
+/* ============ QUIZ (slide 11) ============ */
+(function(){
+  var QS=[
+    {q:"Why does a first-ever infection take one to two weeks to bring under control?",
+     opts:["The pathogen actively hides from the immune system","The immune system must find and multiply the rare cells that recognise this exact threat","Antibodies can only be made during sleep","The body waits to confirm the infection is serious"],
+     a:1, why:"The body starts from scratch &mdash; finding and cloning the few matching cells is what takes the time."},
+    {q:"What is the core thing a vaccine provides?",
+     opts:["A dose of antibiotics","A mild version of the actual illness","Memory of a threat, built without the dangerous infection","Lifetime protection against every disease at once"],
+     a:2, why:"A vaccine is a controlled rehearsal: it builds memory cells while skipping the illness."},
+    {q:"Why can mRNA vaccines NOT alter your DNA?",
+     opts:["The mRNA stays in the cytoplasm and never enters the nucleus where DNA lives","DNA is simply too strong to be changed","The dose is too small to matter","They are kept frozen until the moment of use"],
+     a:0, why:"mRNA works briefly in the cytoplasm and is broken down; your cells can&rsquo;t write it into the genome."},
+    {q:"Measles has R&#8320; &asymp; 15. Roughly what vaccination coverage reaches herd immunity?",
+     opts:["About 50%","About 75%","About 93%","Coverage doesn&rsquo;t matter for measles"],
+     a:2, why:"Threshold = 1 &minus; 1/R&#8320; = 1 &minus; 1/15 &asymp; 93%. Highly contagious diseases need very high coverage."}
+  ];
+  var idx=0, score=0, answered=false;
+  var body=document.getElementById('quizBody');
+  var initialHTML=body.innerHTML;
+  var LET=['A','B','C','D'];
+  var prog,scoreEl,bar,qEl,optsEl,fb,nextBtn;
+
+  function bind(){
+    prog=document.getElementById('quizProg'); scoreEl=document.getElementById('quizScore');
+    bar=document.getElementById('qbarFill'); qEl=document.getElementById('qQ'); optsEl=document.getElementById('qOpts');
+    fb=document.getElementById('qFb'); nextBtn=document.getElementById('qNext');
+    nextBtn.addEventListener('click',onNext);
+  }
+  function render(){
+    answered=false;
+    var item=QS[idx];
+    prog.textContent='Question '+(idx+1)+' of '+QS.length;
+    scoreEl.textContent='Score: '+score;
+    bar.style.width=(idx/QS.length*100)+'%';
+    qEl.innerHTML=item.q;
+    optsEl.innerHTML='';
+    item.opts.forEach(function(o,i){
+      var b=document.createElement('button');
+      b.className='qopt'; b.innerHTML='<span class="mk">'+LET[i]+'</span><span>'+o+'</span>';
+      b.addEventListener('click',function(){choose(i,b);});
+      optsEl.appendChild(b);
+    });
+    fb.className='qfb'; fb.innerHTML=''; nextBtn.style.display='none';
+  }
+  function choose(i,btn){
+    if(answered)return; answered=true;
+    var item=QS[idx], opts=optsEl.children;
+    for(var k=0;k<opts.length;k++)opts[k].disabled=true;
+    if(i===item.a){ btn.classList.add('correct'); score++;
+      fb.className='qfb show right'; fb.innerHTML='<b>Correct.</b> '+item.why;
+    }else{ btn.classList.add('wrong'); opts[item.a].classList.add('correct');
+      fb.className='qfb show wrongfb'; fb.innerHTML='<b>Not quite.</b> '+item.why;
+    }
+    scoreEl.textContent='Score: '+score;
+    bar.style.width=((idx+1)/QS.length*100)+'%';
+    nextBtn.style.display='inline-flex';
+    nextBtn.textContent = (idx===QS.length-1 ? 'See result' : 'Next question');
+    try{nextBtn.focus();}catch(e){}
+  }
+  function onNext(){
+    if(idx<QS.length-1){idx++;render();} else {finish();}
+  }
+  function finish(){
+    var msg = score===QS.length ? 'A clean sweep &mdash; the rehearsal stuck.' :
+              score===QS.length-1 ? 'Strong &mdash; you&rsquo;ve got the core model.' :
+              score>=2 ? 'A solid start. Swipe back to revisit the tricky bits.' :
+              'Worth another pass &mdash; the earlier slides have you covered.';
+    body.innerHTML='<div class="quiz-done"><div class="qscore">'+score+' / '+QS.length+'</div><p>'+msg+'</p>'+
+      '<div style="margin-top:24px"><button class="btn btn-ghost" id="qRetry">Try again</button></div></div>';
+    document.getElementById('qRetry').addEventListener('click',function(){
+      idx=0; score=0; body.innerHTML=initialHTML; bind(); render();
+    });
+  }
+  bind(); render();
+})();
+</script>
+
+<!-- Review & edit overlay — injected by assemble.mjs (invariant; do not hand-edit) -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:8px;right:14px;z-index:9002;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:9010;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:9010;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:9020;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+    // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
+    // Scrolling pages: position just below any fixed/sticky top nav instead.
+    requestAnimationFrame(function () {
+      var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
+      if (isDeck) {
+        launch.style.top = "auto";
+        launch.style.right = "auto";
+        launch.style.bottom = "16px";
+        launch.style.left = "14px";
+      } else {
+        var navBottom = 0;
+        document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+          var s = getComputedStyle(el);
+          if (s.position === "fixed" || s.position === "sticky") {
+            navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+          }
+        });
+        if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      }
+    });
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>

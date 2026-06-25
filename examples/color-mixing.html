@@ -1,0 +1,1642 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How color works — light vs. ink (RGB &amp; CMYK)</title>
+<meta name="description" content="A playable field guide to color: how screens add light (RGB) and print subtracts it (CMYK), why the two systems disagree, and what that means in practice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================ TOKENS ============================ */
+:root{
+  /* paper / ink (light surfaces) */
+  --paper:#fbf8f1;
+  --paper-2:#f2ece0;
+  --paper-card:#ffffff;
+  --line:#e7dfce;
+  --ink:#1a1822;
+  --ink-2:#48434f;
+  --ink-3:#6d6776;
+
+  /* night (dark surfaces) */
+  --night:#0a0910;
+  --night-2:#141220;
+  --night-3:#1d1a2c;
+  --night-line:#2a2640;
+  --night-ink:#f5f2ff;
+  --night-ink-2:#b9b2d4;
+  --night-ink-3:#857ea3;
+
+  /* additive primaries (light) — true-ish for demo correctness */
+  --r:#ff2d55;
+  --g:#2fd158;
+  --b:#3a6dff;
+  /* subtractive primaries (ink) — display hues */
+  --c:#00bcd4;
+  --m:#ff2e9a;
+  --y:#ffd400;
+  /* legible "ink" versions of cyan/yellow for text on white */
+  --c-ink:#0a7c8c;
+  --m-ink:#c01f76;
+  --y-ink:#8a6b00;
+
+  /* chrome accent (UI only — deliberately not a data hue) */
+  --accent:#6b46ff;
+  --accent-soft:#efeaff;
+
+  /* spacing scale (4px) */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  --s7:48px; --s8:64px; --s9:96px; --s10:128px;
+
+  --maxw:1200px;
+  --measure:64ch;
+  --radius:18px;
+  --radius-sm:11px;
+
+  --shadow:0 1px 2px rgba(20,15,40,.05), 0 12px 32px -12px rgba(20,15,40,.18);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"DM Sans",system-ui,sans-serif;
+  font-size:18px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+
+/* ============================ TYPE ============================ */
+h1,h2,h3,.display{
+  font-family:"Fraunces",Georgia,serif;
+  font-weight:600;
+  line-height:1.04;
+  letter-spacing:-.012em;
+  margin:0;
+}
+h1{font-size:clamp(2.6rem,6vw,4.5rem);font-weight:600;font-variation-settings:"opsz" 144}
+h2{font-size:clamp(1.9rem,3.6vw,2.9rem);font-variation-settings:"opsz" 110}
+h3{font-size:1.18rem;font-weight:600}
+p{margin:0 0 var(--s4)}
+a{color:inherit}
+.mono{font-family:"Space Mono",ui-monospace,monospace}
+.eyebrow{
+  font-family:"Space Mono",monospace;
+  font-size:.74rem;
+  font-weight:700;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+}
+em,.ital{font-style:italic}
+strong{font-weight:700}
+
+/* ============================ LAYOUT ============================ */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s6)}
+.band{padding:var(--s9) 0;position:relative;overflow:hidden}
+.measure{max-width:var(--measure)}
+.lede{font-size:1.18rem;color:var(--ink-2)}
+.night .lede{color:var(--night-ink-2)}
+.section-head{margin-bottom:var(--s7)}
+.section-head .eyebrow{color:var(--accent);display:block;margin-bottom:var(--s4)}
+.night .section-head .eyebrow{color:#b6a4ff}
+
+.skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;z-index:200}
+.skip:focus{left:12px;top:12px}
+
+/* surface variants */
+.night{background:var(--night);color:var(--night-ink)}
+.night h1,.night h2,.night h3{color:var(--night-ink)}
+.paper2{background:var(--paper-2)}
+
+/* ============================ NAV ============================ */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(251,248,241,.82);
+  backdrop-filter:saturate(160%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{display:flex;align-items:center;gap:var(--s5);max-width:var(--maxw);margin:0 auto;padding:13px var(--s6)}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Fraunces",serif;font-weight:600;font-size:1.12rem;letter-spacing:-.01em;white-space:nowrap}
+.brand-dots{display:inline-grid;grid-template-columns:9px 9px;grid-auto-rows:9px;gap:2px}
+.brand-dots i{display:block;border-radius:50%}
+.brand-dots i:nth-child(1){background:var(--r)}
+.brand-dots i:nth-child(2){background:var(--g)}
+.brand-dots i:nth-child(3){background:var(--y)}
+.brand-dots i:nth-child(4){background:var(--b)}
+.nav-links{display:flex;gap:var(--s5);margin-left:auto;flex-wrap:wrap}
+.nav-links a{
+  text-decoration:none;color:var(--ink-2);font-size:.92rem;font-weight:500;
+  padding:4px 2px;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;
+}
+.nav-links a:hover{color:var(--ink);border-color:var(--accent)}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:120}
+
+/* ============================ HERO ============================ */
+.hero{background:radial-gradient(120% 90% at 50% -10%, #181430 0%, var(--night) 60%)}
+.hero .wrap{padding-top:var(--s9);padding-bottom:var(--s8)}
+.hero-eyebrow{color:#b6a4ff;display:block;margin-bottom:var(--s5)}
+.hero h1{max-width:16ch}
+.hero h1 .light-word{
+  background:linear-gradient(92deg,#ff2d55,#ffd400 45%,#2fd158 70%,#3a6dff);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-intro{font-size:1.22rem;color:var(--night-ink-2);max-width:54ch;margin-top:var(--s5)}
+.hero-intro b{color:var(--night-ink);font-weight:600}
+
+.split{
+  display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);
+  margin-top:var(--s8);
+}
+.panel{
+  border-radius:var(--radius);padding:var(--s6) var(--s6) var(--s5);
+  position:relative;overflow:hidden;min-height:360px;
+  display:flex;flex-direction:column;
+  animation:rise .7s cubic-bezier(.2,.7,.2,1) both;
+}
+.panel.add{background:#050409;border:1px solid #221c3a}
+.panel.sub{background:#ffffff;border:1px solid #ece4d2;animation-delay:.08s}
+.panel-tag{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:4px}
+.panel .ptitle{font-family:"Space Mono",monospace;font-size:.74rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+.panel.add .ptitle{color:#cfc5ff}
+.panel.sub .ptitle{color:var(--ink-3)}
+.panel .pdir{font-family:"Space Mono",monospace;font-size:.7rem;letter-spacing:.1em}
+.panel.add .pdir{color:#6d6597}
+.panel.sub .pdir{color:#b8ad97}
+.stage{flex:1;position:relative;isolation:isolate;border-radius:12px;margin:var(--s4) 0;min-height:210px;overflow:hidden}
+.stage.add{background:#000}
+.stage.sub{background:#fff;border:1px solid #f0e8d8}
+.blob{position:absolute;width:46%;aspect-ratio:1;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);filter:blur(.3px)}
+.stage.add .blob{mix-blend-mode:screen}
+.stage.sub .blob{mix-blend-mode:multiply}
+.blob.c1{top:34%}
+.blob.c2{top:64%;left:36%}
+.blob.c3{top:64%;left:64%}
+/* comparison diagrams: fixed-size circles in a centered cluster so the venn
+   stays fully inside the (overflow:hidden) stage and never bleeds onto the caption */
+.stage .blob{width:120px;height:120px;aspect-ratio:auto;left:50%;top:50%}
+.stage .blob.c1{transform:translate(-50%,calc(-50% - 30px))}
+.stage .blob.c2{transform:translate(calc(-50% - 40px),calc(-50% + 26px))}
+.stage .blob.c3{transform:translate(calc(-50% + 40px),calc(-50% + 26px))}
+.panel .pcap{font-size:.96rem;line-height:1.5;margin:0}
+.panel.add .pcap{color:#9d96c2}
+.panel.sub .pcap{color:var(--ink-2)}
+.panel .pcap b{font-weight:700}
+.panel.add .pcap b{color:#fff}
+.panel.sub .pcap b{color:var(--ink)}
+
+.throughline{
+  margin-top:var(--s7);display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--night-line);border:1px solid var(--night-line);border-radius:14px;overflow:hidden;
+}
+.tl-cell{background:var(--night-2);padding:var(--s5) var(--s6)}
+.tl-cell .k{font-family:"Space Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#8f87b6;display:block;margin-bottom:6px}
+.tl-cell .v{font-size:1.04rem;color:var(--night-ink)}
+.tl-cell .v b{font-weight:700}
+.tl-cell.add .v b{color:#ffd86a}
+.tl-cell.sub .v b{color:#7fb0ff}
+
+/* ============================ SPECTRUM ============================ */
+.spectrum-wrap{margin-top:var(--s6)}
+.spectrum{
+  position:relative;height:120px;border-radius:14px;overflow:hidden;
+  border:1px solid var(--line);cursor:crosshair;touch-action:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
+}
+.spec-marker{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.55);transform:translateX(-1px);pointer-events:none}
+.spec-readout{
+  position:absolute;top:10px;transform:translateX(-50%);
+  background:rgba(10,9,16,.86);color:#fff;border-radius:8px;padding:5px 10px;
+  font-family:"Space Mono",monospace;font-size:.78rem;white-space:nowrap;pointer-events:none;
+  box-shadow:0 4px 14px rgba(0,0,0,.3)
+}
+.spec-scale{display:flex;justify-content:space-between;margin-top:8px;font-family:"Space Mono",monospace;font-size:.72rem;color:var(--ink-3)}
+.cones{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4);margin-top:var(--s5)}
+.cone{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--paper-card)}
+.cone .ch{display:flex;align-items:center;gap:9px;font-weight:700;font-size:.95rem;margin-bottom:3px}
+.cone .dot{width:13px;height:13px;border-radius:50%}
+.cone p{margin:0;font-size:.86rem;color:var(--ink-2);line-height:1.45}
+
+/* ============================ DEMO SHELL ============================ */
+.demo{
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--shadow);margin-top:var(--s6);
+}
+.demo.on-dark{background:var(--night-2);border:1px solid var(--night-line)}
+.demo.on-light{background:var(--paper-card);border:1px solid var(--line)}
+.demo-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:var(--s5) var(--s6);border-bottom:1px solid var(--line)}
+.demo.on-dark .demo-head{border-color:var(--night-line)}
+.demo-head .dt{font-family:"Space Mono",monospace;font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.demo.on-dark .demo-head .dt{color:#cfc5ff}
+.demo.on-light .demo-head .dt{color:var(--accent)}
+.demo-head .dh{font-family:"Fraunces",serif;font-size:1.15rem;font-weight:600}
+.demo-head .hint{font-size:.85rem}
+.demo.on-dark .hint{color:var(--night-ink-3)}
+.demo.on-light .hint{color:var(--ink-3)}
+.demo-body{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s6);padding:var(--s6)}
+
+/* mixer stage (live circles) */
+.mix-stage{position:relative;isolation:isolate;border-radius:14px;min-height:330px;overflow:hidden}
+.mix-stage.add{background:#000}
+.mix-stage.sub{background:#fff;border:1px solid #efe7d7}
+.mix-stage .blob{position:absolute;width:54%;aspect-ratio:1;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%)}
+.mix-stage.add .blob{mix-blend-mode:screen}
+.mix-stage.sub .blob{mix-blend-mode:multiply}
+.mix-stage .blob.c1{top:33%}
+.mix-stage .blob.c2{top:63%;left:35%}
+.mix-stage .blob.c3{top:63%;left:65%}
+.blob-label{position:absolute;font-family:"Space Mono",monospace;font-weight:700;font-size:.78rem;letter-spacing:.05em;z-index:5;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+
+/* controls column */
+.mix-ctrl{display:flex;flex-direction:column;gap:var(--s4)}
+.swatch{
+  height:108px;border-radius:14px;position:relative;border:1px solid rgba(0,0,0,.08);
+  display:flex;align-items:flex-end;padding:12px;
+}
+.demo.on-dark .swatch{border-color:rgba(255,255,255,.12)}
+.swatch .chip{
+  font-family:"Space Mono",monospace;font-weight:700;font-size:.86rem;
+  background:rgba(255,255,255,.92);color:#15131d;padding:5px 10px;border-radius:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,.18)
+}
+.readout{display:flex;gap:var(--s3);flex-wrap:wrap;font-family:"Space Mono",monospace;font-size:.82rem}
+.readout .r{padding:6px 10px;border-radius:8px;border:1px solid var(--line)}
+.demo.on-dark .readout .r{border-color:var(--night-line);color:var(--night-ink-2)}
+.demo.on-light .readout .r{color:var(--ink-2)}
+.readout .r b{color:inherit}
+
+.slider-row{display:flex;flex-direction:column;gap:7px}
+.slider-row .lab{display:flex;align-items:center;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.8rem;font-weight:700}
+.slider-row .lab .name{display:flex;align-items:center;gap:8px;letter-spacing:.04em}
+.slider-row .lab .val{font-weight:700}
+.chan-tag{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;color:#fff;font-size:.72rem;font-weight:700}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:99px;
+  background:linear-gradient(90deg, var(--track,#888) 0 var(--fill,50%), var(--rail,#e2dccd) var(--fill,50%) 100%);
+  cursor:pointer;outline:none;
+}
+.demo.on-dark input[type=range]{--rail:#2a2640}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+  background:#fff;border:3px solid var(--track,#888);box-shadow:0 2px 7px rgba(0,0,0,.35);cursor:grab;margin-top:0;
+}
+input[type=range]::-moz-range-thumb{
+  width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--track,#888);
+  box-shadow:0 2px 7px rgba(0,0,0,.35);cursor:grab;
+}
+input[type=range]:active::-webkit-slider-thumb{cursor:grabbing}
+input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--track) 45%,transparent)}
+
+/* state callout */
+.callout{
+  margin:0 var(--s6) var(--s6);padding:var(--s5) var(--s5);border-radius:12px;
+  display:flex;gap:14px;align-items:flex-start;border-left:4px solid var(--accent);
+}
+.demo.on-dark .callout{background:var(--night-3)}
+.demo.on-light .callout{background:var(--paper-2)}
+.callout .badge{
+  flex:none;width:38px;height:38px;border-radius:9px;border:2px solid rgba(0,0,0,.12);
+}
+.demo.on-dark .callout .badge{border-color:rgba(255,255,255,.18)}
+.callout .ctxt{font-size:.95rem;line-height:1.5}
+.callout .ctxt b{font-weight:700}
+.demo.on-dark .callout .ctxt{color:var(--night-ink-2)}
+.demo.on-dark .callout .ctxt b{color:var(--night-ink)}
+.demo.on-light .callout .ctxt{color:var(--ink-2)}
+.demo.on-light .callout .ctxt b{color:var(--ink)}
+.callout .cname{display:block;font-family:"Space Mono",monospace;font-weight:700;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;color:var(--accent)}
+.demo.on-dark .callout .cname{color:#b6a4ff}
+
+/* toggle (real ink) */
+.toggle-row{display:flex;align-items:center;gap:12px;padding:0 var(--s6) var(--s6);font-size:.9rem;color:var(--ink-2)}
+.switch{position:relative;width:50px;height:28px;flex:none}
+.switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.switch .track{position:absolute;inset:0;background:var(--line);border-radius:99px;transition:background .18s}
+.switch .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .18s}
+.switch input:checked + .track{background:var(--accent)}
+.switch input:checked + .track + .knob{transform:translateX(22px)}
+.switch input:focus-visible + .track{box-shadow:0 0 0 4px var(--accent-soft)}
+
+/* misconception / info note (in prose) */
+.note{
+  border-radius:14px;padding:var(--s5) var(--s6);margin:var(--s6) 0;border-left:4px solid;
+}
+.note .nt{font-family:"Space Mono",monospace;font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:7px}
+.note p:last-child{margin:0}
+.note.warn{background:#fff4ec;border-color:#ff7a3c}
+.note.warn .nt{color:#c75317}
+.night .note.warn{background:#2a1a12;border-color:#ff7a3c}
+.night .note.warn .nt{color:#ffb088}
+.night .note.warn p{color:var(--night-ink-2)}
+.night .note.warn b{color:var(--night-ink)}
+.note.ink{background:var(--paper-2);border-color:var(--accent)}
+.note.ink .nt{color:var(--accent)}
+
+/* secondary mini-legend */
+.secondaries{display:flex;gap:var(--s4);flex-wrap:wrap;margin-top:var(--s5)}
+.sec{display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--ink-2)}
+.night .sec{color:var(--night-ink-2)}
+.sec .sw{width:30px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.12)}
+.night .sec .sw{border-color:rgba(255,255,255,.18)}
+.sec .mono{font-size:.78rem}
+
+/* ============================ WHEEL ============================ */
+.wheel-grid{display:grid;grid-template-columns:minmax(0,400px) 1fr;gap:var(--s8);align-items:center;margin-top:var(--s6)}
+.wheel-stage{position:relative;width:100%;max-width:400px;aspect-ratio:1;margin:0 auto}
+.wheel-stage svg{position:absolute;inset:0;width:100%;height:100%}
+.wnode{
+  position:absolute;width:18%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);
+  border:3px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer;
+  display:grid;place-items:center;font-family:"Space Mono",monospace;font-weight:700;color:#fff;
+  font-size:.82rem;transition:transform .16s, box-shadow .16s, opacity .16s;padding:0;
+}
+.wnode:hover{transform:translate(-50%,-50%) scale(1.07)}
+.wnode.dim{opacity:.3}
+.wnode.sel{box-shadow:0 0 0 4px var(--accent), 0 6px 18px rgba(0,0,0,.25)}
+.wheel-info .pairing{display:flex;align-items:center;gap:14px;margin-bottom:var(--s4);flex-wrap:wrap}
+.wheel-info .pcell{display:flex;align-items:center;gap:10px;font-weight:700}
+.wheel-info .pcell .sw{width:34px;height:34px;border-radius:9px;border:2px solid rgba(0,0,0,.1)}
+.wheel-info .op{font-family:"Space Mono",monospace;color:var(--ink-3);font-size:1.1rem}
+.wheel-eq{font-family:"Space Mono",monospace;font-size:1.05rem;background:var(--paper-card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:inline-block;margin-bottom:var(--s4)}
+.wheel-info p{color:var(--ink-2)}
+
+/* ============================ GAMUT ============================ */
+.gamut-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s6);margin-top:var(--s6)}
+.gcanvas-wrap{background:var(--night-2);border:1px solid var(--night-line);border-radius:var(--radius);padding:var(--s5);box-shadow:var(--shadow)}
+.gcanvas-wrap canvas{width:100%;height:auto;display:block;border-radius:10px;cursor:crosshair;touch-action:none}
+.gcanvas-legend{display:flex;gap:var(--s5);flex-wrap:wrap;margin-top:14px;font-size:.8rem;color:var(--night-ink-2)}
+.gcanvas-legend span{display:flex;align-items:center;gap:7px}
+.gcanvas-legend .k{width:22px;height:8px;border-radius:4px}
+.gcanvas-legend .kring{width:13px;height:13px;border-radius:50%;border:2px solid #fff;background:#1a4dff}
+
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+.cmp{border-radius:14px;overflow:hidden;border:1px solid var(--night-line)}
+.cmp .cap{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;font-family:"Space Mono",monospace;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.cmp.screen .cap{background:#050409;color:#cfc5ff}
+.cmp.print .cap{background:#fff;color:var(--ink-3)}
+.cmp .sw{height:150px}
+.cmp .hexline{font-family:"Space Mono",monospace;font-size:.82rem;font-weight:700;padding:9px 14px}
+.cmp.screen .hexline{background:#050409;color:#fff}
+.cmp.print .hexline{background:#fff;color:#15131d}
+
+.gauge{margin-top:var(--s5)}
+.gauge .glab{display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:.78rem;color:var(--night-ink-2);margin-bottom:6px}
+.gbar{height:12px;border-radius:99px;background:var(--night-3);overflow:hidden}
+.gbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#34d058,#ffd400 55%,#ff5a36);transition:width .12s}
+.verdict{
+  margin-top:var(--s5);border-radius:14px;padding:var(--s5);border:1px solid var(--night-line);
+  background:var(--night-3);
+}
+.verdict .vbadge{font-family:"Space Mono",monospace;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;padding:5px 11px;border-radius:99px;margin-bottom:10px}
+.verdict.good .vbadge{background:#10331f;color:#69e08a}
+.verdict.bad .vbadge{background:#3a1320;color:#ff7aa8}
+.verdict .vtxt{font-size:.96rem;color:var(--night-ink-2);line-height:1.5}
+.verdict .vtxt b{color:var(--night-ink)}
+.gam-ctrl{margin-top:var(--s5);display:flex;flex-direction:column;gap:var(--s4)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.chip-btn{
+  border:1px solid var(--night-line);background:var(--night-3);color:var(--night-ink-2);
+  font-family:"Space Mono",monospace;font-size:.74rem;font-weight:700;padding:7px 11px;border-radius:99px;
+  cursor:pointer;display:flex;align-items:center;gap:7px;transition:border-color .15s,color .15s;
+}
+.chip-btn:hover{color:var(--night-ink);border-color:#4a4170}
+.chip-btn .sw{width:14px;height:14px;border-radius:50%;border:1px solid rgba(255,255,255,.25)}
+
+/* ============================ PRACTICE ============================ */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s5);margin-top:var(--s6)}
+.card{
+  background:var(--paper-card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:var(--s6);position:relative;
+}
+.card .ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;margin-bottom:var(--s4)}
+.card .ic svg{width:23px;height:23px;stroke-width:1.6}
+.card h3{margin-bottom:8px}
+.card p{font-size:.96rem;color:var(--ink-2);margin:0}
+.card p + p{margin-top:10px}
+
+/* ============================ QUIZ ============================ */
+.quiz{max-width:760px;margin:var(--s6) auto 0;background:var(--night-2);border:1px solid var(--night-line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.quiz-head{display:flex;align-items:center;justify-content:space-between;padding:var(--s5) var(--s6);border-bottom:1px solid var(--night-line)}
+.quiz-head .ql{font-family:"Space Mono",monospace;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#b6a4ff}
+.quiz-head .qn{font-family:"Space Mono",monospace;font-size:.82rem;color:var(--night-ink-3)}
+.quiz-body{padding:var(--s6)}
+.quiz-q{font-family:"Fraunces",serif;font-size:1.4rem;font-weight:600;color:var(--night-ink);line-height:1.2;margin-bottom:var(--s5)}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{
+  text-align:left;border:1px solid var(--night-line);background:var(--night-3);color:var(--night-ink);
+  padding:15px 17px;border-radius:12px;font:inherit;font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:13px;
+  transition:border-color .14s,background .14s;
+}
+.opt:hover:not(:disabled){border-color:#5a4fa0}
+.opt:disabled{cursor:default}
+.opt .mk{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--night-line);display:grid;place-items:center;font-family:"Space Mono",monospace;font-size:.8rem;font-weight:700;color:var(--night-ink-3)}
+.opt.correct{border-color:#3ddc7f;background:#10301e}
+.opt.correct .mk{border-color:#3ddc7f;color:#3ddc7f}
+.opt.wrong{border-color:#ff5a82;background:#311221}
+.opt.wrong .mk{border-color:#ff5a82;color:#ff5a82}
+.why{margin-top:var(--s5);padding:var(--s5);border-radius:12px;background:var(--night-3);border-left:4px solid #b6a4ff;display:none}
+.why.show{display:block;animation:rise .35s ease both}
+.why .wl{font-family:"Space Mono",monospace;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#b6a4ff;display:block;margin-bottom:6px}
+.why p{margin:0;color:var(--night-ink-2);font-size:.95rem}
+.quiz-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:var(--s5) var(--s6);border-top:1px solid var(--night-line)}
+.score{font-family:"Space Mono",monospace;font-size:.85rem;color:var(--night-ink-2)}
+.score b{color:var(--night-ink)}
+
+.btn{font:inherit;font-weight:700;font-size:.95rem;border-radius:11px;padding:12px 22px;cursor:pointer;border:1px solid transparent;transition:transform .1s, background .15s, opacity .15s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#5a36e6}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--night-ink-2);border-color:var(--night-line)}
+.btn-ghost:hover{color:var(--night-ink);border-color:#4a4170}
+
+.quiz-done{text-align:center;padding:var(--s6) var(--s5)}
+.quiz-done .big{font-family:"Fraunces",serif;font-size:3rem;font-weight:600;color:var(--night-ink);line-height:1}
+.quiz-done .lbl{color:var(--night-ink-2);margin:10px 0 var(--s6)}
+
+/* ============================ FOOTER ============================ */
+.foot{background:var(--night-2);color:var(--night-ink-3);padding:var(--s8) 0}
+.foot h3{color:var(--night-ink);margin-bottom:var(--s4)}
+.foot p{font-size:.9rem;line-height:1.6;max-width:62ch;color:var(--night-ink-3)}
+.foot .fmeta{margin-top:var(--s5);font-family:"Space Mono",monospace;font-size:.74rem;letter-spacing:.04em;color:#6a6390}
+
+/* ============================ ANIM ============================ */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width:920px){
+  .demo-body{grid-template-columns:1fr}
+  .gamut-grid{grid-template-columns:1fr}
+  .wheel-grid{grid-template-columns:1fr;gap:var(--s6)}
+  .split{grid-template-columns:1fr}
+  .throughline{grid-template-columns:1fr}
+}
+@media (max-width:680px){
+  body{font-size:17px}
+  .wrap{padding:0 var(--s5)}
+  .band{padding:var(--s8) 0}
+  .nav-links{display:none}
+  .cards{grid-template-columns:1fr}
+  .cones{grid-template-columns:1fr}
+  .compare{grid-template-columns:1fr}
+  .hero .wrap{padding-top:var(--s8)}
+  .demo-head{flex-direction:column;align-items:flex-start;gap:6px}
+  .demo-body{padding:var(--s5)}
+  .callout{margin:0 var(--s5) var(--s5)}
+  .toggle-row{padding:0 var(--s5) var(--s5)}
+}
+</style>
+</head>
+<body data-review-toggle>
+<a class="skip" href="#main">Skip to content</a>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand"><span class="brand-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span> Light &amp; Ink</div>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#light">Light</a>
+      <a href="#screens">Screens</a>
+      <a href="#print">Print</a>
+      <a href="#mirror">The mirror</a>
+      <a href="#mismatch">The mismatch</a>
+      <a href="#practice">In practice</a>
+      <a href="#quiz">Quiz</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="band hero night" id="top">
+  <div class="wrap">
+    <span class="eyebrow hero-eyebrow">A playable field guide to color</span>
+    <h1>How color actually works, in <span class="light-word">light</span> and in ink</h1>
+    <p class="hero-intro">Every color on a screen is made by <b>adding light</b>. Every color in print is made by <b>subtracting it</b>. The two systems run in opposite directions, and that single fact explains nearly everything else, including why the colors never quite match.</p>
+
+    <div class="split">
+      <div class="panel add">
+        <div class="panel-tag"><span class="ptitle">Screens · add light</span><span class="pdir">black → white</span></div>
+        <div class="stage add" aria-hidden="true">
+          <div class="blob c1" style="background:#ff0000"></div>
+          <div class="blob c2" style="background:#00ff00"></div>
+          <div class="blob c3" style="background:#0000ff"></div>
+        </div>
+        <p class="pcap">Start in the dark. Add <b>red</b>, <b>green</b>, and <b>blue</b> light. Where all three pile up, you reach <b>white</b>.</p>
+      </div>
+      <div class="panel sub">
+        <div class="panel-tag"><span class="ptitle">Print · subtract light</span><span class="pdir">white → black</span></div>
+        <div class="stage sub" aria-hidden="true">
+          <div class="blob c1" style="background:#00ffff"></div>
+          <div class="blob c2" style="background:#ff00ff"></div>
+          <div class="blob c3" style="background:#ffff00"></div>
+        </div>
+        <p class="pcap">Start with white paper. Add <b>cyan</b>, <b>magenta</b>, and <b>yellow</b> ink. Where all three pile up, you reach <b>black</b>.</p>
+      </div>
+    </div>
+
+    <div class="throughline">
+      <div class="tl-cell add"><span class="k">The one idea · screens</span><span class="v">Pixels begin <b>black</b> and emit light. More light means a brighter color, all the way up to <b>white</b>.</span></div>
+      <div class="tl-cell sub"><span class="k">The one idea · print</span><span class="v">Paper begins <b>white</b> and reflects light. More ink means less escapes, all the way down to <b>black</b>.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIGHT / SPECTRUM ============ -->
+<section class="band" id="light">
+  <div class="wrap">
+    <div class="section-head measure">
+      <span class="eyebrow">First, what color even is</span>
+      <h2>Color is light, and your eye keeps only three numbers</h2>
+      <p class="lede">White light is a blend of every wavelength, from deep red to violet. Drag across the spectrum below. Your eye does not measure each wavelength on its own. It carries just three kinds of color sensor, tuned roughly to red, green, and blue.</p>
+    </div>
+
+    <div class="spectrum-wrap">
+      <div class="spectrum" id="spectrum" role="slider" tabindex="0" aria-label="Visible light spectrum, drag to read wavelength" aria-valuemin="380" aria-valuemax="700" aria-valuenow="540">
+        <div class="spec-marker" id="specMarker" style="left:50%"></div>
+        <div class="spec-readout" id="specReadout" style="left:50%">540 nm · green</div>
+      </div>
+      <div class="spec-scale"><span>380 nm · violet</span><span>490 · cyan</span><span>540 · green</span><span>620 · red</span><span>700 nm · deep red</span></div>
+    </div>
+
+    <p class="measure" style="margin-top:var(--s6)">Every color you have ever seen is your brain reading three signals from those sensors. That is the loophole every screen exploits. It never reproduces a true wavelength. It just lights three dots, red, green, and blue, in the right proportion so your three sensors fire the same way they would for the real thing.</p>
+
+    <div class="cones">
+      <div class="cone"><div class="ch"><span class="dot" style="background:var(--r)"></span> Long &middot; "red"</div><p>Peaks in the yellow-red range. Carries most of the warmth in a scene.</p></div>
+      <div class="cone"><div class="ch"><span class="dot" style="background:var(--g)"></span> Medium &middot; "green"</div><p>Peaks in green. Your most sensitive channel, and where fine detail lives.</p></div>
+      <div class="cone"><div class="ch"><span class="dot" style="background:var(--b)"></span> Short &middot; "blue"</div><p>Peaks in blue-violet. The sparsest sensor, and the weakest in dim light.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREENS / ADDITIVE ============ -->
+<section class="band night" id="screens">
+  <div class="wrap">
+    <div class="section-head measure">
+      <span class="eyebrow">01 &middot; Screens &middot; additive</span>
+      <h2>On a screen, you add light to the dark</h2>
+      <p class="lede">A pixel begins as black, emitting nothing. Behind it sit three tiny lights: red, green, and blue. Turn them up and the light adds together. Two at full make a bright secondary; all three at full make white.</p>
+    </div>
+
+    <div class="note warn">
+      <span class="nt">A common surprise</span>
+      <p>Red plus green should make brown, right? In paint, yes. In <b>light</b>, red and green make <b>yellow</b>, because your red and green sensors both fire and your brain reads that combination as yellow. No yellow lamp is involved.</p>
+    </div>
+
+    <!-- RGB MIXER -->
+    <div class="demo on-dark" id="rgbDemo">
+      <div class="demo-head">
+        <div><span class="dt">Demo 01</span> <span class="dh">Add light, make a color</span></div>
+        <span class="hint">Drag R, G, B. Watch the three lights blend.</span>
+      </div>
+      <div class="demo-body">
+        <div class="mix-stage add" id="rgbStage" aria-hidden="true">
+          <div class="blob c1" id="rgbR"></div>
+          <div class="blob c2" id="rgbG"></div>
+          <div class="blob c3" id="rgbB"></div>
+          <span class="blob-label" style="left:50%;top:8%;transform:translateX(-50%);color:#ff7a8e">R</span>
+          <span class="blob-label" style="left:17%;top:85%;color:#7bf0a0">G</span>
+          <span class="blob-label" style="left:83%;top:85%;transform:translateX(-100%);color:#8fb0ff">B</span>
+        </div>
+        <div class="mix-ctrl">
+          <div class="swatch" id="rgbSwatch"><span class="chip mono" id="rgbHex">#7F7F7F</span></div>
+          <div class="readout">
+            <span class="r mono">rgb(<b id="rgbRgb">127, 127, 127</b>)</span>
+          </div>
+          <div class="slider-row">
+            <div class="lab"><span class="name"><span class="chan-tag" style="background:var(--r)">R</span> Red light</span><span class="val" id="rgbRv">127</span></div>
+            <input type="range" id="rgbRs" min="0" max="255" value="127" step="1" style="--track:#ff2d55" aria-label="Red light, 0 to 255">
+          </div>
+          <div class="slider-row">
+            <div class="lab"><span class="name"><span class="chan-tag" style="background:var(--g)">G</span> Green light</span><span class="val" id="rgbGv">127</span></div>
+            <input type="range" id="rgbGs" min="0" max="255" value="127" step="1" style="--track:#2fd158" aria-label="Green light, 0 to 255">
+          </div>
+          <div class="slider-row">
+            <div class="lab"><span class="name"><span class="chan-tag" style="background:var(--b)">B</span> Blue light</span><span class="val" id="rgbBv">127</span></div>
+            <input type="range" id="rgbBs" min="0" max="255" value="127" step="1" style="--track:#3a6dff" aria-label="Blue light, 0 to 255">
+          </div>
+        </div>
+      </div>
+      <div class="callout" id="rgbCallout">
+        <span class="badge" id="rgbBadge"></span>
+        <div class="ctxt"><span class="cname" id="rgbCname">Neutral gray</span><span id="rgbCdesc">Equal red, green, and blue light always reads as gray. Push them apart to find a color.</span></div>
+      </div>
+    </div>
+
+    <div class="secondaries">
+      <div class="sec"><span class="sw" style="background:#ffff00"></span> R + G = <span class="mono">yellow</span></div>
+      <div class="sec"><span class="sw" style="background:#ff00ff"></span> R + B = <span class="mono">magenta</span></div>
+      <div class="sec"><span class="sw" style="background:#00ffff"></span> G + B = <span class="mono">cyan</span></div>
+    </div>
+    <p class="measure" style="margin-top:var(--s5);color:var(--night-ink-2)">Hold onto those three results. Yellow, magenta, and cyan, the colors a screen makes by combining its primaries, are exactly the three inks a printer starts with. The next section is the same wheel, read backwards.</p>
+  </div>
+</section>
+
+<!-- ============ PRINT / SUBTRACTIVE ============ -->
+<section class="band" id="print">
+  <div class="wrap">
+    <div class="section-head measure">
+      <span class="eyebrow">02 &middot; Print &middot; subtractive</span>
+      <h2>On paper, you take light away</h2>
+      <p class="lede">Paper has no light of its own. White paper looks white because it reflects every wavelength back at you. Ink is a filter: each layer absorbs part of the light and returns less. Cyan absorbs red, magenta absorbs green, yellow absorbs blue. Stack all three and almost nothing escapes.</p>
+    </div>
+
+    <!-- CMY MIXER -->
+    <div class="demo on-light" id="cmyDemo">
+      <div class="demo-head">
+        <div><span class="dt">Demo 02</span> <span class="dh">Add ink, take light away</span></div>
+        <span class="hint">Drag C, M, Y. Watch ink build toward black.</span>
+      </div>
+      <div class="demo-body">
+        <div class="mix-stage sub" id="cmyStage" aria-hidden="true">
+          <div class="blob c1" id="cmyC"></div>
+          <div class="blob c2" id="cmyM"></div>
+          <div class="blob c3" id="cmyY"></div>
+          <span class="blob-label" style="left:50%;top:8%;transform:translateX(-50%);color:#0a7c8c">C</span>
+          <span class="blob-label" style="left:17%;top:85%;color:#c01f76">M</span>
+          <span class="blob-label" style="left:83%;top:85%;transform:translateX(-100%);color:#8a6b00">Y</span>
+        </div>
+        <div class="mix-ctrl">
+          <div class="swatch" id="cmySwatch"><span class="chip mono" id="cmyHex">#FFFFFF</span></div>
+          <div class="readout">
+            <span class="r mono">ink <b id="cmyInk">C0 M0 Y0</b></span>
+            <span class="r mono">reflects <b id="cmyRgb">255, 255, 255</b></span>
+          </div>
+          <div class="slider-row">
+            <div class="lab"><span class="name"><span class="chan-tag" style="background:var(--c)">C</span> Cyan ink</span><span class="val" id="cmyCv">0%</span></div>
+            <input type="range" id="cmyCs" min="0" max="100" value="0" step="1" style="--track:#00bcd4" aria-label="Cyan ink, 0 to 100 percent">
+          </div>
+          <div class="slider-row">
+            <div class="lab"><span class="name"><span class="chan-tag" style="background:var(--m)">M</span> Magenta ink</span><span class="val" id="cmyMv">0%</span></div>
+            <input type="range" id="cmyMs" min="0" max="100" value="0" step="1" style="--track:#ff2e9a" aria-label="Magenta ink, 0 to 100 percent">
+          </div>
+          <div class="slider-row">
+            <div class="lab"><span class="name"><span class="chan-tag" style="background:var(--y)">Y</span> Yellow ink</span><span class="val" id="cmyYv">0%</span></div>
+            <input type="range" id="cmyYs" min="0" max="100" value="0" step="1" style="--track:#ffd400" aria-label="Yellow ink, 0 to 100 percent">
+          </div>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <label class="switch"><input type="checkbox" id="cmyReal" aria-label="Toggle realistic ink"><span class="track"></span><span class="knob"></span></label>
+        <span>Show <b>real ink</b> &mdash; imperfect pigments make a muddy near-black instead of true black</span>
+      </div>
+      <div class="callout" id="cmyCallout">
+        <span class="badge" id="cmyBadge"></span>
+        <div class="ctxt"><span class="cname" id="cmyCname">Bare paper</span><span id="cmyCdesc">No ink at all. The paper reflects every wavelength, so you see white. Lay down ink to start subtracting.</span></div>
+      </div>
+    </div>
+
+    <div class="note ink">
+      <span class="nt">Why CMYK has a fourth letter</span>
+      <p>In theory, cyan plus magenta plus yellow at full strength absorbs everything and gives black. Real pigments are imperfect, so all three together make a muddy dark brown and soak the paper. So printers add a dedicated black, the <b>K</b> in CMYK, for true blacks, crisp text, and far less ink.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE MIRROR / WHEEL ============ -->
+<section class="band paper2" id="mirror">
+  <div class="wrap">
+    <div class="section-head measure">
+      <span class="eyebrow">The bridge</span>
+      <h2>The two sets of primaries are mirror images</h2>
+      <p class="lede">Screens build from red, green, blue. Print builds from cyan, magenta, yellow. These are not two unrelated lists. Each print primary is one screen primary taken away from white. Tap a color to see its opposite.</p>
+    </div>
+
+    <div class="wheel-grid">
+      <div class="wheel-stage" id="wheelStage">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><line id="wheelLine" x1="50" y1="50" x2="50" y2="50" stroke="#1a1822" stroke-width="1.1" stroke-dasharray="2 2" opacity="0"></line></svg>
+        <button class="wnode" data-i="0" type="button" style="background:#ff0000">R</button>
+        <button class="wnode" data-i="1" type="button" style="background:#ffea00;color:#5a4a00">Y</button>
+        <button class="wnode" data-i="2" type="button" style="background:#00cc44">G</button>
+        <button class="wnode" data-i="3" type="button" style="background:#00d2e6;color:#024049">C</button>
+        <button class="wnode" data-i="4" type="button" style="background:#1a4dff">B</button>
+        <button class="wnode" data-i="5" type="button" style="background:#ff00cc">M</button>
+      </div>
+      <div class="wheel-info">
+        <div class="pairing" id="wheelPair">
+          <span class="pcell"><span class="sw" id="wheelSwA" style="background:#ff0000"></span> <span id="wheelNameA">Red light</span></span>
+          <span class="op">&harr;</span>
+          <span class="pcell"><span class="sw" id="wheelSwB" style="background:#00d2e6"></span> <span id="wheelNameB">Cyan ink</span></span>
+        </div>
+        <div class="wheel-eq" id="wheelEq">cyan = white &minus; red</div>
+        <p id="wheelDesc">Cyan ink is whatever is left of white light once you remove red. That is why a printer needs cyan to control the red in an image, and why these two can never both be strong in the same spot.</p>
+        <p style="color:var(--ink-3);font-size:.92rem">Across the wheel: <span class="mono">R&harr;C</span>, <span class="mono">G&harr;M</span>, <span class="mono">B&harr;Y</span>. Opposite sides, same wheel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE MISMATCH / GAMUT ============ -->
+<section class="band night" id="mismatch">
+  <div class="wrap">
+    <div class="section-head measure">
+      <span class="eyebrow">03 &middot; The mismatch</span>
+      <h2>Why your screen and your printer disagree</h2>
+      <p class="lede">A screen emits light, so it can reach colors that glow. Ink only redirects light that is already in the room, so it cannot. The full range a device can produce is its <b>gamut</b>, and screens have a wider one, especially for saturated blues, greens, and neons. Pick a color and watch what survives the trip to paper.</p>
+    </div>
+
+    <div class="gamut-grid">
+      <div class="gcanvas-wrap">
+        <canvas id="gamutCanvas" width="720" height="420" role="img" aria-label="Hue and saturation map showing which colors print can reproduce. Click to pick a color."></canvas>
+        <div class="gcanvas-legend">
+          <span><span class="k" style="background:linear-gradient(90deg,#3a8f55,#88d6a0)"></span> Below the line: print can match it</span>
+          <span><span class="k" style="background:repeating-linear-gradient(45deg,#555 0 4px,#222 4px 8px)"></span> Above the line: screen only</span>
+          <span><span class="kring"></span> Your color</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="compare">
+          <div class="cmp screen">
+            <div class="cap"><span>On your screen</span><span>RGB</span></div>
+            <div class="sw" id="gScreenSw" style="background:#00b3ff"></div>
+            <div class="hexline" id="gScreenHex">#00B3FF</div>
+          </div>
+          <div class="cmp print">
+            <div class="cap"><span>Printed</span><span>CMYK sim</span></div>
+            <div class="sw" id="gPrintSw" style="background:#3f8fc0"></div>
+            <div class="hexline" id="gPrintHex">#3F8FC0</div>
+          </div>
+        </div>
+
+        <div class="gauge">
+          <div class="glab"><span>Vibrancy lost in print</span><span id="gLostPct">0%</span></div>
+          <div class="gbar"><i id="gLostBar"></i></div>
+        </div>
+
+        <div class="verdict good" id="gVerdict">
+          <span class="vbadge" id="gBadge">In gamut</span>
+          <p class="vtxt" id="gVtxt">This color sits inside what ink can reproduce. It should print close to what you see.</p>
+        </div>
+
+        <div class="gam-ctrl">
+          <div class="slider-row">
+            <div class="lab"><span class="name" style="color:var(--night-ink)">Hue</span><span class="val" id="gHv" style="color:var(--night-ink)">197&deg;</span></div>
+            <input type="range" id="gHs" min="0" max="360" value="197" step="1" style="--track:#7a86ff;--rail:#2a2640" aria-label="Hue, 0 to 360 degrees">
+          </div>
+          <div class="slider-row">
+            <div class="lab"><span class="name" style="color:var(--night-ink)">Saturation</span><span class="val" id="gSv" style="color:var(--night-ink)">100%</span></div>
+            <input type="range" id="gSs" min="0" max="100" value="100" step="1" style="--track:#7a86ff;--rail:#2a2640" aria-label="Saturation, 0 to 100 percent">
+          </div>
+          <div class="slider-row">
+            <div class="lab"><span class="name" style="color:var(--night-ink)">Lightness</span><span class="val" id="gLv" style="color:var(--night-ink)">50%</span></div>
+            <input type="range" id="gLs" min="0" max="100" value="50" step="1" style="--track:#7a86ff;--rail:#2a2640" aria-label="Lightness, 0 to 100 percent">
+          </div>
+          <div>
+            <div class="glab" style="margin-bottom:8px;color:var(--night-ink-2)">Try a tricky color</div>
+            <div class="chips" id="gChips">
+              <button class="chip-btn" type="button" data-h="201" data-s="100" data-l="50"><span class="sw" style="background:#0099ff"></span> Electric blue</button>
+              <button class="chip-btn" type="button" data-h="140" data-s="100" data-l="50"><span class="sw" style="background:#00e64d"></span> Neon green</button>
+              <button class="chip-btn" type="button" data-h="320" data-s="100" data-l="55"><span class="sw" style="background:#ff3df0"></span> Hot magenta</button>
+              <button class="chip-btn" type="button" data-h="28" data-s="80" data-l="45"><span class="sw" style="background:#cf6a1a"></span> Terracotta</button>
+              <button class="chip-btn" type="button" data-h="40" data-s="35" data-l="62"><span class="sw" style="background:#c4a878"></span> Sand</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:var(--s6);color:var(--night-ink-3);font-size:.86rem;max-width:70ch">Simplified simulation for intuition, not a color-managed proof. Real results depend on the paper, the inks, and the printer profile. The map is drawn at one fixed lightness; the lightness slider still changes the two swatches.</p>
+  </div>
+</section>
+
+<!-- ============ PRACTICE ============ -->
+<section class="band" id="practice">
+  <div class="wrap">
+    <div class="section-head measure">
+      <span class="eyebrow">In practice</span>
+      <h2>What this means when you actually make things</h2>
+      <p class="lede">The same image lives in two worlds. Here is how the light-versus-ink split shows up in everyday work.</p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="ic" style="background:#eaf0ff;color:#3a6dff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"></rect><path d="M8 20h8M12 16v4"></path></svg></div>
+        <h3>Designing for screens</h3>
+        <p>Screens work in RGB, almost always the sRGB standard. Use hex codes, lean on the brightest colors the screen allows, and trust that most modern displays will show them nearly the same.</p>
+      </div>
+      <div class="card">
+        <div class="ic" style="background:#fdeaf4;color:#c01f76"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V4h12v5"></path><rect x="4" y="9" width="16" height="7" rx="1.5"></rect><path d="M7 16h10v4H7z"></path></svg></div>
+        <h3>Designing for print</h3>
+        <p>Files print in CMYK. Expect saturated colors to come back calmer. Design in CMYK or soft-proof before you commit, so the dull surprise happens on your screen, not on the press run you already paid for.</p>
+      </div>
+      <div class="card">
+        <div class="ic" style="background:#e9f7ee;color:#1f9a4d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="8.5" cy="10" r="1.5"></circle><path d="M21 16l-5-5L5 19"></path></svg></div>
+        <h3>Editing photos</h3>
+        <p>That neon sign or electric sunset often sits outside the print gamut. Editors flag it as "out of gamut" and map it to the nearest ink color they can reach, which is why a print can look flatter than the glowing version on screen.</p>
+      </div>
+      <div class="card">
+        <div class="ic" style="background:#efeaff;color:#6b46ff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"></path></svg></div>
+        <h3>The black ink, K</h3>
+        <p>K is the dedicated black. It gives deep shadows, sharp text, and uses less ink than stacking three colors. It is also why "rich black" in a design file mixes a little cyan, magenta, and yellow underneath the K for extra depth.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="band night" id="quiz">
+  <div class="wrap">
+    <div class="section-head measure" style="margin-left:auto;margin-right:auto;text-align:center">
+      <span class="eyebrow" style="color:#b6a4ff">Check yourself</span>
+      <h2>Six questions</h2>
+      <p class="lede">Instant feedback, with the reason underneath. Retry as many times as you like.</p>
+    </div>
+
+    <div class="quiz" id="quizCard">
+      <div class="quiz-head">
+        <span class="ql">Knowledge check</span>
+        <span class="qn" id="quizCounter">Question 1 of 6</span>
+      </div>
+      <div class="quiz-body" id="quizBody">
+        <div class="quiz-q" id="quizQ"></div>
+        <div class="opts" id="quizOpts"></div>
+        <div class="why" id="quizWhy"><span class="wl">Why</span><p id="quizWhyTxt"></p></div>
+      </div>
+      <div class="quiz-foot">
+        <span class="score">Score <b id="quizScore">0</b> / <span id="quizTotal">6</span></span>
+        <button class="btn btn-primary" id="quizNext" type="button" disabled>Next question</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <h3>About this guide</h3>
+    <p>This is a settled-physics explainer; the core ideas about additive and subtractive color are stable and need no sourcing. The print preview is a simplified model built for intuition, not a color-managed proof. Screen values assume the sRGB standard; real print output depends on paper, ink, and the press profile.</p>
+    <p class="fmeta">Light &amp; Ink &middot; a field guide to color &middot; RGB adds &middot; CMYK subtracts</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var clamp = function(v,a,b){ return Math.max(a,Math.min(b,v)); };
+  function hex2(n){ return clamp(Math.round(n),0,255).toString(16).padStart(2,"0"); }
+  function toHex(r,g,b){ return ("#"+hex2(r)+hex2(g)+hex2(b)).toUpperCase(); }
+  function setFill(el){ var pct = (el.value-el.min)/(el.max-el.min)*100; el.style.setProperty("--fill", pct+"%"); }
+  function lum(r,g,b){ var a=[r,g,b].map(function(v){ v/=255; return v<=0.03928? v/12.92 : Math.pow((v+0.055)/1.055,2.4); }); return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2]; }
+  function chipInk(el,r,g,b){ var light=lum(r,g,b)>0.42; el.style.background = light? "rgba(20,18,28,.86)":"rgba(255,255,255,.92)"; el.style.color = light? "#fff":"#15131d"; }
+
+  /* ================= RGB ADDITIVE MIXER ================= */
+  (function(){
+    var R=$("rgbRs"),G=$("rgbGs"),B=$("rgbBs");
+    var bR=$("rgbR"),bG=$("rgbG"),bB=$("rgbB");
+    var hexEl=$("rgbHex"),rgbEl=$("rgbRgb"),sw=$("rgbSwatch");
+    var name=$("rgbCname"),desc=$("rgbCdesc"),badge=$("rgbBadge");
+    function classify(r,g,b){
+      var hi=200, lo=55;
+      var Rh=r>=hi,Gh=g>=hi,Bh=b>=hi, Rl=r<=lo,Gl=g<=lo,Bl=b<=lo;
+      if(Rl&&Gl&&Bl) return ["Black","No light at all. A screen showing black is a screen emitting nothing, every channel off."];
+      if(Rh&&Gh&&Bh) return ["White","All three lights at full. Equal, maximal red, green, and blue light blend into white."];
+      if(Rh&&Gh&&Bl) return ["Yellow","Red and green light together, no blue. Your screen makes yellow with no yellow light source."];
+      if(Rh&&Bh&&Gl) return ["Magenta","Red and blue light, no green. This is a screen secondary, and a printer primary."];
+      if(Gh&&Bh&&Rl) return ["Cyan","Green and blue light, no red. Another screen secondary that doubles as a printer ink."];
+      if(Math.abs(r-g)<14&&Math.abs(g-b)<14&&Math.abs(r-b)<14){
+        if(r<70) return ["Near-black gray","Equal but dim. A little of every light reads as dark gray."];
+        if(r>200) return ["Near-white gray","Equal and bright, almost white, just short of full power."];
+        return ["Neutral gray","Equal red, green, and blue light always reads as gray, never a color."];
+      }
+      var max=Math.max(r,g,b);
+      return max===r? ["Red-dominant","Red leads the mix, so the color leans warm."] : max===g? ["Green-dominant","Green leads the mix, the channel your eye sees most strongly."] : ["Blue-dominant","Blue leads the mix, so the color leans cool."];
+    }
+    function update(){
+      var r=+R.value,g=+G.value,b=+B.value;
+      [R,G,B].forEach(setFill);
+      bR.style.background="rgb("+r+",0,0)";
+      bG.style.background="rgb(0,"+g+",0)";
+      bB.style.background="rgb(0,0,"+b+")";
+      sw.style.background="rgb("+r+","+g+","+b+")";
+      hexEl.textContent=toHex(r,g,b); rgbEl.textContent=r+", "+g+", "+b;
+      chipInk(hexEl,r,g,b);
+      $("rgbRv").textContent=r; $("rgbGv").textContent=g; $("rgbBv").textContent=b;
+      var c=classify(r,g,b); name.textContent=c[0]; desc.textContent=c[1];
+      badge.style.background="rgb("+r+","+g+","+b+")";
+    }
+    [R,G,B].forEach(function(s){ s.addEventListener("input",update); });
+    update();
+  })();
+
+  /* ================= CMY SUBTRACTIVE MIXER ================= */
+  (function(){
+    var C=$("cmyCs"),M=$("cmyMs"),Y=$("cmyYs"),real=$("cmyReal");
+    var bC=$("cmyC"),bM=$("cmyM"),bY=$("cmyY");
+    var hexEl=$("cmyHex"),inkEl=$("cmyInk"),rgbEl=$("cmyRgb"),sw=$("cmySwatch");
+    var name=$("cmyCname"),desc=$("cmyCdesc"),badge=$("cmyBadge");
+    function classify(c,m,y){
+      var hi=80, lo=8;
+      var Ch=c>=hi,Mh=m>=hi,Yh=y>=hi, Cl=c<=lo,Ml=m<=lo,Yl=y<=lo;
+      if(Cl&&Ml&&Yl) return ["Bare paper","No ink at all. The paper reflects every wavelength, so you see white."];
+      if(Ch&&Mh&&Yh) return real.checked
+        ? ["Muddy near-black","All three inks at full. Real pigments leave a brown-black mess, exactly why printers add a true black ink, K."]
+        : ["Theoretical black","All three inks absorb everything. In theory this is black; switch on real ink to see what actually prints."];
+      if(Ch&&Mh&&Yl) return ["Blue","Cyan removes red, magenta removes green. What is left to reflect is blue."];
+      if(Ch&&Yh&&Ml) return ["Green","Cyan removes red, yellow removes blue. Green reflects back."];
+      if(Mh&&Yh&&Cl) return ["Red","Magenta removes green, yellow removes blue. Red reflects back."];
+      var max=Math.max(c,m,y);
+      if(max<8) return ["Almost bare paper","Barely any ink. Most light still reflects, so it stays near white."];
+      return max===c? ["Cyan-leaning","Cyan dominates, so red light is most absorbed."] : max===m? ["Magenta-leaning","Magenta dominates, so green light is most absorbed."] : ["Yellow-leaning","Yellow dominates, so blue light is most absorbed."];
+    }
+    function update(){
+      var c=+C.value,m=+M.value,y=+Y.value;
+      [C,M,Y].forEach(setFill);
+      // Real pigments are imperfect: at full ink each channel bottoms out above
+      // zero, so the triple overlap / result lands on a muddy near-black
+      // (#3F3127 = 63,49,39) instead of true black. "Show real ink" lifts those
+      // floors; off = perfect inks that reach pure 0 (true black).
+      var rf=real.checked?192:255, gf=real.checked?206:255, bf=real.checked?216:255;
+      var r=255-rf*(c/100), g=255-gf*(m/100), b=255-bf*(y/100);
+      bC.style.background="rgb("+Math.round(r)+",255,255)";
+      bM.style.background="rgb(255,"+Math.round(g)+",255)";
+      bY.style.background="rgb(255,255,"+Math.round(b)+")";
+      sw.style.background="rgb("+Math.round(r)+","+Math.round(g)+","+Math.round(b)+")";
+      hexEl.textContent=toHex(r,g,b);
+      inkEl.textContent="C"+c+" M"+m+" Y"+y;
+      rgbEl.textContent=Math.round(r)+", "+Math.round(g)+", "+Math.round(b);
+      chipInk(hexEl,r,g,b);
+      $("cmyCv").textContent=c+"%"; $("cmyMv").textContent=m+"%"; $("cmyYv").textContent=y+"%";
+      var cl=classify(c,m,y); name.textContent=cl[0]; desc.textContent=cl[1];
+      badge.style.background="rgb("+Math.round(r)+","+Math.round(g)+","+Math.round(b)+")";
+    }
+    [C,M,Y].forEach(function(s){ s.addEventListener("input",update); });
+    real.addEventListener("change",update);
+    update();
+  })();
+
+  /* ================= SPECTRUM ================= */
+  (function(){
+    function wl2rgb(wl){
+      var r=0,g=0,b=0;
+      if(wl>=380&&wl<440){r=-(wl-440)/60;b=1;}
+      else if(wl<490){g=(wl-440)/50;b=1;}
+      else if(wl<510){g=1;b=-(wl-510)/20;}
+      else if(wl<580){r=(wl-510)/70;g=1;}
+      else if(wl<645){r=1;g=-(wl-645)/65;}
+      else if(wl<=780){r=1;}
+      var f=1;
+      if(wl<420) f=0.3+0.7*(wl-380)/40;
+      else if(wl>700) f=0.3+0.7*(780-wl)/80;
+      var gamma=0.8, C=function(v){ return Math.round(255*Math.pow(Math.max(0,v)*f,gamma)); };
+      return [C(r),C(g),C(b)];
+    }
+    var spec=$("spectrum"), marker=$("specMarker"), readout=$("specReadout");
+    var stops=[];
+    for(var wl=380; wl<=700; wl+=8){ var c=wl2rgb(wl); var pct=((wl-380)/320*100).toFixed(1); stops.push("rgb("+c[0]+","+c[1]+","+c[2]+") "+pct+"%"); }
+    spec.style.background="linear-gradient(90deg,"+stops.join(",")+")";
+    function colorName(wl){
+      if(wl<450) return "violet"; if(wl<485) return "blue"; if(wl<500) return "cyan";
+      if(wl<565) return "green"; if(wl<590) return "yellow"; if(wl<625) return "orange"; return "red";
+    }
+    function setAt(pct){
+      pct=clamp(pct,0,100);
+      var wl=Math.round(380+pct/100*320);
+      marker.style.left=pct+"%"; readout.style.left=pct+"%";
+      readout.textContent=wl+" nm · "+colorName(wl);
+      spec.setAttribute("aria-valuenow",wl);
+    }
+    function fromEvent(e){
+      var rect=spec.getBoundingClientRect();
+      var x=(e.touches? e.touches[0].clientX : e.clientX)-rect.left;
+      setAt(x/rect.width*100);
+    }
+    var down=false;
+    spec.addEventListener("pointerdown",function(e){ down=true; try{spec.setPointerCapture(e.pointerId);}catch(err){} fromEvent(e); });
+    spec.addEventListener("pointermove",function(e){ fromEvent(e); });
+    window.addEventListener("pointerup",function(){ down=false; });
+    spec.addEventListener("keydown",function(e){
+      var wl=+spec.getAttribute("aria-valuenow"), step=(e.shiftKey?10:2);
+      if(e.key==="ArrowLeft"){ wl-=step; e.preventDefault(); } else if(e.key==="ArrowRight"){ wl+=step; e.preventDefault(); } else return;
+      wl=clamp(wl,380,700); setAt((wl-380)/320*100);
+    });
+    setAt(50);
+  })();
+
+  /* ================= COMPLEMENTARY WHEEL ================= */
+  (function(){
+    var stage=$("wheelStage"), nodes=stage.querySelectorAll(".wnode"), line=$("wheelLine");
+    var data=[
+      {n:"Red light",   col:"#ff0000"},
+      {n:"Yellow ink",  col:"#ffea00"},
+      {n:"Green light", col:"#00cc44"},
+      {n:"Cyan ink",    col:"#00d2e6"},
+      {n:"Blue light",  col:"#1a4dff"},
+      {n:"Magenta ink", col:"#ff00cc"}
+    ];
+    var redCyan="Cyan ink is whatever is left of white light once you remove red. A printer uses cyan to control the red in an image, and these two can never both be strong in the same spot.";
+    var grnMag="Magenta ink is white with the green removed. To dial down green in a print, you add magenta. Light's green primary and ink's magenta primary are exact opposites.";
+    var bluYel="Yellow ink is white minus blue. It absorbs blue light and reflects the rest. Blue, a screen primary, and yellow, an ink primary, sit straight across from each other.";
+    var pairs={
+      0:{c:3, eq:"cyan = white − red", d:redCyan},
+      3:{c:0, eq:"cyan = white − red", d:redCyan},
+      2:{c:5, eq:"magenta = white − green", d:grnMag},
+      5:{c:2, eq:"magenta = white − green", d:grnMag},
+      4:{c:1, eq:"yellow = white − blue", d:bluYel},
+      1:{c:4, eq:"yellow = white − blue", d:bluYel}
+    };
+    var cx=50, cy=50, rad=38;
+    function pos(i){ var ang=(-90+i*60)*Math.PI/180; return [cx+rad*Math.cos(ang), cy+rad*Math.sin(ang)]; }
+    nodes.forEach(function(node,i){
+      var p=pos(i);
+      node.style.left=p[0]+"%"; node.style.top=p[1]+"%";
+      node.setAttribute("aria-label", data[i].n+", opposite of "+data[pairs[i].c].n);
+    });
+    function select(i){
+      var p=pairs[i], j=p.c;
+      nodes.forEach(function(n,k){ n.classList.remove("sel","dim"); if(k!==i&&k!==j) n.classList.add("dim"); });
+      nodes[i].classList.add("sel"); nodes[j].classList.add("sel");
+      var a=pos(i), b=pos(j);
+      line.setAttribute("x1",a[0]); line.setAttribute("y1",a[1]);
+      line.setAttribute("x2",b[0]); line.setAttribute("y2",b[1]);
+      line.setAttribute("opacity","0.6");
+      $("wheelSwA").style.background=data[i].col; $("wheelNameA").textContent=data[i].n;
+      $("wheelSwB").style.background=data[j].col; $("wheelNameB").textContent=data[j].n;
+      $("wheelEq").textContent=p.eq; $("wheelDesc").textContent=p.d;
+    }
+    nodes.forEach(function(node){ node.addEventListener("click",function(){ select(+node.dataset.i); }); });
+    select(0);
+  })();
+
+  /* ================= GAMUT / SCREEN vs PRINT ================= */
+  (function(){
+    function hsl2rgb(h,s,l){
+      s/=100; l/=100;
+      var k=function(n){ return (n+h/30)%12; };
+      var a=s*Math.min(l,1-l);
+      var f=function(n){ return l - a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1))); };
+      return [Math.round(255*f(0)),Math.round(255*f(8)),Math.round(255*f(4))];
+    }
+    var G=[[0,88],[30,90],[55,96],[90,72],[140,60],[180,68],[210,56],[240,52],[280,64],[320,80],[360,88]];
+    function ceilHue(h){ h=((h%360)+360)%360; for(var i=0;i<G.length-1;i++){ if(h>=G[i][0]&&h<=G[i+1][0]){ var t=(h-G[i][0])/(G[i+1][0]-G[i][0]); return G[i][1]+(G[i+1][1]-G[i][1])*t; } } return 70; }
+    function ceil(h,l){ var c=ceilHue(h); var ld=Math.abs(l-55)/55; return c*(1-0.32*ld); }
+
+    var Hs=$("gHs"),Ss=$("gSs"),Ls=$("gLs");
+    var cv=$("gamutCanvas"), ctx=cv.getContext("2d");
+    var W=cv.width, Hh=cv.height, bgData=null;
+    function drawBase(){
+      bgData=ctx.createImageData(W,Hh);
+      var d=bgData.data;
+      for(var y=0;y<Hh;y++){
+        var sat=(1-y/Hh)*100;
+        for(var x=0;x<W;x++){
+          var hue=x/W*360;
+          var c=hsl2rgb(hue,sat,50);
+          var dim=sat>ceilHue(hue);
+          var i=(y*W+x)*4, f=dim?0.40:1;
+          d[i]=c[0]*f; d[i+1]=c[1]*f; d[i+2]=c[2]*f; d[i+3]=255;
+        }
+      }
+    }
+    function render(){
+      var h=+Hs.value, s=+Ss.value, l=+Ls.value;
+      [Hs,Ss,Ls].forEach(setFill);
+      $("gHv").textContent=h+"°"; $("gSv").textContent=s+"%"; $("gLv").textContent=l+"%";
+      var screen=hsl2rgb(h,s,l);
+      var cap=ceil(h,l), ps=Math.min(s,cap), print=hsl2rgb(h,ps,l);
+      $("gScreenSw").style.background="rgb("+screen.join(",")+")";
+      $("gPrintSw").style.background="rgb("+print.join(",")+")";
+      $("gScreenHex").textContent=toHex(screen[0],screen[1],screen[2]);
+      $("gPrintHex").textContent=toHex(print[0],print[1],print[2]);
+      var lost=Math.max(0,s-ps), lostPct=Math.round(lost/Math.max(1,s)*100);
+      $("gLostPct").textContent=lostPct+"%"; $("gLostBar").style.width=clamp(lostPct,0,100)+"%";
+      var out=lost>5, v=$("gVerdict"), badge=$("gBadge"), vt=$("gVtxt");
+      if(out){ v.className="verdict bad"; badge.textContent="Out of gamut"; vt.innerHTML="This color glows brighter than any ink can. In print it loses about <b>"+lostPct+"%</b> of its vibrancy and shifts toward a duller, calmer version."; }
+      else { v.className="verdict good"; badge.textContent="In gamut"; vt.innerHTML="This color sits inside what ink can reproduce. It should print close to what you see on screen."; }
+      // canvas
+      ctx.putImageData(bgData,0,0);
+      ctx.beginPath();
+      for(var x=0;x<=W;x+=2){ var hue=x/W*360, cap2=ceilHue(hue), yy=(1-cap2/100)*Hh; if(x===0) ctx.moveTo(x,yy); else ctx.lineTo(x,yy); }
+      ctx.strokeStyle="rgba(255,255,255,.92)"; ctx.lineWidth=2; ctx.setLineDash([7,5]); ctx.stroke(); ctx.setLineDash([]);
+      var mx=h/360*W, my=(1-s/100)*Hh;
+      if(out){
+        var capY=(1-cap/100)*Hh;
+        ctx.beginPath(); ctx.moveTo(mx,my); ctx.lineTo(mx,capY);
+        ctx.strokeStyle="rgba(255,255,255,.85)"; ctx.lineWidth=2; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(mx,capY); ctx.lineTo(mx-5,capY-8); ctx.lineTo(mx+5,capY-8); ctx.closePath(); ctx.fillStyle="#fff"; ctx.fill();
+      }
+      ctx.beginPath(); ctx.arc(mx,my,9,0,Math.PI*2); ctx.fillStyle="rgb("+screen.join(",")+")"; ctx.fill();
+      ctx.lineWidth=3; ctx.strokeStyle="#fff"; ctx.stroke();
+      ctx.lineWidth=1; ctx.strokeStyle="rgba(0,0,0,.45)"; ctx.beginPath(); ctx.arc(mx,my,11,0,Math.PI*2); ctx.stroke();
+    }
+    [Hs,Ss,Ls].forEach(function(s){ s.addEventListener("input",render); });
+    function pick(e){
+      var rect=cv.getBoundingClientRect();
+      var x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+      var y=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
+      Hs.value=Math.round(clamp(x/rect.width,0,1)*360);
+      Ss.value=Math.round(clamp(1-y/rect.height,0,1)*100);
+      render();
+    }
+    cv.addEventListener("pointerdown",pick);
+    $("gChips").querySelectorAll(".chip-btn").forEach(function(btn){
+      btn.addEventListener("click",function(){ Hs.value=btn.dataset.h; Ss.value=btn.dataset.s; Ls.value=btn.dataset.l; render(); });
+    });
+    drawBase(); render();
+  })();
+
+  /* ================= QUIZ ================= */
+  (function(){
+    var QS=[
+      {q:"A screen is showing pure white. What are its red, green, and blue subpixels doing?",
+       o:["All three are off","All three are at full brightness","Only the red one is on"], a:1,
+       w:"White on a screen is every channel at maximum. Add all the light at once and the result is white. Black is the opposite: every channel off."},
+      {q:"You mix red light and green light on a screen. What color appears?",
+       o:["Brown","Yellow","Magenta"], a:1,
+       w:"In light, red plus green makes yellow. Both your red and green sensors fire, and your brain reads that pair as yellow. Paint behaves differently because paint subtracts light."},
+      {q:"A blank sheet of paper looks white before any ink touches it. Why?",
+       o:["It emits a faint white light","It reflects every wavelength back to your eye","It contains tiny white pixels"], a:1,
+       w:"Paper makes no light of its own. It looks white because it reflects all wavelengths. Ink works by absorbing some of them, so less light comes back."},
+      {q:"In theory, cyan, magenta, and yellow ink together make black. Why do printers still add a separate K ink?",
+       o:["Real inks make a muddy brown and waste ink","Black is brighter than the three combined","Paper cannot hold three inks"], a:0,
+       w:"Real pigments are imperfect, so all three at full make a muddy, soggy near-black. A dedicated black, K, gives true blacks, crisp text, and uses far less ink."},
+      {q:"Cyan ink controls the red in an image. How does it actually do that?",
+       o:["It adds red light to the page","It absorbs red light and reflects the rest","It turns red pixels off"], a:1,
+       w:"Cyan ink is white minus red: it absorbs red light and reflects green and blue. That is why cyan and red sit on opposite sides of the color wheel."},
+      {q:"A neon-blue you designed on screen prints noticeably duller. What happened?",
+       o:["The printer ran low on cyan","That blue is outside the CMYK gamut","Your monitor was too bright"], a:1,
+       w:"Glowing, saturated blues sit outside what ink can reproduce. The color is out of gamut, so the printer maps it to the nearest ink color it can reach, which looks calmer."}
+    ];
+    var i=0, score=0, answered=false;
+    var qEl=$("quizQ"), oEl=$("quizOpts"), whyEl=$("quizWhy"), whyTxt=$("quizWhyTxt");
+    var counter=$("quizCounter"), nextBtn=$("quizNext"), scoreEl=$("quizScore");
+    $("quizTotal").textContent=QS.length;
+    var letters=["A","B","C","D"];
+    function render(){
+      var item=QS[i];
+      counter.textContent="Question "+(i+1)+" of "+QS.length;
+      qEl.textContent=item.q; oEl.innerHTML=""; answered=false;
+      whyEl.classList.remove("show"); nextBtn.disabled=true;
+      nextBtn.textContent=(i===QS.length-1)? "See results":"Next question";
+      item.o.forEach(function(opt,k){
+        var b=document.createElement("button");
+        b.className="opt"; b.type="button";
+        b.innerHTML='<span class="mk">'+letters[k]+'</span><span>'+opt+'</span>';
+        b.addEventListener("click",function(){ choose(k,b); });
+        oEl.appendChild(b);
+      });
+    }
+    function choose(k,btn){
+      if(answered) return; answered=true;
+      var item=QS[i], all=oEl.querySelectorAll(".opt");
+      all.forEach(function(b,idx){ b.disabled=true; if(idx===item.a) b.classList.add("correct"); });
+      if(k===item.a){ score++; scoreEl.textContent=score; } else { btn.classList.add("wrong"); }
+      whyTxt.textContent=item.w; whyEl.classList.add("show"); nextBtn.disabled=false;
+    }
+    function finish(){
+      var pct=Math.round(score/QS.length*100);
+      var msg = pct===100? "Flawless. You have the whole model." : pct>=67? "Strong. The core idea has landed." : pct>=34? "Getting there. Re-skim the two mixers." : "Worth another pass through the demos.";
+      qEl.style.display="none"; oEl.style.display="none"; whyEl.style.display="none"; whyEl.classList.remove("show");
+      var done=document.createElement("div"); done.className="quiz-done";
+      var big=document.createElement("div"); big.className="big"; big.textContent=score+" / "+QS.length;
+      var lbl=document.createElement("div"); lbl.className="lbl"; lbl.textContent=msg;
+      var retry=document.createElement("button"); retry.className="btn btn-ghost"; retry.type="button"; retry.textContent="Try again";
+      done.appendChild(big); done.appendChild(lbl); done.appendChild(retry);
+      $("quizBody").appendChild(done);
+      counter.textContent="Complete"; nextBtn.style.display="none";
+      retry.addEventListener("click",function(){
+        done.remove();
+        qEl.style.display=""; oEl.style.display=""; whyEl.style.display="";
+        i=0; score=0; scoreEl.textContent="0"; nextBtn.style.display=""; render();
+      });
+    }
+    nextBtn.addEventListener("click",function(){
+      if(!answered) return;
+      if(i===QS.length-1){ finish(); return; }
+      i++; render();
+    });
+    render();
+  })();
+
+  /* ================= READING PROGRESS ================= */
+  (function(){
+    var bar=$("progress");
+    function upd(){
+      var h=document.documentElement;
+      var max=h.scrollHeight-h.clientHeight;
+      var pct=max>0? h.scrollTop/max*100 : 0;
+      bar.style.width=clamp(pct,0,100)+"%";
+    }
+    window.addEventListener("scroll",upd,{passive:true});
+    window.addEventListener("resize",upd);
+    upd();
+  })();
+
+})();
+</script>
+
+<!-- Review & edit overlay — injected by assemble.mjs (invariant; do not hand-edit) -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:8px;right:14px;z-index:9002;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:9010;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:9010;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:9020;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+    // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
+    // Scrolling pages: position just below any fixed/sticky top nav instead.
+    requestAnimationFrame(function () {
+      var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
+      if (isDeck) {
+        launch.style.top = "auto";
+        launch.style.right = "auto";
+        launch.style.bottom = "16px";
+        launch.style.left = "14px";
+      } else {
+        var navBottom = 0;
+        document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+          var s = getComputedStyle(el);
+          if (s.position === "fixed" || s.position === "sticky") {
+            navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+          }
+        });
+        if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      }
+    });
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>
