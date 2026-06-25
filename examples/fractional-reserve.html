@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Fractional Reserve Banking Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* palette — ledger / banknote */
+  --paper:#f4edd9;
+  --paper-2:#ece2c5;
+  --paper-band:#eadfbf;
+  --ink:#20271f;
+  --ink-soft:#525a4a;
+  --line:#c7b98c;
+  --line-soft:#d8cda3;
+  --vault:#1d5c46;       /* reserves — kept */
+  --vault-deep:#0f3a2b;
+  --vault-light:#cfe0d2;
+  --burgundy:#7c2d36;    /* loans / new money */
+  --burgundy-light:#e7d0d2;
+  --gold:#9a7b2e;        /* seal / total / highlight (decorative / large) */
+  --gold-ink:#7a5d16;    /* gold for small text — passes 4.5:1 on paper */
+  --gold-light:#ead9a6;
+  /* type */
+  --display:'Fraunces',Georgia,serif;
+  --body:'Inter',system-ui,sans-serif;
+  --mono:'Spline Sans Mono',ui-monospace,monospace;
+  /* spacing scale (4/8) */
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:64px;--s9:96px;
+  --maxw:1180px;
+  --prose:66ch;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--body);font-size:18px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.reveal{}/* no-op marker: content always visible */
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.1;letter-spacing:-0.01em;margin:0}
+p{margin:0 0 var(--s4)}
+a{color:var(--vault)}
+.mono{font-family:var(--mono)}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s5)}
+.prose{max-width:var(--prose)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold-ink);font-weight:600}
+
+/* ---------- sticky nav ---------- */
+.nav{position:sticky;top:0;z-index:40;background:rgba(244,237,217,0.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:54px;gap:var(--s4)}
+.nav .brand{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-0.01em}
+.nav ul{display:flex;gap:var(--s5);list-style:none;margin:0;padding:0;font-size:13px;font-family:var(--mono);letter-spacing:0.04em}
+.nav a{color:var(--ink-soft);text-decoration:none}
+.nav a:hover{color:var(--vault)}
+@media(max-width:760px){.nav ul{display:none}}
+
+/* ---------- hero / banknote frame ---------- */
+.hero{padding:var(--s8) 0 var(--s7)}
+.note{position:relative;border:2px solid var(--ink);border-radius:3px;padding:clamp(28px,5vw,60px);background:
+  repeating-linear-gradient(135deg,transparent 0 9px,rgba(29,92,70,0.035) 9px 10px),
+  var(--paper-2);
+  box-shadow:0 1px 0 var(--line),inset 0 0 0 6px var(--paper-2),inset 0 0 0 7px var(--line-soft);}
+.note .corner{position:absolute;width:34px;height:34px;border:2px solid var(--gold);opacity:.7}
+.note .corner.tl{top:10px;left:10px;border-right:0;border-bottom:0}
+.note .corner.tr{top:10px;right:10px;border-left:0;border-bottom:0}
+.note .corner.bl{bottom:10px;left:10px;border-right:0;border-top:0}
+.note .corner.br{bottom:10px;right:10px;border-left:0;border-top:0}
+.note .seal{position:absolute;top:50%;right:clamp(20px,4vw,46px);transform:translateY(-50%);width:84px;height:84px;opacity:.9}
+@media(max-width:680px){.note .seal{display:none}}
+.hero h1{font-size:clamp(34px,6vw,62px);font-weight:900;max-width:14ch;margin:var(--s4) 0 var(--s4)}
+.hero .lede{font-size:clamp(18px,2.4vw,22px);color:var(--ink-soft);max-width:54ch;margin-bottom:var(--s5)}
+.hero .meta{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:var(--s4)}
+.hero .meta b{color:var(--ink);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:var(--s8) 0}
+.band{background:var(--paper-band);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.band-dark{background:var(--vault-deep);color:#eaf0e9;border-top:1px solid var(--vault);border-bottom:1px solid var(--vault)}
+.band-dark h2,.band-dark h3{color:#fff}
+.band-dark .eyebrow{color:var(--gold-light)}
+.band-dark .lede,.band-dark p{color:#cdd9cf}
+.sec-head{margin-bottom:var(--s6)}
+.sec-head h2{font-size:clamp(26px,3.6vw,38px);margin:var(--s2) 0 var(--s3)}
+.sec-head .sub{color:var(--ink-soft);max-width:60ch;font-size:17px}
+.num{font-family:var(--mono);font-size:13px;color:var(--gold-ink);letter-spacing:0.12em}
+
+/* legend chips */
+.legend{display:flex;gap:var(--s4);flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;margin:var(--s4) 0 0}
+.chip{display:inline-flex;align-items:center;gap:6px}
+.sw{width:13px;height:13px;border-radius:2px;display:inline-block;border:1px solid rgba(0,0,0,.25)}
+.sw.res{background:var(--vault)}
+.sw.loan{background:var(--burgundy)}
+.sw.cash{background:var(--gold)}
+
+/* mental-model statement */
+.bigidea{font-family:var(--display);font-size:clamp(24px,3.4vw,34px);line-height:1.32;font-weight:400;max-width:24ch;}
+.bigidea em{font-style:normal;color:var(--vault);font-weight:600;background:linear-gradient(transparent 62%,var(--vault-light) 62%)}
+.bigidea em.b{color:var(--burgundy);background:linear-gradient(transparent 62%,var(--burgundy-light) 62%)}
+
+/* t-account */
+.taccount{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--ink);background:var(--paper);font-family:var(--mono);font-size:14px}
+.taccount .th{padding:var(--s2) var(--s3);background:var(--ink);color:var(--paper);font-weight:600;letter-spacing:0.04em}
+.taccount .th:first-child{border-right:1px solid var(--line)}
+.taccount .cell{padding:var(--s3);border-top:1px solid var(--line-soft)}
+.taccount .cell:nth-child(odd){border-right:1.5px solid var(--ink)}
+.taccount .row-amt{float:right}
+
+/* demo card */
+.demo{border:1.5px solid var(--line);background:var(--paper);border-radius:4px;padding:clamp(20px,3vw,32px);box-shadow:0 1px 0 var(--line)}
+.demo .demo-h{font-family:var(--mono);font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--burgundy);margin-bottom:var(--s4);font-weight:600}
+.ctrl{display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap;margin-bottom:var(--s5)}
+.ctrl label{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+.ctrl output{font-family:var(--mono);font-weight:600;color:var(--vault);font-size:16px;min-width:52px;display:inline-block}
+input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--vault),var(--gold));outline:none;flex:1;min-width:180px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--paper);border:2.5px solid var(--ink);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--paper);border:2.5px solid var(--ink);cursor:pointer}
+
+/* split bar (demo 1) */
+.splitbar{display:flex;height:54px;border:1.5px solid var(--ink);border-radius:3px;overflow:hidden;font-family:var(--mono);font-size:13px;color:#fff}
+.splitbar .res{background:var(--vault);display:flex;align-items:center;justify-content:center;transition:width .25s ease}
+.splitbar .loan{background:var(--burgundy);display:flex;align-items:center;justify-content:center;transition:width .25s ease}
+.split-note{font-family:var(--mono);font-size:13px;color:var(--ink-soft);margin-top:var(--s3)}
+
+/* chain (demo 2 — centerpiece) */
+.chain{display:flex;flex-direction:column;gap:7px;margin-top:var(--s3)}
+.crow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px}
+.crow .rlab{width:58px;color:var(--ink-soft);flex-shrink:0;text-align:right}
+.crow .track{flex:1;height:26px;background:var(--paper-2);border:1px solid var(--line-soft);border-radius:2px;overflow:hidden;display:flex}
+.crow .seg-res{background:var(--vault);height:100%}
+.crow .seg-loan{background:var(--burgundy);height:100%}
+.crow .amt{width:84px;flex-shrink:0;color:var(--ink);font-weight:500}
+.chain-more{font-family:var(--mono);font-size:12px;color:var(--ink-soft);padding-left:68px}
+.totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--s3);margin-top:var(--s5)}
+.stat{border:1.5px solid var(--line);background:var(--paper-2);border-radius:4px;padding:var(--s4)}
+.stat .k{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft)}
+.stat .v{font-family:var(--display);font-size:clamp(24px,3vw,30px);font-weight:600;margin-top:4px}
+.stat.gold{border-color:var(--gold);background:var(--gold-light)}
+.stat.gold .v{color:var(--burgundy)}
+
+/* callout */
+.callout{border-left:4px solid var(--burgundy);background:var(--burgundy-light);padding:var(--s5);border-radius:0 4px 4px 0}
+.callout .tag{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--burgundy);font-weight:600;margin-bottom:var(--s2)}
+.callout h3{font-size:21px;margin-bottom:var(--s2)}
+
+/* three kinds of money diagram */
+.mkinds{border:1.5px solid var(--line);background:var(--paper-2);border-radius:5px;padding:clamp(20px,3vw,32px);box-shadow:0 1px 0 var(--line)}
+.mkinds .mk-h{font-family:var(--mono);font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold-ink);margin-bottom:var(--s5);font-weight:600}
+.mk-cols{display:grid;grid-template-columns:1fr 1fr;gap:var(--s6)}
+.mk-issuer{border:1.5px solid var(--ink);background:var(--paper);border-radius:4px;padding:var(--s4);text-align:center}
+.mk-issuer .lab{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft)}
+.mk-issuer .name{font-family:var(--display);font-size:clamp(18px,2.3vw,22px);font-weight:600;margin-top:4px}
+.mk-arrow{text-align:center;font-family:var(--mono);color:var(--line);font-size:20px;line-height:1;margin:var(--s2) 0}
+.mk-kinds{display:grid;gap:var(--s3)}
+.mk-kinds.pair{grid-template-columns:1fr 1fr}
+.mk-kind{border:1.5px solid var(--line);border-radius:4px;padding:var(--s4)}
+.mk-kind .kt{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600}
+.mk-kind .kd{font-size:14px;color:var(--ink-soft);margin-top:4px;line-height:1.45}
+.mk-kind.res{border-color:var(--vault);background:var(--vault-light)}.mk-kind.res .kt{color:var(--vault-deep)}
+.mk-kind.cash{border-color:var(--gold);background:var(--gold-light)}.mk-kind.cash .kt{color:var(--gold-ink)}
+.mk-kind.dep{border-color:var(--burgundy);background:var(--burgundy-light)}.mk-kind.dep .kt{color:var(--burgundy)}
+.mk-foot{font-family:var(--mono);font-size:11px;text-align:center;color:var(--ink-soft);margin-top:var(--s3)}
+.mk-cap{font-family:var(--mono);font-size:13px;color:var(--ink-soft);margin-top:var(--s5);margin-bottom:0}
+@media(max-width:680px){.mk-cols{grid-template-columns:1fr;gap:var(--s5)}}
+
+/* go-deeper */
+details{border:1px solid var(--line);border-radius:4px;background:var(--paper-2);margin-top:var(--s4)}
+details summary{cursor:pointer;padding:var(--s3) var(--s4);font-family:var(--mono);font-size:13px;font-weight:600;color:var(--vault);list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"+ ";color:var(--gold);font-weight:700}
+details[open] summary::before{content:"\2212 "}
+details .body{padding:0 var(--s4) var(--s4);font-size:16px;color:var(--ink-soft)}
+
+/* constraints grid */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--s4)}
+.card{border:1px solid var(--line);background:var(--paper);border-radius:4px;padding:var(--s5)}
+.card .ic{width:30px;height:30px;color:var(--vault);margin-bottom:var(--s3)}
+.card h3{font-size:18px;margin-bottom:var(--s2)}
+.card p{font-size:15px;color:var(--ink-soft);margin:0}
+
+/* two-col */
+.two{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s7);align-items:start}
+@media(max-width:840px){.two{grid-template-columns:1fr;gap:var(--s6)}}
+
+/* quiz */
+.quiz{max-width:760px;margin:0 auto}
+.q{border:1.5px solid var(--line);background:var(--paper);border-radius:5px;padding:var(--s5);margin-bottom:var(--s4)}
+.q .qn{font-family:var(--mono);font-size:12px;color:var(--gold-ink);letter-spacing:0.1em}
+.q h3{font-size:19px;margin:var(--s2) 0 var(--s4);font-family:var(--display)}
+.opt{display:block;width:100%;text-align:left;font:inherit;font-size:15px;padding:var(--s3) var(--s4);margin-bottom:var(--s2);border:1.5px solid var(--line);background:var(--paper-2);border-radius:4px;cursor:pointer;transition:.12s}
+.opt:hover{border-color:var(--vault)}
+.opt.correct{border-color:var(--vault);background:var(--vault-light)}
+.opt.wrong{border-color:var(--burgundy);background:var(--burgundy-light)}
+.opt:disabled{cursor:default}
+.why{font-size:14.5px;color:var(--ink-soft);margin-top:var(--s2);padding-left:var(--s3);border-left:2px solid var(--gold);display:none}
+.why.show{display:block}
+.score{text-align:center;font-family:var(--mono);font-size:15px;margin-top:var(--s5);color:var(--vault);font-weight:600}
+
+/* footer */
+footer{background:var(--vault-deep);color:#cdd9cf;padding:var(--s7) 0;font-size:14px}
+footer a{color:var(--gold-light)}
+footer h3{color:#fff;font-size:16px;margin-bottom:var(--s3);font-family:var(--mono);letter-spacing:0.08em;text-transform:uppercase}
+footer ol{margin:0;padding-left:18px;line-height:1.9}
+.disc{margin-top:var(--s5);padding-top:var(--s4);border-top:1px solid var(--vault);color:#9fb3a4;font-size:12.5px;font-family:var(--mono)}
+</style>
+</head>
+<body data-review-toggle>
+
+<nav class="nav">
+  <div class="wrap">
+    <span class="brand">Fractional Reserve Banking</span>
+    <ul>
+      <li><a href="#idea">The idea</a></li>
+      <li><a href="#bank">A bank's books</a></li>
+      <li><a href="#multiplier">The multiplier</a></li>
+      <li><a href="#limits">What limits it</a></li>
+      <li><a href="#quiz">Quiz</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="note reveal">
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <svg class="seal" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#9a7b2e" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="39" fill="none" stroke="#9a7b2e" stroke-width="0.8" stroke-dasharray="2 2"/>
+        <text x="50" y="56" text-anchor="middle" font-family="Fraunces,serif" font-size="34" font-weight="900" fill="#9a7b2e">$</text>
+      </svg>
+      <span class="eyebrow">Money &middot; Banking &middot; Credit</span>
+      <h1>How Fractional Reserve Banking Works</h1>
+      <p class="lede">Banks keep only a sliver of your deposit on hand and lend the rest. Out of that simple habit, the banking system quietly creates most of the broad money used in the economy. Here is how the trick works &mdash; and what keeps it from running away.</p>
+      <div class="meta">
+        <span><b>9 min</b> read</span>
+        <span><b>2</b> things to play with</span>
+        <span><b>5</b>-question quiz</span>
+        <span>Sources at the foot</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 1 · THE IDEA -->
+<section id="idea">
+  <div class="wrap two">
+    <div>
+      <div class="sec-head">
+        <span class="num">01 / Start here</span>
+        <h2>One deposit, many deposits</h2>
+        <p class="sub">Before the mechanics, hold one picture in your head. It explains almost everything that follows.</p>
+      </div>
+      <p class="bigidea reveal">A bank keeps a <em>fraction</em> of each deposit in reserve and <em class="b">lends out the rest</em>. The money it lends becomes someone else's deposit &mdash; which gets lent again. One coin ripples into many.</p>
+    </div>
+    <div>
+      <p>Picture $1,000 in cash walking into a bank. The bank doesn't put it in a vault and wait. It keeps a small slice &mdash; say a tenth &mdash; and lends $900 to a borrower. That borrower spends it; the shopkeeper who receives it deposits it in <em>their</em> bank, which keeps a tenth and lends $810. And on it goes.</p>
+      <p>The original $1,000 of cash never multiplied. But the <strong>deposits</strong> &mdash; the numbers in everyone's accounts that they can all spend &mdash; pile up far past $1,000. That pile is what we mostly mean by &ldquo;money.&rdquo;</p>
+      <p>The word <em>fractional</em> is the whole story: the bank holds only a fraction in reserve. The rest is out working in the world.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · A BANK'S BOOKS -->
+<section id="bank" class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">02 / The mechanism</span>
+      <h2>What a bank actually does with your money</h2>
+      <p class="sub">A bank is a balance sheet. Your deposit is something it <em>owes you</em> (a liability). What it does with that deposit &mdash; hold reserves, make loans &mdash; sits on the other side as its assets.</p>
+    </div>
+    <div class="two">
+      <div>
+        <div class="taccount" aria-label="A simplified bank balance sheet">
+          <div class="th">Assets &mdash; what it holds</div>
+          <div class="th">Liabilities &mdash; what it owes</div>
+          <div class="cell">Reserves <span class="row-amt" style="color:var(--vault)">$100</span></div>
+          <div class="cell">Your deposit <span class="row-amt">$1,000</span></div>
+          <div class="cell">Loans <span class="row-amt" style="color:var(--burgundy)">$900</span></div>
+          <div class="cell" style="color:var(--ink-soft)">&nbsp;</div>
+        </div>
+        <p class="split-note">A 10% reserve example. The two sides always balance: $100 + $900 = $1,000.</p>
+        <div class="demo" style="margin-top:var(--s5)">
+          <div class="demo-h">Play &middot; Set the reserve fraction</div>
+          <div class="ctrl">
+            <label for="r1">Reserve kept</label>
+            <input type="range" id="r1" min="0" max="50" value="10" step="1">
+            <output id="r1out">10%</output>
+          </div>
+          <div class="splitbar">
+            <div class="res" id="d1res" style="width:10%">$100</div>
+            <div class="loan" id="d1loan" style="width:90%">$900</div>
+          </div>
+          <div class="legend">
+            <span class="chip"><span class="sw res"></span>Reserves &mdash; kept on hand</span>
+            <span class="chip"><span class="sw loan"></span>Loaned out &mdash; back into the economy</span>
+          </div>
+          <p class="split-note" id="d1note">Out of a $1,000 deposit, the bank keeps $100 and lends $900.</p>
+        </div>
+      </div>
+      <div>
+        <p>For most of banking history a rule called a <em>reserve requirement</em> set that fraction: hold at least, say, 10% of deposits as reserves, lend the rest. The lower the required fraction, the more a bank can lend from the same deposits.</p>
+        <p>Reserves are the cash-like funds a bank can hand over instantly &mdash; vault cash plus its account at the central bank. Loans are the opposite: money committed to borrowers that won't come back for months or years. A bank lives in the tension between the two.</p>
+        <p>Drag the slider. A tiny reserve fraction means almost everything gets lent. That single number, repeated across thousands of banks, is the dial that sets how much money the system can create &mdash; which is the next section.</p>
+        <details class="reveal">
+          <summary>Go deeper: where do reserves actually sit?</summary>
+          <div class="body">Reserves are not bundles of notes in a back room. They are mostly a balance the bank holds in its own account at the central bank (in the US, the Federal Reserve). When one bank pays another, these central-bank balances move between them. Physical cash is a small slice of the total.</div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · THE MULTIPLIER (CENTERPIECE) -->
+<section id="multiplier">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">03 / The payoff</span>
+      <h2>The money multiplier</h2>
+      <p class="sub">Follow that $1,000 as it ripples from bank to bank. Each round, a fraction is parked as reserves and the rest is lent on. Add up every new deposit it creates along the way.</p>
+    </div>
+    <div class="callout reveal" style="border-left-color:var(--gold);background:var(--gold-light);margin-bottom:var(--s6)">
+      <div class="tag" style="color:var(--gold-ink)">Read this first &middot; A model, not a recipe</div>
+      <p style="margin:0">This animation is a <strong>conceptual model</strong> of how lending and deposits relate &mdash; <em>not</em> the literal sequence a modern bank follows. In reality the causation runs the other way: a creditworthy borrower turns up, the bank decides to lend, a new deposit is written into being, and the bank obtains the reserves it needs afterward. See <a href="#modern">how loans actually originate</a> for the modern picture.</p>
+    </div>
+    <div class="demo">
+      <div class="demo-h">Play &middot; Watch $1,000 ripple through the system</div>
+      <div class="mono" style="font-size:11px;color:var(--gold-ink);margin:calc(-1 * var(--s2)) 0 var(--s4)">Conceptual model &mdash; see <a href="#modern">how loans actually originate</a>.</div>
+      <div class="ctrl">
+        <label for="r2">Reserve fraction at every bank</label>
+        <input type="range" id="r2" min="1" max="40" value="10" step="1">
+        <output id="r2out">10%</output>
+      </div>
+      <div class="legend" style="margin-bottom:var(--s4)">
+        <span class="chip"><span class="sw res"></span>Kept as reserves</span>
+        <span class="chip"><span class="sw loan"></span>Lent on &rarr; becomes the next deposit</span>
+      </div>
+      <div class="chain" id="chain" aria-label="Deposit chain across successive banks"></div>
+      <div class="chain-more" id="chainMore"></div>
+      <div class="totals">
+        <div class="stat"><div class="k">Original cash</div><div class="v mono">$1,000</div></div>
+        <div class="stat"><div class="k">Total deposits created</div><div class="v mono" id="totDep">$10,000</div></div>
+        <div class="stat gold"><div class="k">New money conjured</div><div class="v mono" id="totNew">$9,000</div></div>
+        <div class="stat"><div class="k">Money multiplier</div><div class="v mono" id="totMult">&times;10</div></div>
+      </div>
+      <p class="split-note" id="multNote">With a 10% reserve fraction, $1,000 of cash supports $10,000 of deposits. The multiplier is simply 1 &divide; the fraction.</p>
+    </div>
+    <div class="two" style="margin-top:var(--s6)">
+      <div>
+        <p>The pattern is exact. If every bank keeps a fraction <span class="mono">r</span> of its deposits, the original cash supports <span class="mono">1 &divide; r</span> times as much in total deposits. Keep 10% and you get a tenfold expansion; keep 5% and the same cash stretches twentyfold.</p>
+      </div>
+      <div>
+        <p>Notice what was actually scarce. There was never more than $1,000 of physical cash in the whole chain. Everything above it is <em>deposits</em> &mdash; promises to pay, recorded as account balances, that people treat as money because they can spend them at will.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · MISCONCEPTION -->
+<section id="modern" class="band">
+  <div class="wrap prose">
+    <span class="num">04 / Clearing up a myth</span>
+    <h2 class="sec-head" style="margin:var(--s2) 0 var(--s5);font-size:clamp(24px,3.4vw,34px)">Banks don't lend out money that's sitting there</h2>
+    <div class="callout reveal">
+      <div class="tag">Common misconception</div>
+      <h3>&ldquo;The bank takes my deposit and hands it to a borrower.&rdquo;</h3>
+      <p style="margin:0">Not quite. When a bank makes a loan, it doesn't shovel existing cash out the door. It simply <strong>writes a new deposit into the borrower's account</strong> &mdash; typing a number into being. The loan creates the deposit, not the other way round. This is why economists say banks <em>create</em> money when they lend.</p>
+    </div>
+    <p style="margin-top:var(--s5)">The neat ripple diagram above is the classic textbook story, and it's a good way to <em>feel</em> the multiplier. But the modern understanding runs the causation the other way. Banks lend first &mdash; conjuring deposits &mdash; and worry about getting the reserves to settle up afterward. What truly limits lending isn't a pile of deposits waiting to be re-lent, but the demand for loans, the bank's own capital, and the price the central bank sets on borrowing reserves.</p>
+    <details class="reveal">
+      <summary>Go deeper: the textbook multiplier vs. how it really works</summary>
+      <div class="body">In 2014 the Bank of England published <em>Money creation in the modern economy</em>, stating plainly that the bulk of money is created by commercial banks making loans, and that the simple reserve multiplier &mdash; reserves first, loans after &mdash; describes the system backwards. Reserves don't constrain lending in the mechanical way the chain implies; central banks supply the reserves the system needs to settle payments. The multiplier picture still teaches the relationship between reserves and deposits usefully, but treat it as a model, not the literal sequence of events.</div>
+    </details>
+  </div>
+</section>
+
+<!-- 5 · WHAT LIMITS IT -->
+<section id="limits">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">05 / The brakes</span>
+      <h2>If lending creates money, what stops it?</h2>
+      <p class="sub">Money creation isn't a free button. Several forces hold it in check &mdash; some are rules, some are simple self-interest.</p>
+    </div>
+    <div class="cards">
+      <div class="card reveal">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="1"/><path d="M3 8l9-5 9 5"/><path d="M8 20v-6h8v6"/></svg>
+        <h3>Capital requirements</h3>
+        <p>A bank must fund part of its loans with its own money, not just deposits. Lend recklessly and it runs out of this cushion. Today this is the main regulatory brake on lending.</p>
+      </div>
+      <div class="card reveal">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <h3>Demand for loans</h3>
+        <p>A bank can't create money no one wants to borrow. Lending only happens when creditworthy people and firms actually want a loan at the going rate.</p>
+      </div>
+      <div class="card reveal">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3v18"/><path d="M5 8h14"/><path d="M7 8l-3 6a4 4 0 008 0z"/><path d="M17 8l-3 6a4 4 0 008 0z"/></svg>
+        <h3>The central bank's price</h3>
+        <p>To settle payments, banks need reserves &mdash; and the central bank sets their price by moving interest rates. Pricier reserves make new lending less attractive across the board.</p>
+      </div>
+      <div class="card reveal">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="9" width="16" height="11" rx="1"/><path d="M8 9V6a4 4 0 018 0v3"/></svg>
+        <h3>Reserve requirements</h3>
+        <p>The classic brake: a legal minimum fraction to hold back. Once central to the story &mdash; though, as the box below notes, the US no longer uses one.</p>
+      </div>
+    </div>
+    <div class="callout reveal" style="border-left-color:var(--gold);background:var(--gold-light);margin-top:var(--s6)">
+      <div class="tag" style="color:var(--gold-ink)">Worth knowing &middot; 2026</div>
+      <p style="margin:0">In March 2020 the US Federal Reserve cut the reserve requirement to <strong>0%</strong> for all banks &mdash; and it remains zero in 2026. American banks face no legal reserve minimum at all; capital rules and liquidity do the constraining instead. (Many other central banks still keep a small positive requirement.) Fractional reserve banking, in other words, no longer literally depends on a reserve <em>requirement</em>.</p>
+    </div>
+    <div class="mkinds reveal" style="margin-top:var(--s7)">
+      <div class="mk-h">The three kinds of money</div>
+      <div class="mk-cols">
+        <div>
+          <div class="mk-issuer"><div class="lab">Central bank issues</div><div class="name">Central Bank</div></div>
+          <div class="mk-arrow" aria-hidden="true">&darr;</div>
+          <div class="mk-kinds pair">
+            <div class="mk-kind res"><div class="kt">Reserves</div><div class="kd">Held by banks in their accounts at the central bank</div></div>
+            <div class="mk-kind cash"><div class="kt">Cash</div><div class="kd">Notes &amp; coins held by the public</div></div>
+          </div>
+          <div class="mk-foot">together: <strong>base money</strong></div>
+        </div>
+        <div>
+          <div class="mk-issuer"><div class="lab">Commercial banks issue</div><div class="name">Commercial Banks</div></div>
+          <div class="mk-arrow" aria-hidden="true">&darr;</div>
+          <div class="mk-kinds">
+            <div class="mk-kind dep"><div class="kt">Deposits</div><div class="kd">Account balances &mdash; most of the money people actually use</div></div>
+          </div>
+          <div class="mk-foot">this page's <strong>broad money</strong></div>
+        </div>
+      </div>
+      <p class="mk-cap">Reserves and deposits are different things on different balance sheets &mdash; reserves are a bank's own money <em>at</em> the central bank; a deposit is money your bank owes <em>you</em>. That's why &ldquo;a bank needs reserves before it can lend&rdquo; is misleading.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · BANK RUNS -->
+<section class="band-dark">
+  <div class="wrap two">
+    <div>
+      <span class="eyebrow">06 / The fragile part</span>
+      <h2 class="sec-head" style="margin:var(--s2) 0 var(--s4);font-size:clamp(24px,3.4vw,36px)">The catch: everyone can't withdraw at once</h2>
+      <p>The whole system rests on a quiet bet &mdash; that most depositors won't ask for their cash on the same day. Since the bank holds only a fraction in reserve and has lent the rest out for years, it simply cannot return everyone's money at once. It isn't broke; it's <em>illiquid</em>.</p>
+      <p>If enough people fear that and rush to withdraw, the fear becomes self-fulfilling: a <strong>bank run</strong>. A run can topple a perfectly solvent bank purely on timing.</p>
+    </div>
+    <div>
+      <p style="color:#fff;font-family:var(--display);font-size:22px;line-height:1.4">Two inventions tame the panic:</p>
+      <p><strong style="color:#fff">Deposit insurance.</strong> A government guarantee (the FDIC in the US insures up to $250,000 per depositor, per bank) removes the reason to run &mdash; your money is safe whether or not you sprint to the door.</p>
+      <p><strong style="color:#fff">A lender of last resort.</strong> The central bank can lend reserves to a solid-but-illiquid bank overnight, so a timing squeeze doesn't become a collapse.</p>
+      <p style="color:#9fb3a4;font-size:15px">Together they're the reason runs are far rarer than they once were &mdash; though, as 2023's regional-bank failures showed, not extinct.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · QUIZ -->
+<section id="quiz">
+  <div class="wrap quiz">
+    <div class="sec-head" style="text-align:center">
+      <span class="num">07 / Check yourself</span>
+      <h2 style="font-size:clamp(26px,3.6vw,38px);margin:var(--s2) 0">Five quick questions</h2>
+      <p class="sub" style="margin:0 auto">Pick an answer to see whether it lands &mdash; and why.</p>
+    </div>
+    <div id="quizMount"></div>
+    <div class="score" id="score"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <h3>Sources</h3>
+    <ol>
+      <li>Bank of England, <a href="https://www.bankofengland.co.uk/quarterly-bulletin/2014/q1/money-creation-in-the-modern-economy" target="_blank" rel="noopener">&ldquo;Money creation in the modern economy&rdquo;</a> (Quarterly Bulletin, 2014 Q1).</li>
+      <li>Federal Reserve Board, <a href="https://www.federalreserve.gov/monetarypolicy/reservereq.htm" target="_blank" rel="noopener">Reserve Requirements</a> &mdash; ratios set to 0% effective March 26, 2020.</li>
+      <li>Federal Register, <a href="https://www.federalregister.gov/documents/2025/11/24/2025-20744/regulation-d-reserve-requirements-of-depository-institutions" target="_blank" rel="noopener">Regulation D: Reserve Requirements of Depository Institutions</a> (2026 indexation; requirements remain zero).</li>
+      <li>FDIC, <a href="https://www.fdic.gov/resources/deposit-insurance/" target="_blank" rel="noopener">Deposit Insurance</a> &mdash; standard coverage $250,000 per depositor, per insured bank.</li>
+    </ol>
+    <p class="disc">Educational overview, not financial advice. The money-multiplier demo is an illustrative model; as section 04 explains, real-world money creation is driven by bank lending and constrained chiefly by capital, loan demand, and central-bank policy rather than a mechanical reserve cap.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var fmt=function(n){return '$'+Math.round(n).toLocaleString('en-US');};
+
+  /* ---- Demo 1: reserve split ---- */
+  var r1=document.getElementById('r1'),r1out=document.getElementById('r1out'),
+      d1res=document.getElementById('d1res'),d1loan=document.getElementById('d1loan'),d1note=document.getElementById('d1note');
+  function d1(){
+    var r=+r1.value, dep=1000, res=dep*r/100, loan=dep-res;
+    r1out.textContent=r+'%';
+    d1res.style.width=Math.max(r,0)+'%'; d1loan.style.width=(100-r)+'%';
+    d1res.textContent=r>=8?fmt(res):''; d1loan.textContent=(100-r)>=8?fmt(loan):'';
+    d1note.textContent='Out of a $1,000 deposit, the bank keeps '+fmt(res)+' and lends '+fmt(loan)+'.';
+  }
+  r1.addEventListener('input',d1); d1();
+
+  /* ---- Demo 2: money multiplier chain (centerpiece) ---- */
+  var r2=document.getElementById('r2'),r2out=document.getElementById('r2out'),
+      chain=document.getElementById('chain'),chainMore=document.getElementById('chainMore'),
+      totDep=document.getElementById('totDep'),totNew=document.getElementById('totNew'),
+      totMult=document.getElementById('totMult'),multNote=document.getElementById('multNote');
+  function d2(){
+    var r=+r2.value/100, initial=1000, MAXROWS=8;
+    r2out.textContent=(r*100)+'%';
+    chain.innerHTML='';
+    var dep=initial, shown=0, sumShown=0;
+    for(var i=0;i<MAXROWS && dep>=1;i++){
+      var res=dep*r, loan=dep-res;
+      var resPct=(res/initial)*100, loanPct=(loan/initial)*100;
+      var row=document.createElement('div'); row.className='crow';
+      row.innerHTML='<span class="rlab">'+(i===0?'Cash in':'Bank '+i)+'</span>'+
+        '<span class="track"><span class="seg-res" style="width:'+resPct+'%"></span>'+
+        '<span class="seg-loan" style="width:'+loanPct+'%"></span></span>'+
+        '<span class="amt">'+fmt(dep)+'</span>';
+      chain.appendChild(row);
+      sumShown+=dep; shown++; dep=loan;
+    }
+    var totalDeposits=initial/r;
+    var remaining=totalDeposits-sumShown;
+    chainMore.textContent= remaining>1 ? '+ '+fmt(remaining)+' more across the longer tail of banks …' : '';
+    totDep.textContent=fmt(totalDeposits);
+    totNew.textContent=fmt(totalDeposits-initial);
+    totMult.textContent='×'+ (1/r).toFixed(1).replace('.0','');
+    multNote.textContent='With a '+(r*100)+'% reserve fraction, $1,000 of cash supports '+fmt(totalDeposits)+' of deposits. The multiplier is simply 1 ÷ the fraction.';
+  }
+  r2.addEventListener('input',d2); d2();
+
+  /* ---- Quiz ---- */
+  var QUIZ=[
+    {q:"A bank receives a $1,000 deposit and keeps a 10% reserve. How much can it lend?",
+     options:["$100","$900","$1,000","$10,000"],answer:1,
+     why:"It holds back 10% ($100) as reserves and lends the remaining $900."},
+    {q:"With a 20% reserve fraction, roughly how much total deposit money can $1,000 of cash support?",
+     options:["$1,200","$2,000","$5,000","$20,000"],answer:2,
+     why:"The multiplier is 1 ÷ 0.20 = 5, so $1,000 supports about $5,000 in deposits."},
+    {q:"When a bank makes a new loan, where does the loaned money come from?",
+     options:["It hands over cash another customer deposited","It creates a new deposit in the borrower's account","It borrows the exact sum from the central bank first","It prints physical banknotes"],answer:1,
+     why:"Lending creates money: the bank writes a new deposit into existence rather than passing along existing cash."},
+    {q:"What is the US legal reserve requirement for banks in 2026?",
+     options:["10%","3%","0% — there is none","Set monthly by each bank"],answer:2,
+     why:"The Fed cut the reserve requirement to 0% in March 2020 and it remains zero; capital and liquidity rules constrain lending instead."},
+    {q:"Why can a bank run topple even a healthy bank?",
+     options:["The bank is secretly insolvent","Reserves only cover a fraction of deposits, so it can't repay everyone at once","Loans are illegal to call back","Deposit insurance forces it to close"],answer:1,
+     why:"A bank holds only a fraction in reserve; if all depositors demand cash simultaneously it runs short on timing, not on overall worth — it's illiquid, not necessarily broke."}
+  ];
+  var mount=document.getElementById('quizMount'),scoreEl=document.getElementById('score'),
+      answered=0,correct=0;
+  QUIZ.forEach(function(item,qi){
+    var card=document.createElement('div'); card.className='q';
+    var h='<div class="qn">Q'+(qi+1)+' of '+QUIZ.length+'</div><h3>'+item.q+'</h3>';
+    card.innerHTML=h;
+    item.options.forEach(function(opt,oi){
+      var b=document.createElement('button'); b.className='opt'; b.type='button'; b.textContent=opt;
+      b.addEventListener('click',function(){
+        if(card.dataset.done)return; card.dataset.done='1';
+        var btns=card.querySelectorAll('.opt');
+        btns.forEach(function(x){x.disabled=true;});
+        if(oi===item.answer){b.classList.add('correct');correct++;}
+        else{b.classList.add('wrong');btns[item.answer].classList.add('correct');}
+        card.querySelector('.why').classList.add('show');
+        answered++;
+        scoreEl.textContent='Score: '+correct+' / '+answered+(answered===QUIZ.length?'  — all done.':'');
+      });
+      card.appendChild(b);
+    });
+    var why=document.createElement('div'); why.className='why'; why.innerHTML='<strong>Why:</strong> '+item.why;
+    card.appendChild(why);
+    mount.appendChild(card);
+  });
+})();
+</script>
+
+<!-- Review & edit overlay — injected by assemble.mjs (invariant; do not hand-edit) -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:8px;right:14px;z-index:9002;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:9010;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:9010;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:9020;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+    // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
+    // Scrolling pages: position just below any fixed/sticky top nav instead.
+    requestAnimationFrame(function () {
+      var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
+      if (isDeck) {
+        launch.style.top = "auto";
+        launch.style.right = "auto";
+        launch.style.bottom = "16px";
+        launch.style.left = "14px";
+      } else {
+        var navBottom = 0;
+        document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+          var s = getComputedStyle(el);
+          if (s.position === "fixed" || s.position === "sticky") {
+            navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+          }
+        });
+        if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      }
+    });
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>

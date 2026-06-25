@@ -18,8 +18,8 @@
   --ink-3:#76705f;
   --line:#d9d2c4;
   --accent:#1d4e6b;        /* deep ink-blue — structural accent */
-  --accent-soft:#dce7ee;
-  --accent-line:#bcd3e1;
+  --accent-soft:#ece5d6;   /* warm parchment — soft boxes (callouts, reveals) match the deck, not cold blue */
+  --accent-line:#d8cdb6;
   --favor:#2f6b4f;         /* green — favors fair use */
   --favor-soft:#dceae0;
   --against:#9a3b2e;       /* rust — weighs against */
@@ -192,6 +192,8 @@ strong,b{color:var(--ink);font-weight:600}
 .wchip{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s3);align-items:center;width:100%;
   background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:11px 14px;cursor:pointer;
   font-family:var(--sans);text-align:left;transition:border-color .15s,background .15s}
+/* slide headings get programmatic focus on advance (a11y) — suppress the visible ring box */
+[tabindex="-1"]:focus,.slide h1:focus,.slide h2:focus,.slide h3:focus{outline:none}
 .wchip:hover{border-color:var(--accent)}
 .wchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wchip .wc-b{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
