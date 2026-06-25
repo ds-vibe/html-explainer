@@ -68,6 +68,10 @@ blanks. What matters most:
     colors/font/URL). All style in centralized tokens. **Must be its own question — never combine
     with format.** Each axis has 4 options; collapsing them into format+style combos cuts half the
     choices and removes the user's ability to mix (e.g. slide deck + technical-dark).
+    **Also read the topic:** if a strong visual register suggests itself naturally — letterpress for
+    Gutenberg, blueprint for aerospace, clinical-illustration for anatomy, hand-drawn for food —
+    surface it as a **fifth bespoke option** alongside the presets. Offer only when the match is
+    genuinely obvious; don't force it.
   - **Quiz / knowledge check?** — don't assume no. A short test-yourself (MC or fill-in, instant
     right/wrong + a one-line *why*) makes it stickier and works in a pure file. Default **yes, small
     end-of-section or end-of-page** unless declined or it's reference-style.
@@ -87,14 +91,23 @@ blanks. What matters most:
   form (e.g. Explainer Studio), the answers arrive with the brief — honor them, don't re-interview.
   A normal chat with a person (including the Claude app) is **NOT** this case: ask the must-ask set.
 - Collect a **source list** as you go; every non-obvious claim should be traceable.
+- **Prose register (silent — not a user question).** Before writing, auto-select a register based
+  on topic + audience. Never ask the user; never name the authors these draw from. Three registers:
+  - *Crisp and Clear* — short words, concrete over abstract, no word wasted. Default for technical,
+    how-things-work, and policy topics.
+  - *Cool Observer* — rhythm-forward, the outside eye, slightly fragmentary. For company profiles,
+    cultural topics, dossiers, anything with an angle.
+  - *Raises the Stakes* — building sentences, moral weight, addresses the reader directly, assumes
+    their intelligence. For history, and anything where you want the reader to feel something.
+  The register shapes word choice and sentence rhythm throughout; it is never surfaced in the UI.
 
-> **Once the interview is answered: think, then immediately write the file. Do NOT output your architecture plan, section order, design token choices, or any "Phase 1/2 thinking" as chat text. All planning happens silently. You may output ONE scope line first — `Scope: [N sections, centerpiece: X, ~N lines]` — nothing more. The next output after that must be a Write call. If your plan would produce a raw file over 700 lines, cut scope before writing.**
+> **Once the interview is answered: think, then immediately write the file. Do NOT output your architecture plan, section order, design token choices, or any "Phase 1/2 thinking" as chat text. All planning happens silently. You may output ONE scope line first — `Scope: [N sections, centerpiece: X, ~N lines]` — nothing more. The next output after that must be a Write call. If your plan would produce a raw file over 700 lines *and the user did not select comprehensive depth*, cut scope before writing.**
 
 ## Phase 1 — Architecture for learning (sequence before you style)
 
 - **Lead with orientation, not the advanced/latest thing.** Default to a learning path: what is it
   → the core mental model → the specifics/payoff → details → the news/edge cases.
-- **Find the load-bearing mental model — then commit to it (where the topic has one).** Hand the
+- **Find the mental model that illuminates and unlocks the topic — then commit to it (where the topic has one).** Hand the
   reader *one way of thinking* early (a metaphor, reframing, or unifying picture) and reuse it as a
   **throughline** — centerpiece, demos, and recurring motif all reinforce the *same* model. Test: a
   reader who finishes can restate it in a sentence.
@@ -105,9 +118,11 @@ blanks. What matters most:
   **plainly name the topic** ("How compound interest works") — a metaphor may ride alongside but
   never *replace* it (the nav/brand label is not the title). Keep title and intro **editorial**, not
   slogan-y; introduce the model **once, in its own section** — don't stack 2–3 metaphors or turn it
-  into a slogan/joke/precious copy. The model is a teaching tool, not a tagline. **State it once,
-  then drop it** — don't dress the whole page in its costume (themed "RECIPE:" cards, metaphor
-  badges, cutesy step labels); after the intro, use normal, professional section treatments.
+  into a slogan/joke/precious copy. The model is a lens, not a costume — introduce it once, then
+  let it do its work silently as the organizing logic behind the section sequence, demos, and
+  centerpiece. What you drop is the *language*: don't repeat the metaphor framing after the intro;
+  don't dress the whole page in its costume (themed "RECIPE:" cards, metaphor badges, cutesy step
+  labels). After the intro, use normal, professional section treatments.
 - **Progressive complexity:** map the **concept dependencies** first (what must the reader grasp
   before X?) and order sections so each assumes only what earlier ones taught. Signpost the path
   ("Start here · 1 of 3") when it helps. Dependencies guide section *order* only — **never print
@@ -123,12 +138,10 @@ blanks. What matters most:
 
 ## Phase 2 — Visual design system (the 10x bar) — *the source of truth for "what good looks like"*
 
-- **Editorial, not corporate-template.** Aim for a great explainer's polish (Vox / FT / Stripe-docs
-  / The Pudding), not a compliance PDF or AI-generated SaaS landing page. Target: confident editorial
-  typography (a real display + text pairing), a restrained palette where color is mostly *semantic*
-  (carries meaning, not decoration), generous whitespace, no emoji. A **reference screenshot** ships
-  at `reference/ai-act-explainer.jpg` — study it for *type, palette, and restraint only*; it's not a
-  layout/format template (it's a scrolling page — a deck hits the same bar).
+- **The quality bar: professionally edited, purposeful, restrained, polished** — the opposite of auto-generated SaaS texture. All four style presets (and any bespoke topic-matched theme) must clear this bar. Target: confident editorial typography (a real display + text pairing), a restrained palette where color is mostly *semantic* (carries meaning, not decoration), generous whitespace, no emoji. Aim for the polish of Vox / FT / Stripe-docs / The Pudding. Three **reference screenshots** ship in `reference/` — study each for the dimension noted:
+  - `gutenberg-theme.png` — topic-matched visual identity: parchment palette, blackletter display, and letterpress motifs all express the subject matter. The quality bar for a themed build.
+  - `microwave-demo.png` — dark/technical style + "show don't tell": the standing-waves heat-map demo is the model for what a playable micro-demo should look and feel like.
+  - `aiact-coverage.png` — light editorial style + functional interactivity: multi-slider → live verdict; restrained palette where every color is semantic.
 - **Actively avoid the "AI slop" look** — the tells to design *out*:
   - **Emoji as icons/UI** (⏳🔒🚀✨🔍📊 in headers/cards/buttons) — the #1 slop signal. Use a
     *cohesive* SVG icon set (one style), CSS shapes, numerals, or nothing. Never emoji as iconography.
@@ -154,9 +167,7 @@ blanks. What matters most:
   while *prose* stays ~60–70ch: give the **centerpiece** room (wide tables/timelines/diagrams), use
   **full-bleed section bands**, reach for **two-column/asymmetric** layouts where they help. Cap the
   outer container ~1100–1280px with balanced gutters — never a ~720px column stranded in margins.
-- **Motion with purpose:** scroll-reveal/transitions add life; never gratuitous. Make reveals
-  **self-healing** (a failsafe timer forces everything visible if the observer doesn't fire) — content
-  must never stay stuck at `opacity:0` (also why such pages screenshot blank).
+- **Motion with purpose:** scroll-reveal/transitions add life; never gratuitous. **Never hide content at `opacity:0` depending on `IntersectionObserver` firing** — it doesn't fire reliably in Playwright full-page screenshots or on some mobile browsers, leaving pages blank. The safe pattern: make `.reveal` a no-op CSS marker only (content always visible by default); use CSS `@keyframes` entrance animations if you want motion on load. Failsafe timers are not reliable enough to fix this — don't rely on them.
 - **Don't over-engineer the dataviz.** A clean conventional chart/table beats an exotic
   treemap/sunburst almost always. Reach for advanced viz only when the data needs it.
 - Default to **shadcn/ui + Tailwind** in a framework build, or hand-rolled CSS in a single file.
@@ -228,10 +239,22 @@ not deliver until all pass:
       clearly separated; equal gaps in repeated groups; nothing touching edges.
 - [ ] **Title & voice.** `<h1>` plainly names the topic (not a bare metaphor; nav brand doesn't
       count); title/intro editorial not slogan-y; the model appears once in the body, not stacked.
+- [ ] **Prose register & slop tells.** Does the writing hit the selected register (Crisp and Clear /
+      Cool Observer / Raises the Stakes)? Scan for overuse of: em-dashes (one or two fine; three per
+      paragraph is a tell) · loaded metaphor nouns ("the spine", "load-bearing", "the throughline",
+      "connective tissue", "the scaffolding") · "it's not just X — it's Y" contrast framing ·
+      staccato comparison sentences · filler openers ("at its core", "put simply", "in short", "at
+      the end of the day") · rhetorical questions as transitions ("So what does this mean for X?") ·
+      meta-narration ("this is where it gets interesting", "here's the thing") · tricolon
+      everything · every section header as a declarative sentence with a period. Standard: would a
+      human editor at *The Atlantic* flag this as a pattern?
 - [ ] **Visuals match the words.** Every diagram/chart/demo/metaphor depicts the claim — direction,
       order, magnitude, legend all agree with the caption (don't draw an up-slope under "downhill").
 - [ ] **Accessible & responsive** — semantic HTML, keyboard-operable, alt text, real mobile layout
       (stacks cleanly, no horizontal overflow, tap targets ≥40px).
+- [ ] **Scroll-reveal / mobile visibility** — no content hidden at `opacity:0` or via a class
+      depending on `IntersectionObserver`. If `.reveal` exists, it must be a no-op marker (content
+      visible by default). All sections must render fully on mobile without interaction.
 - [ ] **Review & edit overlay inlined** — `review-mode.js` is in the page by default (with `<body
       data-review-toggle>`) unless the user opted out; the "Review & edit" launcher should appear.
 
@@ -297,10 +320,6 @@ Then run the look-and-fix loop:
   Deliver as a real file (Phase 3), never an inline code block.
 - **Framework app (Next.js on Vercel):** when you need a server — most commonly a **chatbot** with a
   managed key, server-side data, or auth. Use the AI SDK.
-- **Notion page** (Notion API/MCP): when the user lives in Notion. Map to native blocks (toggles =
-  go-deeper, callouts = notes, tables = the matrix, columns = side-by-side). *Caveat:* no custom JS,
-  so live micro-demos don't work inline — accept a static toggle-rich version or embed a hosted widget
-  via `/embed` iframe. State the trade-off first. Needs an integration token / shared parent page.
 
 ## Format & reading shape (chosen in Phase 0 — orthogonal to output target)
 
@@ -347,14 +366,16 @@ file (the bundled copies already do). **These are the single source of truth for
   `openai`); `[data-chat-open]` opens it. Key stays in memory only — fine *because it's the reader's*;
   **never ship your own key this way** (that's the server-route framework path).
 
-## Interactivity patterns (reach for the simplest that fits)
+## Interactivity patterns (reach for the most impactful that fits)
 
 - **★ Playable micro-demos (learn-by-doing) — reach for these first.** A small widget that lets the
   reader *manipulate something and watch the result update live*. **Aim for at least 2 distinct
   playable micro-demos** (separate from the quiz) where the topic supports it — roughly one per key
   concept; ship a single demo only when the topic genuinely can't support more, and say why.
   Forms: **fill-in / pick-the-answer** ("what comes next?", ideally predict-then-reveal);
-  **live input → live output**; **a slider that reshapes a result** (driven by the *real* formula);
+  **live input → live output**; **a slider that reshapes a result** (driven by the *real* formula —
+  use a continuous min/max range with small or absent `step`; never large discrete jumps; update on
+  every `input` event, not just `change`);
   **click-to-explore**; **step-through**. Keep each tiny and about ONE idea; prefill sensible
   defaults; label illustrative data as such; keyboard-operable and works on mobile.
 - **Progressive disclosure:** `<details>`/accordion, "go deeper" expanders, tabs.
