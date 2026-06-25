@@ -1,0 +1,1560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What "Fair Use" Actually Means</title>
+<meta name="description" content="A slide-deck walkthrough of fair use under 17 U.S.C. § 107 — the four-factor balancing test, the transformative-use doctrine, and how Campbell, Harper & Row, Google, and Warhol shaped it. With an interactive scenario tool.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz@0,6..72;1,6..72&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* palette — warm paper + ink, one structural accent, semantic pair */
+  --paper:#f7f4ee;
+  --paper-2:#efeae0;
+  --ink:#1c1a17;
+  --ink-2:#4a463f;
+  --ink-3:#76705f;
+  --line:#d9d2c4;
+  --accent:#1d4e6b;        /* deep ink-blue — structural accent */
+  --accent-soft:#dce7ee;
+  --accent-line:#bcd3e1;
+  --favor:#2f6b4f;         /* green — favors fair use */
+  --favor-soft:#dceae0;
+  --against:#9a3b2e;       /* rust — weighs against */
+  --against-soft:#f0dcd6;
+  --neutral:#7c7763;       /* muted — neutral */
+  --neutral-soft:#e7dfcd;
+  /* four-factor identity colors (used only as badges / borders / large labels) */
+  --f1:#1d4e6b;            /* purpose — blue */
+  --f2:#8a6517;            /* nature — gold */
+  --f3:#6a4c93;            /* amount — plum */
+  --f4:#256b64;            /* market — teal */
+  /* dark-surface tokens */
+  --ink-card:#26231e;
+  --ink-card-line:#3a372f;
+  /* spacing scale (4px base) */
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:64px;--s9:96px;
+  --maxprose:64ch;
+  --display:"Fraunces",Georgia,serif;
+  --serif:"Newsreader",Georgia,serif;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  --shadow:0 1px 2px rgba(28,26,23,.06),0 8px 24px rgba(28,26,23,.07);
+  --shadow-lg:0 10px 40px rgba(28,26,23,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{overflow:hidden}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+
+/* ---------- deck mechanics ---------- */
+.deck-viewport{height:100dvh;width:100vw;overflow:hidden;position:relative}
+.deck-track{display:flex;height:100%;transition:transform .55s cubic-bezier(.6,.01,.2,1);will-change:transform}
+@media (prefers-reduced-motion:reduce){.deck-track{transition:none}}
+.slide{flex:0 0 100vw;height:100dvh;overflow-y:auto;overflow-x:hidden;position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  padding:clamp(52px,7vh,92px) clamp(20px,5vw,72px) clamp(84px,10vh,118px);scroll-behavior:smooth}
+.slide-inner{width:100%;max-width:1180px;margin:auto}
+.slide.tone-paper{background:var(--paper)}
+.slide.tone-alt{background:var(--paper-2)}
+.slide.tone-ink{background:var(--ink);color:var(--paper)}
+
+/* eyebrow / headings */
+.eyebrow{font-family:var(--sans);font-weight:600;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 var(--s4);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:currentColor;border-radius:2px;display:inline-block;flex:0 0 auto}
+.tone-ink .eyebrow{color:#9cc3dd}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.07;letter-spacing:-.015em;margin:0}
+h1{font-size:clamp(2.5rem,6.2vw,4.8rem);font-weight:600}
+h2{font-size:clamp(1.95rem,4.2vw,3.15rem)}
+h3{font-size:clamp(1.2rem,2vw,1.5rem)}
+em{font-style:italic}
+.lede{font-family:var(--serif);font-size:clamp(1.18rem,2vw,1.55rem);line-height:1.48;color:var(--ink-2);max-width:var(--maxprose);margin:var(--s5) 0 0}
+.tone-ink .lede{color:#e4ded2}
+p{line-height:1.6;color:var(--ink-2)}
+.tone-ink p{color:#e4ded2}
+.measure{max-width:var(--maxprose)}
+.small{font-size:.86rem;color:var(--ink-3);line-height:1.45}
+.tone-ink .small{color:#b9b2a2}
+strong,b{color:var(--ink);font-weight:600}
+.tone-ink strong,.tone-ink b{color:#fbf8f1}
+
+/* title slide */
+.title-meta{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s7);align-items:center}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;font-weight:500;
+  padding:7px 13px;border:1px solid var(--line);border-radius:999px;color:var(--ink-2);background:rgba(255,255,255,.55)}
+.chip svg{width:13px;height:13px;color:var(--accent)}
+.kicker-rule{width:56px;height:3px;background:var(--accent);border-radius:2px;margin-bottom:var(--s5)}
+
+/* statute block */
+.statute{background:#fff;border-left:4px solid var(--accent);border-radius:0 14px 14px 0;
+  padding:var(--s6);box-shadow:var(--shadow);max-width:960px;margin:var(--s5) auto 0}
+.statute .pre{font-family:var(--serif);font-style:italic;color:var(--ink-2);font-size:1.06rem;line-height:1.55;margin:0 0 var(--s5)}
+.factor-list{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.factor-list li{display:grid;grid-template-columns:auto 1fr;gap:var(--s4);align-items:start;padding:var(--s4) 0;border-top:1px solid var(--line)}
+.fnum{font-family:var(--display);font-weight:600;font-size:1.2rem;color:#fff;
+  width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;line-height:1;flex:0 0 auto}
+.factor-list .ftext{font-family:var(--serif);font-size:1.05rem;color:var(--ink);line-height:1.45}
+.factor-list .ftag{display:block;font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-top:4px}
+
+/* slide 2 — the bargain (tension) */
+.tension{display:grid;grid-template-columns:1fr auto 1fr;gap:var(--s4);align-items:stretch;margin-top:var(--s7)}
+@media(max-width:860px){.tension{grid-template-columns:1fr;gap:var(--s4)}}
+.t-panel{background:var(--ink-card);border:1px solid var(--ink-card-line);border-radius:14px;padding:var(--s6);display:flex;flex-direction:column;gap:var(--s2)}
+.t-panel h3{font-size:1.15rem;color:var(--paper)}
+.t-panel .t-lab{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#9cc3dd}
+.t-panel p{margin:var(--s2) 0 0;font-size:.97rem;color:#d8d2c6}
+.t-arrow{display:flex;align-items:center;justify-content:center;color:#5a564c}
+@media(max-width:860px){.t-arrow{transform:rotate(90deg)}}
+
+/* generic two-col */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:var(--s7)}
+@media(max-width:860px){.cols{grid-template-columns:1fr;gap:var(--s5)}}
+
+/* factor deep slides */
+.factor-head{display:flex;align-items:center;gap:var(--s4);margin-bottom:var(--s5)}
+.factor-badge{font-family:var(--display);font-weight:600;font-size:1.6rem;width:56px;height:56px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;color:#fff;flex:0 0 auto;box-shadow:var(--shadow)}
+.factor-head .fk{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 2px}
+.factor-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s7);align-items:start}
+@media(max-width:920px){.factor-grid{grid-template-columns:1fr;gap:var(--s5)}}
+.weigh{display:grid;gap:var(--s3);margin-top:var(--s5)}
+.weigh-row{display:grid;grid-template-columns:104px 1fr;gap:var(--s4);align-items:start;
+  background:#fff;border:1px solid var(--line);border-radius:11px;padding:var(--s4) var(--s5)}
+.tone-ink .weigh-row{background:var(--ink-card);border-color:var(--ink-card-line)}
+.tone-alt .weigh-row{background:#fbf9f4}
+.weigh-row .lab{font-weight:600;font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:7px;padding-top:2px}
+.weigh-row .lab.favor{color:var(--favor)}
+.weigh-row .lab.against{color:var(--against)}
+.dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;display:inline-block}
+.dot.favor{background:var(--favor)}.dot.against{background:var(--against)}
+.weigh-row p{margin:0;font-size:.96rem;line-height:1.5;color:var(--ink-2)}
+.tone-ink .weigh-row p{color:#d8d2c6}
+.callout{margin-top:var(--s5);background:var(--accent-soft);border-radius:11px;padding:var(--s4) var(--s5);
+  border:1px solid var(--accent-line);font-size:.95rem;color:var(--ink);line-height:1.5}
+.callout strong{color:var(--accent)}
+
+/* case card */
+.case-card{background:#fff;border:1px solid var(--line);border-left:5px solid var(--accent);
+  border-radius:0 14px 14px 0;padding:var(--s6);box-shadow:var(--shadow)}
+.tone-ink .case-card{background:var(--ink-card);border-color:var(--ink-card-line)}
+.case-top{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s3);flex-wrap:wrap}
+.case-name{font-family:var(--display);font-weight:600;font-size:1.32rem;line-height:1.15;margin:0;color:var(--ink)}
+.tone-ink .case-name{color:var(--paper)}
+.case-cite{font-family:var(--mono);font-size:.78rem;color:var(--ink-3);margin:5px 0 0;letter-spacing:.01em}
+.tone-ink .case-cite{color:#b9b2a2}
+.vpill{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:6px 11px;border-radius:999px;white-space:nowrap;flex:0 0 auto}
+.vpill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.vpill.fair{background:var(--favor-soft);color:var(--favor)}
+.vpill.not{background:var(--against-soft);color:var(--against)}
+.case-sec{margin-top:var(--s5)}
+.case-sec .cl{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 5px}
+.case-sec p{margin:0;font-size:.96rem;line-height:1.52;color:var(--ink-2)}
+.tone-ink .case-sec p{color:#d8d2c6}
+.case-sec .quote{font-family:var(--serif);font-style:italic;font-size:1.02rem;color:var(--ink);line-height:1.5}
+.tone-ink .case-sec .quote{color:#efe9dd}
+
+/* slide 6 — nature spectrum */
+.spectrum{margin-top:var(--s6);display:grid;gap:var(--s6);max-width:1000px}
+.spec-axis .sa-head{display:flex;justify-content:space-between;font-size:.74rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:var(--s3)}
+.spec-axis .sa-head .lo{color:var(--favor)}
+.spec-axis .sa-head .hi{color:var(--against)}
+.spec-track{height:8px;border-radius:6px;background:linear-gradient(90deg,var(--favor-soft),var(--neutral-soft) 50%,var(--against-soft));border:1px solid var(--line)}
+.spec-marks{display:flex;justify-content:space-between;margin-top:var(--s3);gap:var(--s2)}
+.spec-mark{flex:1;text-align:center;font-size:.82rem;color:var(--ink-3);position:relative;padding-top:var(--s4);line-height:1.35}
+.spec-mark::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:10px;background:var(--ink-3);opacity:.5}
+.spec-mark b{display:block;color:var(--ink);font-size:.9rem;margin-bottom:1px}
+
+/* slide 9 — how factors interact */
+.weight-rows{display:grid;gap:var(--s4);margin-top:var(--s6);max-width:780px}
+.wt-row{display:grid;grid-template-columns:200px 1fr;gap:var(--s4);align-items:center}
+@media(max-width:680px){.wt-row{grid-template-columns:1fr;gap:var(--s2)}}
+.wt-row .wtl{font-weight:600;font-size:.95rem;color:var(--paper);display:flex;align-items:center;gap:10px}
+.wt-row .wtl .wb{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:600;font-size:.95rem;color:#fff;flex:0 0 auto}
+.wt-track{height:14px;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden}
+.wt-fill{height:100%;border-radius:8px}
+.wt-note{font-size:.78rem;color:#b9b2a2;margin-top:6px}
+
+/* ---------- micro-demo: balance scale ---------- */
+.demo{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-lg);
+  padding:var(--s6);margin-top:var(--s5);width:100%}
+.tone-ink .demo{background:var(--ink-card);border-color:var(--ink-card-line)}
+.tone-alt .demo{background:#fbf9f4}
+.scale-wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:var(--s7);align-items:center}
+@media(max-width:860px){.scale-wrap{grid-template-columns:1fr;gap:var(--s5)}}
+.scale-svg{width:100%;height:auto;display:block;max-width:480px;margin:0 auto}
+.scale-beam{transition:transform .6s cubic-bezier(.34,1.2,.4,1)}
+@media (prefers-reduced-motion:reduce){.scale-beam{transition:none}}
+.scale-controls{display:grid;gap:var(--s3)}
+.scale-controls .sc-hint{font-size:.86rem;color:var(--ink-3);margin:0 0 var(--s2);line-height:1.45}
+.wchip{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s3);align-items:center;width:100%;
+  background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:11px 14px;cursor:pointer;
+  font-family:var(--sans);text-align:left;transition:border-color .15s,background .15s}
+.wchip:hover{border-color:var(--accent)}
+.wchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wchip .wc-b{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:600;font-size:1rem;color:#fff;flex:0 0 auto}
+.wchip .wc-name{font-weight:600;font-size:.94rem;color:var(--ink)}
+.wchip .wc-sub{font-size:.76rem;color:var(--ink-3)}
+.wchip .wc-state{font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:5px 11px;border-radius:999px;white-space:nowrap}
+.wc-state.favor{background:var(--favor-soft);color:var(--favor)}
+.wc-state.neutral{background:var(--neutral-soft);color:#5f5a48}
+.wc-state.oppose{background:var(--against-soft);color:var(--against)}
+.scale-verdict{margin-top:var(--s5);text-align:center}
+.scale-verdict .sv-lean{font-family:var(--display);font-size:1.5rem;font-weight:600;line-height:1.15}
+.scale-verdict .sv-why{font-size:.86rem;color:var(--ink-3);margin-top:6px;line-height:1.45;max-width:46ch;margin-left:auto;margin-right:auto}
+
+/* ---------- centerpiece: scenario tool ---------- */
+.scn{width:100%;margin-top:var(--s5)}
+.scn-card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-lg);overflow:hidden}
+.scn-head{display:flex;align-items:flex-start;gap:var(--s4);padding:var(--s5) var(--s6);border-bottom:1px solid var(--line)}
+.scn-icon{width:54px;height:54px;border-radius:13px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:var(--shadow)}
+.scn-icon svg{width:28px;height:28px}
+.scn-head .sh-tag{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+.scn-head h3{font-size:1.32rem;line-height:1.18;margin:0 0 var(--s3)}
+.scn-head .sh-blurb{margin:0;font-size:.97rem;line-height:1.5;color:var(--ink-2);max-width:64ch}
+.scn-body{padding:var(--s4) var(--s6) var(--s5)}
+.scn-instruct{font-size:.84rem;color:var(--ink-3);margin:0 0 var(--s4);display:flex;align-items:center;gap:8px}
+.scn-instruct svg{width:16px;height:16px;flex:0 0 auto}
+.scn-factors{display:grid;gap:var(--s3)}
+.scn-f{display:grid;grid-template-columns:1fr auto;gap:var(--s3) var(--s5);align-items:center;
+  background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:var(--s4) var(--s5)}
+@media(max-width:760px){.scn-f{grid-template-columns:1fr;gap:var(--s3)}}
+.scn-f .sf-name{display:flex;align-items:center;gap:11px;min-width:0}
+.scn-f .sf-b{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:600;font-size:1rem;color:#fff;flex:0 0 auto}
+.scn-f .sf-t{font-weight:600;font-size:.95rem;color:var(--ink)}
+.scn-f .sf-t small{display:block;font-weight:400;font-size:.77rem;color:var(--ink-3);margin-top:1px}
+.seg3{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff;flex:0 0 auto}
+.seg3 button{border:0;background:transparent;padding:9px 15px;font-family:var(--sans);font-size:.82rem;font-weight:600;
+  color:var(--ink-2);cursor:pointer;transition:background .15s,color .15s;border-left:1px solid var(--line)}
+.seg3 button:first-child{border-left:0}
+.seg3 button[aria-pressed="true"][data-v="favor"]{background:var(--favor);color:#fff}
+.seg3 button[aria-pressed="true"][data-v="neutral"]{background:var(--neutral);color:#fff}
+.seg3 button[aria-pressed="true"][data-v="oppose"]{background:var(--against);color:#fff}
+.seg3 button:disabled{cursor:default}
+.seg3 button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.scn-f .sf-court{grid-column:1/-1;display:none;align-items:center;gap:9px;font-size:.85rem;flex-wrap:wrap;
+  padding-top:var(--s3);border-top:1px dashed var(--line);margin-top:var(--s1)}
+.scn-f.revealed .sf-court{display:flex}
+.sf-court .cc-lab{color:var(--ink-3);font-weight:600;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.sf-court .cc-val{font-weight:700;font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+.cc-val.favor{background:var(--favor-soft);color:var(--favor)}
+.cc-val.neutral{background:var(--neutral-soft);color:#5f5a48}
+.cc-val.oppose{background:var(--against-soft);color:var(--against)}
+.sf-court .cc-match{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:600;margin-left:auto}
+.cc-match.yes{color:var(--favor)}.cc-match.no{color:var(--ink-3)}
+.cc-match svg{width:14px;height:14px}
+
+/* tally meter */
+.scn-tally{display:flex;align-items:center;gap:var(--s4);margin-top:var(--s5);flex-wrap:wrap}
+.tally-bar{flex:1;min-width:200px;height:12px;border-radius:7px;background:var(--paper-2);overflow:hidden;display:flex;border:1px solid var(--line)}
+.tally-bar span{height:100%;transition:width .35s ease}
+.tally-bar .tf{background:var(--favor)}.tally-bar .tn{background:var(--neutral)}.tally-bar .to{background:var(--against)}
+.tally-txt{font-size:.84rem;color:var(--ink-2);font-weight:600;white-space:nowrap}
+.tally-txt b{font-family:var(--display)}
+
+/* reveal panel */
+.scn-reveal{display:none;margin-top:var(--s5);border-radius:13px;border:1px solid var(--accent-line);background:var(--accent-soft);padding:var(--s5) var(--s6)}
+.scn-reveal.show{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.scn-reveal.show{animation:none}}
+.scn-reveal .rv-top{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s3)}
+.scn-reveal .rv-why{margin:0;font-size:.97rem;line-height:1.55;color:var(--ink)}
+.scn-reveal .rv-caveat{margin:var(--s4) 0 0;font-size:.88rem;line-height:1.5;color:var(--ink-2);
+  padding-top:var(--s4);border-top:1px solid var(--accent-line)}
+.scn-reveal .rv-caveat b{color:var(--accent)}
+
+/* scenario footer / controls */
+.scn-foot{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);margin-top:var(--s5);flex-wrap:wrap}
+.scn-foot .sf-left{display:flex;gap:var(--s2);align-items:center}
+.scn-dots{display:flex;gap:7px;align-items:center}
+.scn-dot{width:9px;height:9px;border-radius:50%;border:0;background:var(--line);cursor:pointer;padding:0;transition:.2s}
+.scn-dot[aria-current="true"]{background:var(--accent);transform:scale(1.35)}
+.scn-dot:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-weight:600;font-size:.92rem;
+  border-radius:10px;padding:11px 18px;cursor:pointer;border:1px solid transparent;transition:.15s;line-height:1}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover:not(:disabled){background:#163d54}
+.btn-primary:disabled{background:#a9bcc7;border-color:#a9bcc7;cursor:default}
+.btn-ghost{background:transparent;color:var(--ink-2);border-color:var(--line)}
+.btn-ghost:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn-ghost:disabled{opacity:.4;cursor:default}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn-link{background:none;border:0;color:var(--accent);font-weight:600;font-family:var(--sans);font-size:.9rem;
+  cursor:pointer;padding:7px 9px;display:inline-flex;align-items:center;gap:5px;border-radius:8px}
+.btn-link:hover:not(:disabled){background:var(--accent-soft)}
+.btn-link:disabled{color:var(--ink-3);cursor:default}
+.btn-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn-link svg{width:14px;height:14px}
+
+/* myths */
+.myth-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);margin-top:var(--s6)}
+@media(max-width:860px){.myth-grid{grid-template-columns:1fr}}
+.myth{background:var(--ink-card);border:1px solid var(--ink-card-line);border-radius:13px;padding:var(--s5)}
+.myth .m-claim{font-family:var(--serif);font-style:italic;font-size:1.06rem;color:#efbcae;display:flex;gap:11px;align-items:flex-start;line-height:1.4;margin:0}
+.myth .m-x{width:22px;height:22px;border-radius:50%;background:rgba(154,59,46,.25);color:#efbcae;display:flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:1px}
+.myth .m-x svg{width:12px;height:12px}
+.myth .m-real{margin:var(--s4) 0 0;font-size:.95rem;line-height:1.55;color:#d8d2c6}
+.myth .m-real b{color:#fbf8f1}
+
+/* ---------- quiz ---------- */
+.quiz{width:100%;max-width:860px;margin:var(--s5) auto 0}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:var(--s6);box-shadow:var(--shadow-lg)}
+.qmeta{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)}
+.qmeta .qn{font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.qmeta .qprog{display:flex;gap:6px}
+.qmeta .qprog i{width:24px;height:4px;border-radius:3px;background:var(--line);display:block}
+.qmeta .qprog i.done{background:var(--accent)}
+.qq{font-family:var(--serif);font-size:1.28rem;line-height:1.38;color:var(--ink);margin:0 0 var(--s5)}
+.qopts{display:grid;gap:var(--s3)}
+.qopt{text-align:left;border:1px solid var(--line);background:var(--paper);border-radius:11px;padding:14px 16px;
+  font-family:var(--sans);font-size:.97rem;color:var(--ink);cursor:pointer;transition:.15s;line-height:1.4;display:flex;gap:12px;align-items:flex-start}
+.qopt .qk{font-weight:700;color:var(--ink-3);font-size:.86rem;flex:0 0 auto;width:18px}
+.qopt:hover:not(:disabled){border-color:var(--accent)}
+.qopt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.qopt:disabled{cursor:default}
+.qopt.correct{background:var(--favor-soft);border-color:var(--favor);color:var(--favor);font-weight:600}
+.qopt.correct .qk{color:var(--favor)}
+.qopt.wrong{background:var(--against-soft);border-color:var(--against);color:var(--against)}
+.qopt.wrong .qk{color:var(--against)}
+.qwhy{margin-top:var(--s4);padding:var(--s4) var(--s5);border-radius:11px;background:var(--accent-soft);
+  border:1px solid var(--accent-line);font-size:.93rem;line-height:1.55;color:var(--ink);display:none}
+.qwhy.show{display:block;animation:fadeUp .35s ease}
+@media (prefers-reduced-motion:reduce){.qwhy.show{animation:none}}
+.qfoot{display:flex;justify-content:space-between;align-items:center;margin-top:var(--s5)}
+.qscore{font-size:.86rem;color:var(--ink-2);font-weight:600}
+.qresult{text-align:center;padding:var(--s5) 0}
+.qresult .qr-big{font-family:var(--display);font-size:2.5rem;font-weight:600;color:var(--accent);line-height:1}
+.qresult p{margin:var(--s4) auto 0;max-width:46ch}
+
+/* sources */
+.src-list{columns:2;column-gap:var(--s7);margin-top:var(--s5);max-width:1000px;padding:0;list-style:none}
+@media(max-width:860px){.src-list{columns:1}}
+.src-list li{break-inside:avoid;margin-bottom:var(--s4);font-size:.92rem;line-height:1.45;color:var(--ink-2);
+  padding-left:var(--s4);border-left:2px solid var(--line)}
+.src-list a{font-weight:600}
+.src-list .sy{font-family:var(--mono);font-size:.74rem;color:var(--ink-3);display:block;margin-top:2px}
+
+/* ---------- chrome: nav, dots, progress ---------- */
+.deck-chrome{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;justify-content:space-between;
+  gap:var(--s4);padding:14px clamp(16px,4vw,40px);background:linear-gradient(to top,var(--paper) 58%,rgba(247,244,238,0));pointer-events:none}
+.deck-chrome>*{pointer-events:auto}
+.navbtns{display:flex;gap:9px}
+.navbtn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);transition:.15s}
+.navbtn svg{width:19px;height:19px}
+.navbtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.navbtn:disabled{opacity:.32;cursor:default}
+.navbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dots{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:56vw}
+.dot-btn{width:9px;height:9px;border-radius:50%;border:0;background:var(--line);cursor:pointer;padding:0;transition:.2s}
+.dot-btn[aria-current="true"]{background:var(--accent);transform:scale(1.4)}
+.dot-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.counter{font-variant-numeric:tabular-nums;font-size:.84rem;font-weight:600;color:var(--ink-2);
+  background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 15px;box-shadow:var(--shadow);white-space:nowrap}
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:50;transition:width .45s ease;width:0}
+/* top bar: brand + jump menu */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:41;display:flex;align-items:center;justify-content:space-between;
+  padding:12px clamp(16px,4vw,40px);pointer-events:none}
+.brand{font-family:var(--display);font-weight:600;font-size:.98rem;color:var(--ink);pointer-events:auto;
+  background:rgba(247,244,238,.72);backdrop-filter:blur(6px);padding:5px 12px;border-radius:9px;display:inline-flex;align-items:center;gap:8px}
+.brand .bdot{width:8px;height:8px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+.jump{pointer-events:auto;position:relative}
+.jump-btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 13px;font-family:var(--sans);
+  font-size:.82rem;font-weight:600;color:var(--ink-2);cursor:pointer;box-shadow:var(--shadow);display:inline-flex;align-items:center;gap:7px}
+.jump-btn svg{width:13px;height:13px;transition:transform .2s}
+.jump-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.jump-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.jump-menu{position:absolute;right:0;top:calc(100% + 7px);background:#fff;border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 12px 34px rgba(28,26,23,.2);padding:7px;min-width:260px;max-height:64vh;overflow:auto;display:none}
+.jump-menu.open{display:block}
+.jump-menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:transparent;padding:9px 12px;border-radius:8px;
+  font-family:var(--sans);font-size:.87rem;color:var(--ink-2);cursor:pointer}
+.jump-menu button:hover,.jump-menu button:focus-visible{background:var(--accent-soft);color:var(--accent);outline:none}
+.jump-menu .jm-num{display:inline-block;width:22px;color:var(--ink-3);font-variant-numeric:tabular-nums;font-weight:700;font-size:.8rem}
+.jump-menu button[aria-current="true"]{color:var(--accent);font-weight:600}
+
+.hint-key{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);font-size:.76rem;color:var(--ink-3);
+  background:rgba(247,244,238,.85);padding:5px 14px;border-radius:999px;z-index:39;transition:opacity .5s;display:flex;align-items:center;gap:7px}
+@media(max-width:860px){.hint-key{display:none}}
+.kbd{font-family:var(--sans);font-size:.7rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;background:#fff;color:var(--ink-2);font-weight:600}
+.scrollnote{font-size:.82rem;color:var(--ink-3);margin-top:var(--s7);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.disclaim{font-size:.76rem;color:var(--ink-3);margin-top:var(--s4);font-style:italic}
+</style>
+<style>/* assembler: keep launcher clear of deck chrome */ body #rv-launch{top:64px;right:16px}</style>
+</head>
+<body data-review-toggle>
+<div class="progress" id="progress"></div>
+
+<div class="topbar">
+  <span class="brand"><span class="bdot"></span>Fair Use, in Practice</span>
+  <div class="jump">
+    <button class="jump-btn" id="jumpBtn" aria-haspopup="true" aria-expanded="false">Jump to slide
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="jump-menu" id="jumpMenu" role="menu"></div>
+  </div>
+</div>
+
+<div class="deck-viewport" id="viewport">
+  <div class="deck-track" id="track">
+
+    <!-- 1. TITLE -->
+    <section class="slide tone-paper" data-title="Title" aria-label="Title">
+      <div class="slide-inner">
+        <div class="kicker-rule"></div>
+        <p class="eyebrow">Copyright · 17 U.S.C. § 107</p>
+        <h1>What "fair use"<br>actually means.</h1>
+        <p class="lede">Not a word count. Not a 10% rule. Not "I credited the author." Fair use is an
+          <em>affirmative defense</em> — a four-factor balancing test, applied case by case, and recently
+          recalibrated by the Supreme Court.</p>
+        <div class="title-meta">
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Four factors</span>
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Five landmark cases</span>
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l9 4-9 4-9-4 9-4z"/><path d="M3 12l9 4 9-4"/></svg>Interactive scenarios</span>
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>~12 min</span>
+        </div>
+        <p class="scrollnote"><span class="kbd">→</span> arrow keys, swipe, or the dots below to advance · deep-link any slide via <span class="kbd">#</span> in the URL</p>
+      </div>
+    </section>
+
+    <!-- 2. WHY IT EXISTS -->
+    <section class="slide tone-ink" data-title="Why it exists" aria-label="Why fair use exists">
+      <div class="slide-inner">
+        <p class="eyebrow">Why it exists</p>
+        <h2>Copyright is a bargain.<br>Fair use is the release valve.</h2>
+        <p class="lede" style="max-width:70ch">Copyright hands creators a temporary monopoly so they'll keep
+          creating. But culture is cumulative — and a monopoly with no give would choke the very progress it
+          was built to promote. Fair use is the breathing room.</p>
+        <div class="tension">
+          <div class="t-panel">
+            <span class="t-lab">The incentive</span>
+            <h3>Exclusive rights</h3>
+            <p>The author alone may copy, adapt, distribute, and perform the work. That control is the reward
+              that makes writing, filming, and recording worth the risk.</p>
+          </div>
+          <div class="t-arrow" aria-hidden="true">
+            <svg width="40" height="26" viewBox="0 0 40 26" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h34M30 3l8 6-8 6"/><path d="M37 17H3M10 11l-7 6 7 6" opacity=".55"/></svg>
+          </div>
+          <div class="t-panel">
+            <span class="t-lab">The commons</span>
+            <h3>The right to build</h3>
+            <p>Critics quote. Scholars analyze. Comedians parody. Journalists report. New technology indexes
+              and reuses. None of it works if every borrowing needs permission.</p>
+          </div>
+        </div>
+        <p class="small" style="margin-top:var(--s6);max-width:82ch">Copyright exists to "promote the Progress of Science and useful Arts"
+          (<em>U.S. Const.</em> art. I, § 8). Fair use is one of copyright's "built-in First Amendment accommodations" (<em>Eldred v. Ashcroft</em>, 2003) — which is why courts rarely entertain a standalone free-speech defense to infringement: the speech interest runs through Factor 1, not a separate constitutional test.</p>
+      </div>
+    </section>
+
+    <!-- 3. THE STATUTE -->
+    <section class="slide tone-paper" data-title="The statute" aria-label="The statute, section 107">
+      <div class="slide-inner">
+        <p class="eyebrow">The statute</p>
+        <h2>§ 107, in the words Congress used.</h2>
+        <div class="statute">
+          <p class="pre">"…the fair use of a copyrighted work … for purposes such as criticism, comment,
+            news reporting, teaching …, scholarship, or research, is not an infringement of copyright.
+            In determining whether the use made of a work in any particular case is a fair use the factors
+            to be considered shall include—"</p>
+          <ul class="factor-list">
+            <li><span class="fnum" style="background:var(--f1)">1</span><span class="ftext">"the purpose and character of the use, including whether such use is of a commercial nature or is for nonprofit educational purposes"<span class="ftag">Purpose &amp; character</span></span></li>
+            <li><span class="fnum" style="background:var(--f2)">2</span><span class="ftext">"the nature of the copyrighted work"<span class="ftag">Nature of the work</span></span></li>
+            <li><span class="fnum" style="background:var(--f3)">3</span><span class="ftext">"the amount and substantiality of the portion used in relation to the copyrighted work as a whole"<span class="ftag">Amount &amp; substantiality</span></span></li>
+            <li><span class="fnum" style="background:var(--f4)">4</span><span class="ftext">"the effect of the use upon the potential market for or value of the copyrighted work"<span class="ftag">Market effect</span></span></li>
+          </ul>
+        </div>
+        <p class="small measure" style="margin:var(--s5) auto 0;text-align:center;max-width:76ch">Two things the text quietly settles: the preamble examples (criticism, teaching, news) are <strong>illustrative, not a safe harbor</strong>, and the factor list is <strong>non-exhaustive</strong> — "shall include."</p>
+      </div>
+    </section>
+
+    <!-- 4. FOUR-FACTOR OVERVIEW + BALANCE SCALE -->
+    <section class="slide tone-alt" data-title="A balancing act" aria-label="The four-factor balancing test">
+      <div class="slide-inner">
+        <p class="eyebrow">The mental model</p>
+        <h2>It's a balancing act, not a checklist.</h2>
+        <p class="measure" style="margin-top:var(--s4)">You don't tally the four factors and declare a winner. Courts <strong>weigh</strong> them
+          together, and underneath all four sits one question: <em>does this use substitute for the original
+          in a market the author can claim — or does it add something new, for a different purpose?</em> Set the
+          factors below and watch the balance tip.</p>
+        <div class="demo">
+          <div class="scale-wrap">
+            <div>
+              <svg class="scale-svg" viewBox="-20 -20 560 320" role="img" aria-labelledby="scaleTitle">
+                <title id="scaleTitle">A balance scale that tips toward fair use or infringement</title>
+                <rect x="248" y="150" width="24" height="150" rx="5" fill="#cbbfa6"/>
+                <rect x="200" y="296" width="120" height="14" rx="7" fill="#b8ab8e"/>
+                <circle cx="260" cy="150" r="13" fill="var(--accent)"/>
+                <g class="scale-beam" id="scaleBeam" style="transform-origin:260px 150px">
+                  <rect x="70" y="143" width="380" height="14" rx="7" fill="var(--ink)"/>
+                  <line x1="90" y1="150" x2="90" y2="196" stroke="var(--ink-3)" stroke-width="2.5"/>
+                  <path d="M48 196 h84 a42 24 0 0 1 -84 0 z" fill="var(--favor-soft)" stroke="var(--favor)" stroke-width="2.5"/>
+                  <text x="90" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="700" fill="#2f6b4f">FAIR USE</text>
+                  <line x1="430" y1="150" x2="430" y2="196" stroke="var(--ink-3)" stroke-width="2.5"/>
+                  <path d="M388 196 h84 a42 24 0 0 1 -84 0 z" fill="var(--against-soft)" stroke="var(--against)" stroke-width="2.5"/>
+                  <text x="430" y="240" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="700" fill="#9a3b2e">INFRINGEMENT</text>
+                </g>
+              </svg>
+              <div class="scale-verdict">
+                <div class="sv-lean" id="svLean">—</div>
+                <div class="sv-why" id="svWhy"></div>
+              </div>
+            </div>
+            <div class="scale-controls" id="scaleControls">
+              <p class="sc-hint">Click each factor to cycle <b>favors → neutral → opposes</b>. Factors 1 and 4 carry the most weight — so the scale won't track a simple count.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. FACTOR 1 + CAMPBELL -->
+    <section class="slide tone-paper" data-title="Factor 1 · Purpose" aria-label="Factor one, purpose and character">
+      <div class="slide-inner">
+        <div class="factor-head">
+          <span class="factor-badge" style="background:var(--f1)">1</span>
+          <div><p class="fk">Factor one</p><h2>Purpose &amp; character</h2></div>
+        </div>
+        <div class="factor-grid">
+          <div>
+            <p>The center of gravity. Two questions dominate: is the use <strong>transformative</strong> — does it
+              serve a genuinely different purpose, adding new expression or meaning — and is it
+              <strong>commercial</strong>? <em>Campbell</em> made transformativeness the fulcrum: the more
+              transformative the work, the less the other factors weigh against it.</p>
+            <div class="weigh">
+              <div class="weigh-row"><span class="lab favor"><span class="dot favor"></span>Toward</span><p><b>A transformative purpose</b> — criticism, parody, commentary, reporting, or a new function. After <em>Warhol</em>, new meaning alone isn't enough; the <em>purpose</em> must differ.</p></div>
+              <div class="weigh-row"><span class="lab against"><span class="dot against"></span>Against</span><p><b>Commercial use sharing the original's purpose.</b> Commerciality isn't fatal (<em>Campbell</em>), but when the purposes overlap it pulls hard against fair use.</p></div>
+            </div>
+          </div>
+          <div class="case-card" style="border-left-color:var(--f1)">
+            <div class="case-top">
+              <div><p class="case-name">Campbell v. Acuff-Rose</p><p class="case-cite">510 U.S. 569 (1994)</p></div>
+              <span class="vpill fair">Fair use (remanded)</span>
+            </div>
+            <div class="case-sec"><p class="cl">The facts</p><p>2 Live Crew recorded a raunchy rap parody of Roy Orbison's "Oh, Pretty Woman" and sold it — after being refused a license.</p></div>
+            <div class="case-sec"><p class="cl">The holding</p><p class="quote">"Parody has an obvious claim to transformative value." A commercial purpose is not presumptively fatal — but the Court <em>reversed and remanded</em>, leaving the Factor 4 market harm (the rap-derivatives market) to be decided below.</p></div>
+            <div class="case-sec"><p class="cl">Why it matters</p><p>It put <strong>transformative use</strong> at the heart of Factor 1 and demoted the old presumption against commercial use.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. FACTOR 2 -->
+    <section class="slide tone-alt" data-title="Factor 2 · Nature" aria-label="Factor two, nature of the work">
+      <div class="slide-inner">
+        <div class="factor-head">
+          <span class="factor-badge" style="background:var(--f2)">2</span>
+          <div><p class="fk">Factor two</p><h2>Nature of the work</h2></div>
+        </div>
+        <div class="factor-grid">
+          <div>
+            <p>The least decisive factor, but real. Copyright protects expression, not facts or ideas — so the
+              <em>kind</em> of work being borrowed sets how much breathing room a user gets. Two axes do the work:</p>
+            <div class="spectrum" style="margin-top:var(--s5);gap:var(--s5)">
+              <div class="spec-axis">
+                <div class="sa-head"><span class="lo">More room ◂ factual / functional</span><span class="hi">creative / expressive ▸ less room</span></div>
+                <div class="spec-track"></div>
+                <div class="spec-marks">
+                  <span class="spec-mark"><b>API code</b>databases</span>
+                  <span class="spec-mark"><b>News report</b>recipes, facts</span>
+                  <span class="spec-mark"><b>Biography</b>textbooks</span>
+                  <span class="spec-mark"><b>Novel · song</b>photograph</span>
+                  <span class="spec-mark"><b>Film · art</b>poetry</span>
+                </div>
+              </div>
+              <div class="spec-axis">
+                <div class="sa-head"><span class="lo">More room ◂ published</span><span class="hi">unpublished ▸ less room</span></div>
+                <div class="spec-track"></div>
+                <div class="spec-marks">
+                  <span class="spec-mark"><b>Released</b>widely available</span>
+                  <span class="spec-mark"><b>In print</b>distributed</span>
+                  <span class="spec-mark"><b>Leaked draft</b>private letter</span>
+                  <span class="spec-mark"><b>Unpublished memoir</b>the scoop</span>
+                </div>
+              </div>
+            </div>
+            <div class="callout" style="max-width:none"><strong>Why publication matters:</strong> the author's right of first publication weighs heavily — though § 107 was amended to say unpublished status alone is never an automatic bar.</div>
+          </div>
+          <div class="case-card" style="border-left-color:var(--f2)">
+            <div class="case-top">
+              <div><p class="case-name">Google v. Oracle</p><p class="case-cite">593 U.S. 1 (2021)</p></div>
+              <span class="vpill fair">Fair use</span>
+            </div>
+            <div class="case-sec"><p class="cl">The facts</p><p>Google copied ~11,500 lines of Java API "declaring code" so developers could reuse familiar calls in Android.</p></div>
+            <div class="case-sec"><p class="cl">The holding</p><p class="quote">Fair use. The declaring code is inherently functional — bound up with uncopyrightable ideas and methods of operation — so it sits far from copyright's core, leaving wide room to reuse.</p></div>
+            <div class="case-sec"><p class="cl">Why it matters</p><p>The Court <strong>assumed, without deciding,</strong> the code was even copyrightable, then resolved everything on fair use — folding a copyrightability question into the test. It really turned on Factors 1, 2 and 4 together (transformative "reimplementation," the functional nature, no market substitution) — but it's the <em>nature</em> analysis that did the distinctive work.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. FACTOR 3 + HARPER & ROW -->
+    <section class="slide tone-paper" data-title="Factor 3 · Amount" aria-label="Factor three, amount and substantiality">
+      <div class="slide-inner">
+        <div class="factor-head">
+          <span class="factor-badge" style="background:var(--f3)">3</span>
+          <div><p class="fk">Factor three</p><h2>Amount &amp; substantiality</h2></div>
+        </div>
+        <div class="factor-grid">
+          <div>
+            <p>Both quantitative and qualitative — and there is <strong>no magic percentage</strong>. Taking a little
+              can still lose if you take "the heart" of the work; taking a lot can survive if the purpose genuinely
+              requires it — a thumbnail, a search index, the lines a parody must evoke.</p>
+            <div class="weigh">
+              <div class="weigh-row"><span class="lab favor"><span class="dot favor"></span>Toward</span><p><b>No more than needed.</b> Copying tailored to a legitimate transformative purpose supports fair use — even verbatim, whole-work copying can survive.</p></div>
+              <div class="weigh-row"><span class="lab against"><span class="dot against"></span>Against</span><p><b>Taking "the heart."</b> The most central, expressive core of a work — regardless of how small a fraction it is.</p></div>
+            </div>
+            <div class="callout"><strong>The real test:</strong> amount is always measured <em>relative to purpose</em>, never as a flat ratio.</div>
+          </div>
+          <div class="case-card" style="border-left-color:var(--f3)">
+            <div class="case-top">
+              <div><p class="case-name">Harper &amp; Row v. Nation</p><p class="case-cite">471 U.S. 539 (1985)</p></div>
+              <span class="vpill not">Not fair use</span>
+            </div>
+            <div class="case-sec"><p class="cl">The facts</p><p>The Nation scooped a memoir by quoting ~300 words from President Ford's unpublished account of the Nixon pardon — just before licensed excerpts ran.</p></div>
+            <div class="case-sec"><p class="cl">The holding</p><p class="quote">Those ~300 words were the qualitative "heart of the work" — fatal, despite being a tiny fraction of the book.</p></div>
+            <div class="case-sec"><p class="cl">Why it matters</p><p>Proof that <strong>quality beats quantity</strong> — a tiny excerpt can be fatal if it's the core. (The same scoop also destroyed the market — see Factor 4.)</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. FACTOR 4 + HARPER & ROW -->
+    <section class="slide tone-alt" data-title="Factor 4 · Market" aria-label="Factor four, market effect">
+      <div class="slide-inner">
+        <div class="factor-head">
+          <span class="factor-badge" style="background:var(--f4)">4</span>
+          <div><p class="fk">Factor four</p><h2>Effect on the market</h2></div>
+        </div>
+        <div class="factor-grid">
+          <div>
+            <p>The one that most often decides cases — and, after <em>Warhol</em>, tightly linked to Factor 1. The
+              question is <strong>market substitution</strong>: does the use stand in for the original, or for a
+              market the owner could reasonably license?</p>
+            <div class="weigh">
+              <div class="weigh-row"><span class="lab against"><span class="dot against"></span>Against</span><p><b>It substitutes.</b> If the use fills demand for the original — or a licensing market, including derivatives — Factor 4 cuts hard against.</p></div>
+              <div class="weigh-row"><span class="lab favor"><span class="dot favor"></span>Toward</span><p><b>Harm from criticism doesn't count.</b> A parody that kills demand by mocking the work isn't cognizable harm (<em>Campbell</em>) — only <em>substitution</em> is.</p></div>
+            </div>
+          </div>
+          <div class="case-card" style="border-left-color:var(--f4)">
+            <div class="case-top">
+              <div><p class="case-name">Harper &amp; Row v. Nation</p><p class="case-cite">471 U.S. 539 (1985)</p></div>
+              <span class="vpill not">Not fair use</span>
+            </div>
+            <div class="case-sec"><p class="cl">The facts</p><p>The Nation obtained a stolen manuscript and published ~300 words from President Ford's unpublished memoir about the Nixon pardon — scooping <em>Time</em>'s licensed serialization.</p></div>
+            <div class="case-sec"><p class="cl">The holding</p><p class="quote"><em>Time</em> backed out, refusing the remaining $12,500 of a $25,000 deal. The use usurped the market for first publication — market effect, the Court said, being "the single most important element." (<em>Campbell</em> later softened that into a holistic weighing of all four.)</p></div>
+            <div class="case-sec"><p class="cl">Why it matters</p><p>Real, provable <strong>market substitution</strong> — a lost licensing deal — is the core of Factor 4. This is the <em>same</em> case as Factor 3: the "heart" they took is what destroyed the market, which is why Factors 3 and 4 so often move together.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. HOW THEY INTERACT -->
+    <section class="slide tone-ink" data-title="How they interact" aria-label="How the factors interact">
+      <div class="slide-inner">
+        <p class="eyebrow">Weighed, not scored</p>
+        <h2>Two factors do most of the work.</h2>
+        <p class="lede" style="max-width:68ch">No factor is automatically decisive and none is ignored. But in practice the
+          analysis pivots on Factors 1 and 4 — and <em>Warhol</em> welded them together.</p>
+        <div class="weight-rows" id="weightRows"></div>
+        <div class="callout" style="background:rgba(28,78,107,.28);border-color:#3b6b88;color:#e8f0f6;max-width:780px">
+          <strong style="color:#bcdcef">The Warhol link:</strong> a use that shares the original's purpose <em>and</em> is commercial is, almost by definition, a market substitute. That single move ties Factor 1 to Factor 4 — and is why a "transformative-looking" work can still lose.
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. MISCONCEPTIONS -->
+    <section class="slide tone-paper" data-title="Misconceptions" aria-label="Common misconceptions">
+      <div class="slide-inner">
+        <p class="eyebrow">Clear these out</p>
+        <h2>Four things fair use is <em>not</em>.</h2>
+        <div class="myth-grid" id="myths"></div>
+      </div>
+    </section>
+
+    <!-- 11. WARHOL -->
+    <section class="slide tone-ink" data-title="Warhol (2023)" aria-label="Warhol versus Goldsmith, 2023">
+      <div class="slide-inner">
+        <p class="eyebrow">2023 · the modern shift</p>
+        <h2>Warhol narrowed "transformative."</h2>
+        <div class="cols" style="margin-top:var(--s6)">
+          <div class="measure">
+            <p>In <em>Andy Warhol Foundation v. Goldsmith</em> (7–2), the Court looked at Warhol's "Orange Prince" —
+              based on Lynn Goldsmith's photograph — as <strong>licensed to a magazine</strong>. The Foundation's use and
+              Goldsmith's original shared "substantially the same purpose": illustrating stories about Prince. And the
+              use was commercial.</p>
+            <p>So <strong>Factor 1 favored Goldsmith</strong>, even though Warhol added his own expression. New meaning,
+              by itself, does not make a use transformative.</p>
+            <p class="small">It is the cleanest illustration of the whole deck: Factors 1 and 4, pulling the same
+              direction, can override striking artistic transformation.</p>
+          </div>
+          <div class="case-card" style="border-left-color:#9cc3dd;background:var(--ink-card);border-color:var(--ink-card-line)">
+            <div class="case-top">
+              <div><p class="case-name">Warhol Foundation v. Goldsmith</p><p class="case-cite">598 U.S. 508 (2023)</p></div>
+              <span class="vpill not">Not fair use</span>
+            </div>
+            <div class="case-sec"><p class="cl">The holding to remember</p><p class="quote">"If an original work and a secondary use share the same or highly similar purposes, and the secondary use is of a commercial nature, the first factor is likely to weigh against fair use."</p></div>
+            <div class="case-sec"><p class="cl">The narrow point</p><p>The Court ruled only on the specific <strong>commercial licensing</strong> use — not on Warhol creating the art, or on museum display.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. SCENARIO TOOL (centerpiece) -->
+    <section class="slide tone-alt" data-title="Try it: scenarios" aria-label="Interactive scenario tool">
+      <div class="slide-inner">
+        <p class="eyebrow">Your turn · learn by doing</p>
+        <h2>Call it yourself.</h2>
+        <p class="measure" style="margin-top:var(--s4)">Rate the four factors as you read each use, then reveal how courts actually weigh it. The <b>Scenario</b> buttons move between cases — arrow keys still drive the deck.</p>
+        <div class="scn" id="scn"></div>
+        <p class="disclaim">Illustrative model only — these reflect the doctrine and leading cases, not legal advice. Real disputes turn on detail no widget can capture.</p>
+      </div>
+    </section>
+
+    <!-- 13. QUIZ -->
+    <section class="slide tone-paper" data-title="Knowledge check" aria-label="Knowledge check quiz">
+      <div class="slide-inner">
+        <p class="eyebrow" style="justify-content:center">Test yourself</p>
+        <h2 style="text-align:center">Knowledge check.</h2>
+        <div class="quiz" id="quiz"></div>
+      </div>
+    </section>
+
+    <!-- 14. SOURCES -->
+    <section class="slide tone-alt" data-title="Sources &amp; caveat" aria-label="Sources and disclaimer">
+      <div class="slide-inner">
+        <p class="eyebrow">Trust surface</p>
+        <h2>Sources &amp; a necessary caveat.</h2>
+        <p class="measure">Every load-bearing claim here traces to primary law or a Supreme Court opinion. This deck explains a
+          doctrine; it is <strong>not legal advice</strong>, and fair use is decided one case at a time. For a real question, consult counsel.</p>
+        <ul class="src-list">
+          <li><a href="https://www.law.cornell.edu/uscode/text/17/107" target="_blank" rel="noopener">17 U.S.C. § 107</a> — statutory text of the fair use limitation.<span class="sy">Cornell LII</span></li>
+          <li><a href="https://supreme.justia.com/cases/federal/us/510/569/" target="_blank" rel="noopener">Campbell v. Acuff-Rose Music</a> — transformative use; parody; market substitution.<span class="sy">510 U.S. 569 (1994)</span></li>
+          <li><a href="https://supreme.justia.com/cases/federal/us/471/539/" target="_blank" rel="noopener">Harper &amp; Row v. Nation Enterprises</a> — "the heart of the work"; market as central.<span class="sy">471 U.S. 539 (1985)</span></li>
+          <li><a href="https://supreme.justia.com/cases/federal/us/593/18-956/" target="_blank" rel="noopener">Google LLC v. Oracle America</a> — fair use of API declaring code.<span class="sy">593 U.S. 1 (2021)</span></li>
+          <li><a href="https://www.oyez.org/cases/2022/21-869" target="_blank" rel="noopener">Andy Warhol Foundation v. Goldsmith</a> — purpose-focused Factor 1.<span class="sy">598 U.S. 508 (2023)</span></li>
+          <li><a href="https://supreme.justia.com/cases/federal/us/464/417/" target="_blank" rel="noopener">Sony Corp. v. Universal City Studios</a> — time-shifting; the commercial-use presumption.<span class="sy">464 U.S. 417 (1984)</span></li>
+          <li><a href="https://supreme.justia.com/cases/federal/us/537/186/" target="_blank" rel="noopener">Eldred v. Ashcroft</a> — fair use as a "built-in First Amendment accommodation."<span class="sy">537 U.S. 186 (2003)</span></li>
+          <li><a href="https://www.copyright.gov/fair-use/" target="_blank" rel="noopener">U.S. Copyright Office — Fair Use Index</a> — official overview and case summaries.<span class="sy">copyright.gov</span></li>
+          <li><a href="https://www.eff.org/deeplinks/2023/05/what-supreme-courts-decision-warhol-means-fair-use" target="_blank" rel="noopener">EFF — what Warhol means for fair use</a> — practitioner commentary.<span class="sy">eff.org</span></li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="hint-key" id="hintKey">Use <span class="kbd">←</span> <span class="kbd">→</span> to navigate</div>
+
+<div class="deck-chrome">
+  <div class="navbtns">
+    <button class="navbtn" id="prevBtn" aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="navbtn" id="nextBtn" aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+  </div>
+  <div class="dots" id="dots" role="tablist" aria-label="Slides"></div>
+  <div class="counter" id="counter">1 / 14</div>
+</div>
+
+<script>
+/* ============================ ICONS ============================ */
+const ICON = {
+  film:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>',
+  music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8"/></svg>',
+  camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3l2-2h8l2 2h3v12H3z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+  cross:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  arrowR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  arrowL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  reset:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>'
+};
+
+/* ============================ DATA ============================ */
+const FACTORS = [
+  {n:1, name:"Purpose & character", sub:"transformative? commercial?", color:"var(--f1)"},
+  {n:2, name:"Nature of the work",  sub:"factual or creative?",        color:"var(--f2)"},
+  {n:3, name:"Amount used",         sub:"how much? the heart?",        color:"var(--f3)"},
+  {n:4, name:"Market effect",       sub:"does it substitute?",         color:"var(--f4)"}
+];
+const STATE_LABEL = {favor:"Favors", neutral:"Neutral", oppose:"Opposes"};
+
+const WEIGHTS = [
+  {n:1, name:"Purpose & character", w:96, color:"var(--f1)", note:"The fulcrum — transformativeness drives everything."},
+  {n:4, name:"Market effect",       w:92, color:"var(--f4)", note:"Most often outcome-determinative in practice."},
+  {n:3, name:"Amount used",         w:56, color:"var(--f3)", note:"Quality of the taking matters more than quantity."},
+  {n:2, name:"Nature of the work",  w:34, color:"var(--f2)", note:"Real, but rarely decides a case on its own."}
+];
+
+const MYTHS = [
+  {claim:"“It's under 30 seconds (or 10%), so it's automatically fine.”",
+   real:"<b>No magic number exists.</b> Factor 3 is qualitative — taking the “heart” can lose at a tiny fraction (Harper & Row), and length thresholds appear nowhere in § 107."},
+  {claim:"“I credited the creator, so it's fair use.”",
+   real:"<b>Attribution is irrelevant to the test.</b> Crediting may answer a plagiarism charge, but it doesn't touch any of the four factors."},
+  {claim:"“It's non-profit, so it's fair use.”",
+   real:"<b>Non-commercial helps but doesn't decide.</b> It's one input to Factor 1; a non-profit use that substitutes for the original can still infringe."},
+  {claim:"“It's a parody, so it's always protected.”",
+   real:"<b>Parody is favored, not bulletproof.</b> It must target the original (not just borrow it), and the other three factors still get weighed."}
+];
+
+const SCENARIOS = [
+  {tag:"Classroom", icon:"film", color:"var(--f1)",
+   title:"A teacher shows a 4-minute film clip in class",
+   blurb:"A high-school teacher streams a short clip from a feature film to a face-to-face class to spark discussion of a historical event. No copies are made or handed out.",
+   court:{f1:"favor", f2:"oppose", f3:"favor", f4:"favor"},
+   verdict:"fair", ruling:"Leans fair use",
+   why:"The use is nonprofit, educational, and arguably transformative — a clip used to teach, not to entertain. Only a small portion is shown, and a clip in class doesn't substitute for buying or licensing the film.",
+   caveat:"Face-to-face classroom display is also separately sheltered by § 110(1) — a different exemption from fair use. Streaming the whole film, or posting it online, changes the analysis fast."},
+  {tag:"Soundtrack", icon:"music", color:"var(--f4)",
+   title:"A YouTuber drops a hit song under their vlog",
+   blurb:"A monetized creator lays 90 seconds of a chart single — chorus included — under footage of their trip, purely as background music.",
+   court:{f1:"oppose", f2:"oppose", f3:"oppose", f4:"oppose"},
+   verdict:"not", ruling:"Not fair use",
+   why:"The use is commercial and serves the song's original purpose — entertainment — with no new meaning. It takes the recognizable heart, and it steps directly on the sync-licensing market the rights-holder sells into.",
+   caveat:"“I'll take it down if asked” and crediting the artist change nothing. This is the textbook case for clearing a license first."},
+  {tag:"Parody", icon:"mic", color:"var(--f1)",
+   title:"A comedian rewrites a song to mock the original",
+   blurb:"A comedian records new lyrics that ridicule a famous song, borrowing its melody and signature line so the target is unmistakable — and sells the result.",
+   court:{f1:"favor", f2:"oppose", f3:"neutral", f4:"favor"},
+   verdict:"fair", ruling:"Leans fair use",
+   why:"Parody is the paradigm transformative use (Campbell): it comments on the original. It may take enough to “conjure up” that original, and sales lost to ridicule aren't the harm the law counts — only substitution is.",
+   caveat:"It must target the original, not just borrow it to mock something else (that's satire, which gets less room). Selling it is fine — commerciality isn't fatal."},
+  {tag:"News", icon:"camera", color:"var(--f4)",
+   title:"A news site reprints a photographer's image",
+   blurb:"A commercial news site copies a freelancer's photograph in full to illustrate an article about the event it depicts — without a license.",
+   court:{f1:"oppose", f2:"oppose", f3:"oppose", f4:"oppose"},
+   verdict:"not", ruling:"Leans against fair use",
+   why:"Reproducing the photo to show its own subject shares the photographer's purpose and is commercial (cf. Warhol). The whole creative image is taken, and it usurps the licensing market — outlets routinely pay for photos.",
+   caveat:"“News reporting” in the preamble is not a safe harbor. It can flip when the photo itself is the story — e.g., reporting on a controversy about the image."}
+];
+
+const QUIZ = [
+  {q:"After Warhol v. Goldsmith, what makes a use “transformative” under Factor 1?",
+   options:["It looks visually different from the original","It serves a genuinely different purpose — not just a new meaning or message","The creator added significant artistic effort","It's shown in a gallery rather than sold"],
+   answer:1,
+   why:"Warhol held new meaning alone isn't enough — a genuinely different purpose is what counts, and it matters most when the use is commercial."},
+  {q:"Why did roughly 300 words defeat fair use in Harper & Row?",
+   options:["It crossed a 10% line","The magazine gave no attribution","It was the qualitative “heart” of an unpublished work and usurped the first-publication market","Memoirs receive absolute protection"],
+   answer:2,
+   why:"Factor 3 is qualitative: taking the most newsworthy passage from an unpublished work — scooping the licensed excerpt — was fatal despite the tiny quantity."},
+  {q:"What counts as cognizable harm under Factor 4, the market effect?",
+   options:["Any dip in the original's sales after the use","Market substitution — the use replaces demand for the original or a market it would license","Lost sales caused by harsh criticism in the new work","The defendant earning any revenue at all"],
+   answer:1,
+   why:"Campbell distinguishes substitution (counts) from sales lost to criticism (doesn't). Factor 4 asks whether the use serves as a market replacement."}
+];
+
+/* ============================ RENDER: static lists ============================ */
+document.getElementById('myths').innerHTML = MYTHS.map(m=>`
+  <div class="myth">
+    <p class="m-claim"><span class="m-x">${ICON.cross}</span><span>${m.claim}</span></p>
+    <p class="m-real">${m.real}</p>
+  </div>`).join('');
+
+document.getElementById('weightRows').innerHTML = WEIGHTS.map(w=>`
+  <div class="wt-row">
+    <span class="wtl"><span class="wb" style="background:${w.color}">${w.n}</span>${w.name}</span>
+    <div>
+      <div class="wt-track"><div class="wt-fill" style="width:${w.w}%;background:${w.color}"></div></div>
+      <div class="wt-note">${w.note}</div>
+    </div>
+  </div>`).join('');
+
+/* ============================ DEMO: balance scale ============================ */
+const SCALE = ['favor','oppose','neutral','favor']; // f1..f4 starting read
+const scaleW = [1.5, 0.7, 1.0, 1.5];
+const cycle = {favor:'neutral', neutral:'oppose', oppose:'favor'};
+const valOf = v => v==='favor'?1 : v==='oppose'?-1 : 0;
+const scaleControls = document.getElementById('scaleControls');
+
+FACTORS.forEach((f,i)=>{
+  const b=document.createElement('button');
+  b.className='wchip'; b.type='button';
+  b.setAttribute('aria-label', f.name+' factor weight');
+  b.innerHTML=`<span class="wc-b" style="background:${f.color}">${f.n}</span>
+    <span><span class="wc-name">${f.name}</span><br><span class="wc-sub">${f.sub}</span></span>
+    <span class="wc-state ${SCALE[i]}">${STATE_LABEL[SCALE[i]]}</span>`;
+  b.addEventListener('click',()=>{ SCALE[i]=cycle[SCALE[i]]; renderScale(); });
+  scaleControls.appendChild(b);
+});
+function renderScale(){
+  scaleControls.querySelectorAll('.wchip').forEach((b,i)=>{
+    const s=b.querySelector('.wc-state');
+    s.className='wc-state '+SCALE[i];
+    s.textContent=STATE_LABEL[SCALE[i]];
+  });
+  let weighted=0; SCALE.forEach((v,i)=> weighted += valOf(v)*scaleW[i]);
+  const angle = Math.max(-13, Math.min(13, -weighted*2.77));
+  document.getElementById('scaleBeam').style.transform = `rotate(${angle}deg)`;
+  const lean=document.getElementById('svLean'), why=document.getElementById('svWhy');
+  if(weighted >= 1.5){ lean.textContent="Leans fair use"; lean.style.color="var(--favor)";
+    why.textContent="A different purpose and no market substitution carry the balance — though no outcome is guaranteed."; }
+  else if(weighted <= -1.5){ lean.textContent="Leans against fair use"; lean.style.color="var(--against)";
+    why.textContent="Shared purpose, commerciality, or market substitution dominate the weighing here."; }
+  else { lean.textContent="Genuinely close"; lean.style.color="var(--f2)";
+    why.textContent="The factors point in different directions — exactly the kind of case that goes to litigation."; }
+}
+renderScale();
+
+/* ============================ CENTERPIECE: scenario tool ============================ */
+let scnIdx = 0;
+const scnPicks = SCENARIOS.map(()=>({f1:null,f2:null,f3:null,f4:null}));
+const scnDone  = SCENARIOS.map(()=>false);
+const scnEl = document.getElementById('scn');
+const FK = ['f1','f2','f3','f4'];
+
+function renderScn(){
+  const s = SCENARIOS[scnIdx];
+  const picks = scnPicks[scnIdx];
+  const revealed = scnDone[scnIdx];
+  scnEl.innerHTML = `
+    <div class="scn-card">
+      <div class="scn-head">
+        <span class="scn-icon" style="background:${s.color}">${ICON[s.icon]}</span>
+        <div><p class="sh-tag">${s.tag} · scenario ${scnIdx+1} of ${SCENARIOS.length}</p>
+          <h3>${s.title}</h3><p class="sh-blurb">${s.blurb}</p></div>
+      </div>
+      <div class="scn-body">
+        <p class="scn-instruct">${ICON.eye} How does each factor cut? Set all four, then reveal the ruling.</p>
+        <div class="scn-factors">
+          ${FACTORS.map((f,i)=>{
+            const key=FK[i], chosen=picks[key], court=s.court[key];
+            const match = chosen===court;
+            return `<div class="scn-f ${revealed?'revealed':''}">
+              <div class="sf-name"><span class="sf-b" style="background:${f.color}">${f.n}</span>
+                <span class="sf-t">${f.name}<small>${f.sub}</small></span></div>
+              <div class="seg3" role="group" data-key="${key}">
+                ${['favor','neutral','oppose'].map(v=>`<button type="button" data-v="${v}" aria-pressed="${chosen===v?'true':'false'}" ${revealed?'disabled':''}>${STATE_LABEL[v]}</button>`).join('')}
+              </div>
+              <div class="sf-court">
+                <span class="cc-lab">Courts:</span>
+                <span class="cc-val ${court}">${STATE_LABEL[court]}</span>
+                ${chosen?`<span class="cc-match ${match?'yes':'no'}">${match?ICON.check+' you matched':'your read differed'}</span>`:''}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="scn-tally">
+          <div class="tally-bar" id="scnTally"><span class="tf"></span><span class="tn"></span><span class="to"></span></div>
+          <span class="tally-txt" id="scnTallyTxt"></span>
+        </div>
+        <div class="scn-reveal ${revealed?'show':''}">
+          <div class="rv-top"><span class="vpill ${s.verdict}">${s.ruling}</span></div>
+          <p class="rv-why">${s.why}</p>
+          <p class="rv-caveat"><b>The nuance:</b> ${s.caveat}</p>
+        </div>
+        <div class="scn-foot">
+          <div class="sf-left">
+            <button class="btn-link" id="scnPrev" ${scnIdx===0?'disabled':''}>${ICON.arrowL} Scenario</button>
+            <div class="scn-dots" id="scnDots" role="tablist" aria-label="Scenarios"></div>
+            <button class="btn-link" id="scnNext" ${scnIdx===SCENARIOS.length-1?'disabled':''}>Scenario ${ICON.arrowR}</button>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-ghost" id="scnReset">${ICON.reset} Reset</button>
+            <button class="btn btn-primary" id="scnRevealBtn">${ICON.eye} Reveal the ruling</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  scnEl.querySelectorAll('.seg3').forEach(seg=>{
+    const key=seg.dataset.key;
+    seg.addEventListener('click',e=>{
+      const b=e.target.closest('button'); if(!b||scnDone[scnIdx]) return;
+      seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      scnPicks[scnIdx][key]=b.dataset.v;
+      updateTally(); updateRevealBtn();
+    });
+  });
+  const dotsWrap=scnEl.querySelector('#scnDots');
+  SCENARIOS.forEach((_,i)=>{
+    const d=document.createElement('button'); d.type='button'; d.className='scn-dot';
+    d.setAttribute('role','tab'); d.setAttribute('aria-label','Scenario '+(i+1));
+    d.setAttribute('aria-current', i===scnIdx?'true':'false');
+    d.addEventListener('click',()=>{ scnIdx=i; renderScn(); });
+    dotsWrap.appendChild(d);
+  });
+  scnEl.querySelector('#scnPrev').addEventListener('click',()=>{ if(scnIdx>0){scnIdx--;renderScn();} });
+  scnEl.querySelector('#scnNext').addEventListener('click',()=>{ if(scnIdx<SCENARIOS.length-1){scnIdx++;renderScn();} });
+  scnEl.querySelector('#scnReset').addEventListener('click',()=>{
+    scnPicks[scnIdx]={f1:null,f2:null,f3:null,f4:null}; scnDone[scnIdx]=false; renderScn();
+  });
+  scnEl.querySelector('#scnRevealBtn').addEventListener('click',()=>{ scnDone[scnIdx]=true; renderScn(); });
+  updateTally(); updateRevealBtn();
+}
+function updateTally(){
+  const picks=scnPicks[scnIdx];
+  let f=0,n=0,o=0;
+  FK.forEach(k=>{ const v=picks[k]; if(v==='favor')f++; else if(v==='neutral')n++; else if(v==='oppose')o++; });
+  const set=picks.f1!==null||picks.f2!==null||picks.f3!==null||picks.f4!==null;
+  const bar=scnEl.querySelector('#scnTally'), txt=scnEl.querySelector('#scnTallyTxt');
+  if(!bar) return;
+  bar.querySelector('.tf').style.width=(f/4*100)+'%';
+  bar.querySelector('.tn').style.width=(n/4*100)+'%';
+  bar.querySelector('.to').style.width=(o/4*100)+'%';
+  txt.innerHTML = set
+    ? `Your read: <b style="color:var(--favor)">${f}</b> favor · <b style="color:#5f5a48">${n}</b> neutral · <b style="color:var(--against)">${o}</b> oppose`
+    : `Rate all four factors to reveal the ruling`;
+}
+function updateRevealBtn(){
+  const btn=scnEl.querySelector('#scnRevealBtn'); if(!btn) return;
+  const p=scnPicks[scnIdx];
+  btn.disabled = !(p.f1&&p.f2&&p.f3&&p.f4) || scnDone[scnIdx];
+}
+renderScn();
+
+/* ============================ QUIZ ============================ */
+let qIdx=0, qScore=0;
+const quiz=document.getElementById('quiz');
+const KEYS=['A','B','C','D'];
+function renderQuiz(){
+  const item=QUIZ[qIdx];
+  quiz.innerHTML = `
+    <div class="qcard">
+      <div class="qmeta">
+        <span class="qn">Question ${qIdx+1} of ${QUIZ.length}</span>
+        <span class="qprog">${QUIZ.map((_,i)=>`<i class="${i<=qIdx?'done':''}"></i>`).join('')}</span>
+      </div>
+      <p class="qq">${item.q}</p>
+      <div class="qopts">
+        ${item.options.map((o,oi)=>`<button class="qopt" data-oi="${oi}"><span class="qk">${KEYS[oi]}</span><span>${o}</span></button>`).join('')}
+      </div>
+      <div class="qwhy" id="qwhy"></div>
+      <div class="qfoot">
+        <span class="qscore">Score: <b>${qScore}</b> / ${QUIZ.length}</span>
+        <button class="btn btn-primary" id="qnext" style="display:none">${qIdx===QUIZ.length-1?'See result':'Next question'} ${ICON.arrowR}</button>
+      </div>
+    </div>`;
+  let answered=false;
+  quiz.querySelectorAll('.qopt').forEach(opt=>{
+    opt.addEventListener('click',()=>{
+      if(answered) return; answered=true;
+      const oi=+opt.dataset.oi, correct = oi===item.answer;
+      if(correct){ opt.classList.add('correct'); qScore++; }
+      else{ opt.classList.add('wrong'); quiz.querySelectorAll('.qopt')[item.answer].classList.add('correct'); }
+      quiz.querySelectorAll('.qopt').forEach(x=>x.disabled=true);
+      const why=document.getElementById('qwhy'); why.classList.add('show');
+      why.innerHTML = `<b style="color:${correct?'var(--favor)':'var(--against)'}">${correct?'Correct. ':'Not quite. '}</b>${item.why}`;
+      quiz.querySelector('.qscore').innerHTML = `Score: <b>${qScore}</b> / ${QUIZ.length}`;
+      quiz.querySelector('#qnext').style.display='inline-flex';
+    });
+  });
+  quiz.querySelector('#qnext').addEventListener('click',()=>{
+    if(qIdx<QUIZ.length-1){ qIdx++; renderQuiz(); }
+    else renderResult();
+  });
+}
+function renderResult(){
+  const msg = qScore===QUIZ.length ? "A clean sweep — you've got the doctrine cold."
+            : qScore===2 ? "Strong grasp of the four-factor balance."
+            : "Worth another pass through the factor slides.";
+  quiz.innerHTML = `
+    <div class="qcard">
+      <div class="qresult">
+        <div class="qr-big">${qScore} / ${QUIZ.length}</div>
+        <p>${msg}</p>
+        <div style="margin-top:var(--s5)"><button class="btn btn-ghost" id="qretry">${ICON.reset} Take it again</button></div>
+      </div>
+    </div>`;
+  quiz.querySelector('#qretry').addEventListener('click',()=>{ qIdx=0; qScore=0; renderQuiz(); });
+}
+renderQuiz();
+
+/* ============================ DECK ENGINE ============================ */
+const track=document.getElementById('track');
+const slides=Array.from(track.children);
+const N=slides.length;
+const prevBtn=document.getElementById('prevBtn'), nextBtn=document.getElementById('nextBtn');
+const counter=document.getElementById('counter'), dotsEl=document.getElementById('dots');
+const progress=document.getElementById('progress');
+let cur=0;
+
+const jumpMenu=document.getElementById('jumpMenu');
+slides.forEach((s,i)=>{
+  const d=document.createElement('button');
+  d.className='dot-btn'; d.setAttribute('role','tab');
+  d.setAttribute('aria-label',`Slide ${i+1}: ${s.dataset.title||''}`);
+  d.addEventListener('click',()=>go(i));
+  dotsEl.appendChild(d);
+  const j=document.createElement('button');
+  j.setAttribute('role','menuitem');
+  j.innerHTML=`<span class="jm-num">${i+1}</span>${s.dataset.title||'Slide '+(i+1)}`;
+  j.addEventListener('click',()=>{go(i);closeJump();});
+  jumpMenu.appendChild(j);
+});
+const dotBtns=Array.from(dotsEl.children);
+const jumpItems=Array.from(jumpMenu.children);
+
+function go(i,fromHash){
+  cur=Math.max(0,Math.min(N-1,i));
+  track.style.transform=`translateX(-${cur*100}vw)`;
+  counter.textContent=`${cur+1} / ${N}`;
+  progress.style.width=`${((cur+1)/N)*100}%`;
+  prevBtn.disabled=cur===0; nextBtn.disabled=cur===N-1;
+  dotBtns.forEach((d,j)=>d.setAttribute('aria-current',j===cur?'true':'false'));
+  jumpItems.forEach((b,j)=>b.setAttribute('aria-current',j===cur?'true':'false'));
+  if(!fromHash && location.hash!=='#'+(cur+1)) history.replaceState(null,'','#'+(cur+1));
+  if(fromHash!=='init'){
+    const h=slides[cur].querySelector('h1,h2');
+    if(h){h.setAttribute('tabindex','-1');h.focus({preventScroll:true});}
+  }
+  slides[cur].scrollTop=0;
+}
+const next=()=>go(cur+1), prev=()=>go(cur-1);
+prevBtn.addEventListener('click',prev);
+nextBtn.addEventListener('click',next);
+
+document.addEventListener('keydown',e=>{
+  const t=e.target;
+  const typing = t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable);
+  if(typing && (e.key==='ArrowLeft'||e.key==='ArrowRight')) return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+  else if(e.key===' '&&!typing){e.preventDefault();next();}
+  else if(e.key==='Home'){e.preventDefault();go(0);}
+  else if(e.key==='End'){e.preventDefault();go(N-1);}
+  else if(e.key==='Escape'){closeJump();}
+});
+
+let tsx=0,tsy=0;
+const vp=document.getElementById('viewport');
+vp.addEventListener('touchstart',e=>{tsx=e.touches[0].clientX;tsy=e.touches[0].clientY;},{passive:true});
+vp.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy;
+  if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5){ dx<0?next():prev(); }
+},{passive:true});
+
+const jumpBtn=document.getElementById('jumpBtn');
+function openJump(){jumpMenu.classList.add('open');jumpBtn.setAttribute('aria-expanded','true');}
+function closeJump(){jumpMenu.classList.remove('open');jumpBtn.setAttribute('aria-expanded','false');}
+jumpBtn.addEventListener('click',e=>{e.stopPropagation();jumpMenu.classList.contains('open')?closeJump():openJump();});
+document.addEventListener('click',e=>{if(!jumpMenu.contains(e.target)&&e.target!==jumpBtn)closeJump();});
+
+function fromHash(initial){
+  const n=parseInt(location.hash.replace('#',''),10);
+  if(!isNaN(n)&&n>=1&&n<=N) go(n-1, initial?'init':true);
+  else if(initial) go(0,'init');
+}
+window.addEventListener('hashchange',()=>fromHash(false));
+fromHash(true);
+
+window.reviewGoto = function(note){ if(note && typeof note.slideIdx==='number') go(note.slideIdx); };
+
+let moved=false;
+['click','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{
+  if(!moved){moved=true;const h=document.getElementById('hintKey');if(h){h.style.opacity='0';setTimeout(()=>h.remove(),600);}}
+},{once:true}));
+</script>
+
+<!-- Review & edit overlay — injected by assemble.mjs (invariant; do not hand-edit) -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:8px;right:14px;z-index:9002;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:9010;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:9010;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:9020;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+    // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
+    // Scrolling pages: position just below any fixed/sticky top nav instead.
+    requestAnimationFrame(function () {
+      var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
+      if (isDeck) {
+        launch.style.top = "auto";
+        launch.style.right = "auto";
+        launch.style.bottom = "16px";
+        launch.style.left = "14px";
+      } else {
+        var navBottom = 0;
+        document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+          var s = getComputedStyle(el);
+          if (s.position === "fixed" || s.position === "sticky") {
+            navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+          }
+        });
+        if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      }
+    });
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>
