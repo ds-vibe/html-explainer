@@ -216,6 +216,9 @@ not deliver until all pass:
       bento grid of identical soft-shadow cards, no drop-shadow-on-everything.
 - [ ] **The JS actually runs** — no syntax errors (watch unescaped quotes/apostrophes in JS
       strings), no undefined refs; every interactive widget works, not just renders.
+- [ ] **Button hierarchy in interactive widgets** — primary actions (Next, Submit, Check, Next step)
+      are solid filled buttons with clear visual weight; secondary actions (Back, Reset, Skip) are
+      ghost/outline. Never give all buttons equal treatment — the primary must be unmissable.
 - [ ] **Canvas/WebGL demos auto-initialize on load.** Any `<canvas>` must render its first frame on
       `DOMContentLoaded` or `window.onload` — never require a click/hover to show the first frame.
       Check: does `getContext()` and the first draw call happen inside a load-time listener?
@@ -386,6 +389,9 @@ file (the bundled copies already do). **These are the single source of truth for
 - **Quiz / knowledge check:** short test-yourself (MC or fill-in) with **instant** right/wrong
   feedback + a one-line *why* (the explanation is the point). Place it *after* the teaching it checks.
   Keep questions in **structured data** (`{q, options, answer, why}`); friendly tally; allow retry.
+  **Button hierarchy is mandatory:** the primary action (Next, Submit, Check) must be a solid filled
+  button with clear visual weight — not a tiny outline pill. Secondary actions (Back, Reset, Skip)
+  get ghost/outline treatment. A "Next →" that blends into the background is the #1 quiz UX failure.
 - **Chat / "ask the page":** use `chat-dock.js` (single-file BYOK) or a server route (managed key) —
   see *Drop-in widgets*.
 
