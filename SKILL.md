@@ -68,10 +68,26 @@ blanks. What matters most:
     colors/font/URL). All style in centralized tokens. **Must be its own question — never combine
     with format.** Each axis has 4 options; collapsing them into format+style combos cuts half the
     choices and removes the user's ability to mix (e.g. slide deck + technical-dark).
-    **Also read the topic:** if a strong visual register suggests itself naturally — letterpress for
-    Gutenberg, blueprint for aerospace, clinical-illustration for anatomy, hand-drawn for food —
-    surface it as a **fifth bespoke option** alongside the presets. Offer only when the match is
-    genuinely obvious; don't force it.
+    **Also read the topic:** if a bespoke visual register would genuinely illuminate the subject,
+    surface it as a **fifth option** alongside the presets. The gold standard is **relevant +
+    tasteful** — both are required:
+    - *Relevant*: the visual language expresses what the topic IS, not just when or where it came
+      from. Letterpress for Gutenberg works because typography IS the subject. Parchment for the
+      Black Death is just era-matching — it explains nothing. Blueprint for aerospace works because
+      schematics are how engineers think about it.
+    - *Tasteful*: applied as accent, not full reskin. One or two thematic tokens (a display font,
+      a signature color) used selectively in the hero and centerpiece. Body text, UI controls, and
+      data visualizations stay clean and readable. If every surface — headings, labels, sliders,
+      quiz buttons — has been reskinned, the theme has tipped from editorial choice to costume.
+    When in doubt, the quality-bar presets beat a forced theme every time.
+    **Themed interactivity takes this further — and is the highest-order version.** When the
+    topic has a teachable mechanism (a historical craft, a physical process, a step-by-step
+    technique), ask: can the demo *be* that mechanism instead of just looking like it? In the
+    Gutenberg compositor's-stick demo (see `reference/gutenberg-theme.png`), letters appear
+    backwards and mirrored because that's how metal type actually works; "Pull the press" reveals
+    the printed result. The demo teaches letterpress printing because the mechanic IS the process,
+    not because it's dressed in parchment. This is a different category from themed skin — and it
+    only works when the topic genuinely has a mechanism worth simulating.
   - **Quiz / knowledge check?** — don't assume no. A short test-yourself (MC or fill-in, instant
     right/wrong + a one-line *why*) makes it stickier and works in a pure file. Default **yes, small
     end-of-section or end-of-page** unless declined or it's reference-style.
@@ -139,7 +155,7 @@ blanks. What matters most:
 ## Phase 2 — Visual design system (the 10x bar) — *the source of truth for "what good looks like"*
 
 - **The quality bar: professionally edited, purposeful, restrained, polished** — the opposite of auto-generated SaaS texture. All four style presets (and any bespoke topic-matched theme) must clear this bar. Target: confident editorial typography (a real display + text pairing), a restrained palette where color is mostly *semantic* (carries meaning, not decoration), generous whitespace, no emoji. Aim for the polish of Vox / FT / Stripe-docs / The Pudding. Three **reference screenshots** ship in `reference/` — study each for the dimension noted:
-  - `gutenberg-theme.png` — topic-matched visual identity: parchment palette, blackletter display, and letterpress motifs all express the subject matter. The quality bar for a themed build.
+  - `gutenberg-theme.png` — topic-matched done right, and themed interactivity at its best: letterpress motifs work because typography IS the subject, not because it's old. The compositor's-stick demo (slide 5) doesn't just look like letterpress — it *is* the letterpress process: letters render backwards and mirrored, then "Pull the press" reveals the printed result. The mechanic teaches the concept. Note also the restraint — theme tokens in hero and display font; body text and UI stay clean. This is relevant + tasteful; era-matching alone (parchment for any medieval topic) is not.
   - `microwave-demo.png` — dark/technical style + "show don't tell": the standing-waves heat-map demo is the model for what a playable micro-demo should look and feel like.
   - `aiact-coverage.png` — light editorial style + functional interactivity: multi-slider → live verdict; restrained palette where every color is semantic.
 - **Actively avoid the "AI slop" look** — the tells to design *out*:
@@ -214,6 +230,10 @@ not deliver until all pass:
       bands); prose ~60–70ch but the *page* is not a ~720–800px column in empty margins.
 - [ ] **No other slop tells** — no decorative/iridescent gradients, no rainbow text/rows, no 2×2
       bento grid of identical soft-shadow cards, no drop-shadow-on-everything.
+- [ ] **Bespoke theme not a costume** — if a topic-matched theme was used, verify it's an accent
+      not a full reskin: body text and UI controls are clean and readable, the theme tokens appear
+      in the hero/display elements only. If every surface (labels, sliders, buttons, quiz) has been
+      reskinned, pull back to one or two thematic tokens.
 - [ ] **The JS actually runs** — no syntax errors (watch unescaped quotes/apostrophes in JS
       strings), no undefined refs; every interactive widget works, not just renders.
 - [ ] **Button hierarchy in interactive widgets** — primary actions (Next, Submit, Check, Next step)
