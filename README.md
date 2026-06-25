@@ -35,15 +35,14 @@ Built with this skill, hosted on GitHub Pages — each is a self-contained `.htm
 
 | Explainer | Format | Live |
 |---|---|---|
+| The machine that multiplied ideas (Gutenberg's press) | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/gutenberg.html) |
 | How a microwave heats food | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/microwave.html) |
 | How transistors work | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/transistors.html) |
-| How GPS finds you | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/gps.html) |
-| How blockchain works | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/blockchain.html) |
-| How RAG works | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/rag.html) |
-| How encryption works | scrolling page + BYOK chatbot | [open](https://ds-vibe.github.io/html-explainer/examples/encryption.html) |
+| How vaccines work | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/vaccines.html) |
+| Two ways to make a color | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/color-mixing.html) |
 | The EU AI Act | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ai-act.html) |
-| The CCPA | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ccpa.html) |
-| The machine that multiplied ideas (Gutenberg's press) | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/gutenberg.html) |
+| What "fair use" actually means | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/fair-use.html) |
+| How fractional reserve banking works | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/fractional-reserve.html) |
 
 Source lives in [`examples/`](./examples).
 
