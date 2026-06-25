@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
-const SCRIPTS = resolve(__dir, "scripts"); // scripts/ lives next to assemble.mjs in the skill repo
+const SCRIPTS = __dir; // review-mode.js and chat-dock.js live alongside assemble.mjs in scripts/
 
 const args = process.argv.slice(2);
 const input = args.find((a) => !a.startsWith("-"));

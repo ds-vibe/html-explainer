@@ -174,7 +174,7 @@ blanks. What matters most:
   content, CSS, and bespoke JS only. Do **not** inline `review-mode.js` or `chat-dock.js`. Then run
   the assembler to inject them:
   ```
-  node ~/.claude/skills/html-explainer/assemble.mjs <raw-file.html> [--chat] -o <output.html>
+  node scripts/assemble.mjs <raw-file.html> [--chat] -o <output.html>
   ```
   Pass `--chat` when the user requested an AI chat dock. The assembler adds `data-review-toggle`,
   injects the overlay and (optionally) chat-dock, validates unique IDs, and flags escaping issues.
