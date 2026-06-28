@@ -52,6 +52,7 @@ blanks. What matters most:
   - **Possibly dynamic** — the topic involves anything that changes: current legislation or amendments, a specific company/product, market data, recent events, regulatory status, anything post-cutoff, or a niche area where your training may be incomplete. Research before building.
   - This fork applies to **any domain** — a science topic can be dynamic (a new treatment, a recent discovery), and a legal topic can be settled (the US Constitution's original text). Judge the topic, not the category.
   - **Cap research at 2–3 fetches.** One authoritative primary source + at most 1–2 cross-checks. Stop there — more searches rarely change the content and burn minutes.
+  - **Gather synthesis while you research, not after.** As you read, note the parallels, tensions, ironies, and second-order effects (what does this rhyme with? what's the contradiction? who's affected?). These become connective sections later instead of being bolted on; label inference as inference and don't force a trend from one data point.
 - **The six must-ask axes (from the gate above), in detail.** Present each as a **clickable option
   menu** where the environment offers one (cowork, the app); otherwise list them in one message.
   Recommend a default for each (one click); cover all six, never collapse to one or two:
@@ -139,6 +140,15 @@ blanks. What matters most:
   centerpiece. What you drop is the *language*: don't repeat the metaphor framing after the intro;
   don't dress the whole page in its costume (themed "RECIPE:" cards, metaphor badges, cutesy step
   labels). After the intro, use normal, professional section treatments.
+- **No stacked headers; open on substance.** AI nests three layers of framing before any text:
+  eyebrow → heading → restating sub-head/lede → finally the point. Allow **one** heading layer
+  before body: the eyebrow (`§N · LABEL`) + the section heading is the only stack. Never add an
+  `<h3>` that restates the heading, and in short sections drop the sub-head — the opening sentence
+  carries it. And cut the **lede that says nothing**: a standfirst that only paraphrases the heading
+  or re-gestures at the topic ("…landed in a market where denial is hard to enforce"). This is the
+  "so what" test (see Phase 2 dataviz) applied to prose: an opening sentence must state a concrete
+  claim the reader couldn't guess from the heading, or be cut so the section opens on the claim
+  itself. Keep a lede only when it's a real hook or a usage instruction for an interactive.
 - **Progressive complexity:** map the **concept dependencies** first (what must the reader grasp
   before X?) and order sections so each assumes only what earlier ones taught. Signpost the path
   ("Start here · 1 of 3") when it helps. Dependencies guide section *order* only — **never print
@@ -167,13 +177,16 @@ blanks. What matters most:
     section. Cards are *one* device; vary the treatment.
   - **Generic SaaS texture** — drop shadow on every box, faux-3D, "✨ AI-powered" flourishes,
     Inter-on-pure-white blandness. Restraint reads expensive; decoration reads auto-generated.
+  - **The default editorial palette** — cream + a lone rust-orange accent + dark band + green/red
+    chips: the AI house style, reads templated. Derive ≥1 accent from the subject; color semantic, not decorative.
 - **A consistent visual language should teach.** Small *semantic* system used everywhere: color =
   category/meaning (e.g. risk tier); a recurring motif = state (before→after highlight; a status
   badge). Paper + ink + **one or two** accents that *mean* something.
 - **Variety with rhythm:** each section gets a distinct treatment (cards, pyramid, flow, timeline,
   matrix) but shares spacing, type scale, and the color system. Alternate backgrounds to separate.
 - **Typography & space:** strong hierarchy, ~60–70ch measure for prose, generous whitespace, a real
-  type pairing (serif display + clean sans) over system-Inter-everywhere.
+  type pairing (serif display + clean sans) over system-Inter-everywhere. Section eyebrows/kickers
+  must read as signposts — weight 600–700, ~13–14px, not faint 11px labels.
 - **Spacing on a scale, not by feel.** Spacing tokens (4/8px scale) used everywhere → consistent
   rhythm: even section padding, hero elements separated, equal gaps in repeated groups.
 - **Contrast is per-surface.** A color legible on the page background won't be on a dark band,
@@ -184,6 +197,17 @@ blanks. What matters most:
   **full-bleed section bands**, reach for **two-column/asymmetric** layouts where they help. Cap the
   outer container ~1100–1280px with balanced gutters — never a ~720px column stranded in margins.
 - **Motion with purpose:** scroll-reveal/transitions add life; never gratuitous. **Never hide content at `opacity:0` depending on `IntersectionObserver` firing** — it doesn't fire reliably in Playwright full-page screenshots or on some mobile browsers, leaving pages blank. The safe pattern: make `.reveal` a no-op CSS marker only (content always visible by default); use CSS `@keyframes` entrance animations if you want motion on load. Failsafe timers are not reliable enough to fix this — don't rely on them.
+- **Meaningful graphics — the "so what" test, then form follows data.** Every graphic must encode a
+  *relationship*, not just store facts. If you can't name its one takeaway in a sentence, it's
+  decoration — a 2×2 of disconnected stats is a list in costume; use prose. Match the form to the
+  shape of the data (**non-exhaustive lexicon — extend it**): comparison / trade-off → two-up panels
+  or before/after; **position on a spectrum → dot / strip plot on a shared axis** (each item a
+  colored dot along one meaningful axis, e.g. settled→contested, so the *distribution* is the
+  insight); sequence with real gaps → **true-scale timeline** (spacing ∝ elapsed time, not
+  equal-spaced tabs); process / causal arc → flow with connectors; part-to-whole or magnitude →
+  bar / meter, not a number in a box; "what applies to X" → filterable matrix; before↔after →
+  two-tier or toggle. Run the **inverse check** too: dense comparative / numeric / sequential
+  *prose* that should be a graphic.
 - **Don't over-engineer the dataviz.** A clean conventional chart/table beats an exotic
   treemap/sunburst almost always. Reach for advanced viz only when the data needs it.
 - Default to **shadcn/ui + Tailwind** in a framework build, or hand-rolled CSS in a single file.
@@ -230,12 +254,18 @@ not deliver until all pass:
       bands); prose ~60–70ch but the *page* is not a ~720–800px column in empty margins.
 - [ ] **No other slop tells** — no decorative/iridescent gradients, no rainbow text/rows, no 2×2
       bento grid of identical soft-shadow cards, no drop-shadow-on-everything.
+- [ ] **Palette isn't the templated default** (cream + lone rust/orange accent); ≥1 accent subject-derived, color semantic.
 - [ ] **Bespoke theme not a costume** — if a topic-matched theme was used, verify it's an accent
       not a full reskin: body text and UI controls are clean and readable, the theme tokens appear
       in the hero/display elements only. If every surface (labels, sliders, buttons, quiz) has been
       reskinned, pull back to one or two thematic tokens.
 - [ ] **The JS actually runs** — no syntax errors (watch unescaped quotes/apostrophes in JS
       strings), no undefined refs; every interactive widget works, not just renders.
+- [ ] **Interactivity floor — ≥2 genuinely playable micro-demos.** Manipulate → live result (slider
+      on a real model, step-through, sim, predict-then-reveal), separate from the quiz. Toggles,
+      accordions, reveal/expand cards, and gov-vs-critic static cards do NOT count. If the page has
+      fewer than two, it must say on-page why the topic can't support them — otherwise this is a
+      blocker, not a pass. (The no-browser path is the usual culprit; build the demos anyway.)
 - [ ] **Button hierarchy in interactive widgets** — primary actions (Next, Submit, Check, Next step)
       are solid filled buttons with clear visual weight; secondary actions (Back, Reset, Skip) are
       ghost/outline. Never give all buttons equal treatment — the primary must be unmissable.
@@ -262,6 +292,14 @@ not deliver until all pass:
       clearly separated; equal gaps in repeated groups; nothing touching edges.
 - [ ] **Title & voice.** `<h1>` plainly names the topic (not a bare metaphor; nav brand doesn't
       count); title/intro editorial not slogan-y; the model appears once in the body, not stacked.
+- [ ] **No stacked headers; open on substance.** At most one heading layer before body (eyebrow +
+      heading); no `<h3>` that restates its heading; no sub-head in a short section the opening
+      sentence already covers. Every lede states a concrete claim unguessable from the heading, or
+      is cut so the section opens on the claim. (See Phase 1.)
+- [ ] **No flat redundancy.** Each load-bearing concept has one home; elsewhere reference it, don't
+      re-explain. *Throughline exception:* a recurring mental model restated at **new depth** is
+      progressive teaching, not repetition. Flag only same-idea-at-same-depth repeats and any
+      paragraph that survives deletion with no loss.
 - [ ] **Prose register & slop tells.** Does the writing hit the selected register (Crisp and Clear /
       Cool Observer / Raises the Stakes)? Scan for overuse of: em-dashes (one or two fine; three per
       paragraph is a tell) · loaded metaphor nouns ("the spine", "load-bearing", "the throughline",
@@ -269,8 +307,12 @@ not deliver until all pass:
       staccato comparison sentences · filler openers ("at its core", "put simply", "in short", "at
       the end of the day") · rhetorical questions as transitions ("So what does this mean for X?") ·
       meta-narration ("this is where it gets interesting", "here's the thing") · tricolon
-      everything · every section header as a declarative sentence with a period. Standard: would a
-      human editor at *The Atlantic* flag this as a pattern?
+      everything · every section header as a declarative sentence with a period. Then the slop
+      **shapes** a wordlist misses (need a fresh-eyes read): **dismiss-and-pivot** ("the real story
+      is Y") · **antithesis-to-inflate** ("not X, it's Y"; "not just X") · **setup-then-turn**
+      ("…unprecedented. It was not.") · **aphoristic one-liner** ("The structure is the point.") ·
+      **gating closer** ("only once you see…") · **precious metaphor verbs/nouns** ("doubled as a
+      roadmap", "the spine"). Standard: would a human editor at *The Atlantic* flag this?
 - [ ] **Visuals match the words.** Every diagram/chart/demo/metaphor depicts the claim — direction,
       order, magnitude, legend all agree with the caption (don't draw an up-slope under "downhill").
 - [ ] **Accessible & responsive** — semantic HTML, keyboard-operable, alt text, real mobile layout
@@ -301,6 +343,22 @@ Then run the look-and-fix loop:
    low-contrast? Is the *order* right? Would a newcomer follow it? Does the mental model land and hold?
 3. **10x the weak spots** — then re-screenshot. Repeat until you'd ship it proudly unprompted.
 4. "It builds / renders text" is **not** "it's good." Real improvements are found by *looking*.
+
+**The QA gate — fresh-eyes passes, not a self-skim.** Listing a standard is not enforcing it: a
+checklist you read once gets pattern-matched as "done," and the pass that wrote the prose is the
+worst judge of whether it is slop (it sees intent, not effect). So before shipping, run the
+pre-flight as **discrete passes**, ideally with fresh eyes (a sub-agent that did not author the
+draft). The passes and where their criteria live above:
+- **Slop** (phrases + the sentence-shape catalog) · **Structure** (no stacked headers; open on
+  substance) · **Redundancy** (one concept/home; throughline exception) · **Graphics** (the "so
+  what" test + form-follows-data; plus the inverse check for prose that should be a graphic) ·
+  **Synthesis** (a real, sourced, labeled connection where the topic supports it).
+- **Rank findings** blocker / should-fix / optional and fail only on blockers, so the gate doesn't
+  drown in nits. **Re-run Slop on any revised section** — slop most often re-enters during edits.
+- Mechanical tells (em-dash density, banned phrases) are lintable with a grep; shapes and tone need
+  the read. Two cheap artifacts make the passes faster: a **concept ledger** (every load-bearing
+  concept and where it lives) and a **graphics inventory** (each graphic + its one-sentence
+  takeaway). **Definition of done = all passes clear**, not "it builds and looks fine."
 
 ## Phase 5 — Verify & ship
 
@@ -392,9 +450,13 @@ file (the bundled copies already do). **These are the single source of truth for
 ## Interactivity patterns (reach for the most impactful that fits)
 
 - **★ Playable micro-demos (learn-by-doing) — reach for these first.** A small widget that lets the
-  reader *manipulate something and watch the result update live*. **Aim for at least 2 distinct
-  playable micro-demos** (separate from the quiz) where the topic supports it — roughly one per key
-  concept; ship a single demo only when the topic genuinely can't support more, and say why.
+  reader *manipulate something and watch the result update live*. **Required floor: at least 2
+  distinct playable micro-demos** (separate from the quiz), enforced in the Phase-4 gate. "Playable"
+  means manipulate → live result: a slider/input driving a real model, a step-through, a sim, a
+  predict-then-reveal. **Toggles, accordions, reveal cards, click-to-expand, and the quiz do NOT
+  count toward the floor** — they're lighter disclosure, useful but not demos. Ship fewer than two
+  only when the topic genuinely can't support them, and **say so on the page**. Note: the no-browser
+  path tends to under-build demos (no render loop to iterate on) — hit the floor anyway.
   Forms: **fill-in / pick-the-answer** ("what comes next?", ideally predict-then-reveal);
   **live input → live output**; **a slider that reshapes a result** (driven by the *real* formula —
   use a continuous min/max range with small or absent `step`; never large discrete jumps; update on
@@ -404,6 +466,17 @@ file (the bundled copies already do). **These are the single source of truth for
 - **Progressive disclosure:** `<details>`/accordion, "go deeper" expanders, tabs.
 - **Filterable table/matrix:** the workhorse centerpiece for "what applies to / what is X".
 - **Timeline:** for sequence/schedule; before-vs-after overlays and a "today" marker when relevant.
+  Prefer **true-scale** spacing (position ∝ elapsed time) when the gaps themselves tell a story.
+  **Detail goes in a fixed panel, not a floating tooltip.** A click/hover tooltip anchored to a node
+  collides with neighboring nodes, hides behind the dot's own number, and clips at the track edges
+  (a recurring bug). Default: one shared detail panel below the rail that updates on
+  select/hover. If you must float a label, render it above the row, offset clear of every dot, and
+  clamp it inside the container bounds. When true-scale clustering crowds nodes, dodge them
+  vertically with connector stems and keep date labels on a separate baseline from the node numbers.
+- **Dot / strip plot on a shared axis:** plot each item as a colored dot along one meaningful axis
+  (e.g. settled→contested, cheap→expensive); the *distribution* and the outliers are the insight.
+  Color = category; click or hover a row to update a shared detail panel. Strong, compact centerpiece
+  for "where does each piece fall."
 - **Click-through citations:** a shared slide-in drawer/modal showing source text + a deep link.
 - **Interactive diagram:** pyramid/flow/grid where clicking a node reveals detail.
 - **Quiz / knowledge check:** short test-yourself (MC or fill-in) with **instant** right/wrong

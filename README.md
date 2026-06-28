@@ -10,6 +10,11 @@ from filling in blanks.
 
 **See it in action: [live examples gallery](https://ds-vibe.github.io/html-explainer/)**
 
+> **Best results: run it in Claude Code with Opus 4.8 at high effort.** Counterintuitively, high
+> effort is both faster and higher quality — stronger first drafts mean fewer quality-loop fix
+> cycles. Claude Code also renders in a real headless browser, so it catches visual bugs the
+> app/cowork (static-only) cannot.
+
 ## What it does
 
 Given a topic (or your own source material), the skill:
@@ -36,9 +41,8 @@ Built with this skill, hosted on GitHub Pages — each is a self-contained `.htm
 | Explainer | Format | Live |
 |---|---|---|
 | The machine that multiplied ideas (Gutenberg's press) | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/gutenberg.html) |
-| How a microwave heats food | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/microwave.html) |
+| The Doppler effect (why a siren changes pitch) | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/doppler.html) |
 | How transistors work | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/transistors.html) |
-| How vaccines work | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/vaccines.html) |
 | Two ways to make a color | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/color-mixing.html) |
 | The EU AI Act | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ai-act.html) |
 | What "fair use" actually means | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/fair-use.html) |

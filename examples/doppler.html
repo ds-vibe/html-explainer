@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Doppler Effect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --space:#080b16; --space-2:#0d1324; --panel:#111a31; --panel-2:#0f1730;
+    --ink:#eef2ff; --ink-2:#b3bedd; --muted:#7e8ab0;
+    --blue:#4ea3ff; --blue-soft:#9cc8ff; --blue-deep:#1f4f8a;
+    --red:#ff6259; --red-soft:#ffa39c; --red-deep:#8f2f2a;
+    --amber:#ffce5a;
+    --rule:#1d2740; --rule-2:#2a3656;
+    --serif:"Spectral",Georgia,serif; --sans:"Inter",system-ui,sans-serif;
+    --s1:4px; --s2:8px; --s3:16px; --s4:24px; --s5:40px; --s6:64px; --s7:96px;
+    --maxw:1180px; --measure:64ch;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--space);color:var(--ink-2);font-family:var(--sans);
+    font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s4);}
+  .prose{max-width:var(--measure);}
+  p{margin:0 0 var(--s3);}
+  h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.1;color:var(--ink);
+    letter-spacing:-.01em;margin:0;}
+  a{color:var(--blue-soft);}
+  .num{font-variant-numeric:tabular-nums;}
+  strong{color:var(--ink);font-weight:600;}
+  .blue{color:var(--blue-soft);} .red{color:var(--red-soft);}
+
+  .eyebrow{font-family:var(--sans);font-weight:700;font-size:14px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--blue);margin:0 0 var(--s3);}
+
+  nav{position:sticky;top:0;z-index:40;background:rgba(8,11,22,.82);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--rule);}
+  nav .wrap{display:flex;align-items:center;gap:var(--s4);height:54px;}
+  nav .brand{font-family:var(--serif);font-weight:600;font-size:16px;color:var(--ink);margin-right:auto;}
+  nav a{font-size:13px;color:var(--muted);text-decoration:none;font-weight:500;}
+  nav a:hover{color:var(--blue-soft);}
+  @media (max-width:760px){nav .links{display:none}}
+
+  header.hero{padding:var(--s7) 0 var(--s6);border-bottom:1px solid var(--rule);
+    background:radial-gradient(120% 90% at 80% -10%,#13213f 0%,var(--space) 60%);}
+  .hero h1{font-size:clamp(44px,7.5vw,88px);font-weight:400;letter-spacing:-.03em;max-width:12ch;color:var(--ink);}
+  .hero .lede{font-size:clamp(19px,2.1vw,23px);line-height:1.5;color:var(--ink-2);
+    max-width:56ch;margin-top:var(--s4);font-family:var(--serif);}
+  .hero .meta{margin-top:var(--s5);display:flex;gap:var(--s4);flex-wrap:wrap;
+    font-size:13px;color:var(--muted);letter-spacing:.02em;}
+  .hero .meta span{display:flex;align-items:center;gap:8px;}
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--blue);display:inline-block;}
+
+  section{padding:var(--s7) 0;border-bottom:1px solid var(--rule);}
+  section.alt{background:var(--space-2);}
+  h2{font-size:clamp(28px,3.6vw,40px);max-width:18ch;color:var(--ink);}
+  .sec-head{margin-bottom:var(--s5);}
+  .lead{font-size:19px;color:var(--ink-2);max-width:62ch;margin-top:var(--s3);}
+  .take{font-size:14.5px;color:var(--muted);max-width:64ch;display:flex;gap:10px;align-items:baseline;}
+  .take b{color:var(--blue-soft);font-weight:600;white-space:nowrap;}
+
+  .callout{border-left:3px solid var(--amber);background:rgba(255,206,90,.06);
+    padding:var(--s3) var(--s4);border-radius:0 6px 6px 0;margin-top:var(--s4);max-width:62ch;}
+  .callout .t{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--amber);margin-bottom:6px;}
+  .callout p{margin:0;font-size:15.5px;}
+  .idea-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:var(--s6);align-items:start;}
+  .idea-main p{max-width:70ch;}
+  .idea-aside .callout{margin-top:0;max-width:none;}
+  @media (max-width:820px){.idea-grid{grid-template-columns:1fr;gap:var(--s4)}}
+
+  /* ---- panels / demos ---- */
+  .demo{background:var(--panel);border:1px solid var(--rule-2);border-radius:12px;
+    padding:var(--s5);margin-top:var(--s5);}
+  canvas{display:block;width:100%;height:340px;border-radius:8px;background:#060912;
+    border:1px solid var(--rule);}
+  .ctrl{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s4);flex-wrap:wrap;}
+  .ctrl label{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:.02em;min-width:104px;}
+  input[type=range]{flex:1;min-width:200px;accent-color:var(--blue);height:6px;cursor:pointer;}
+  .ctrl-val{font-variant-numeric:tabular-nums;font-size:14px;color:var(--blue-soft);
+    font-weight:600;min-width:96px;text-align:right;}
+  .legend{display:flex;gap:var(--s4);flex-wrap:wrap;margin-top:var(--s4);font-size:13px;color:var(--muted);}
+  .legend span{display:flex;align-items:center;gap:8px;}
+  .swatch{width:22px;height:4px;border-radius:2px;display:inline-block;}
+  .chip{width:11px;height:11px;border-radius:50%;display:inline-block;}
+
+  .readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3);margin-top:var(--s4);}
+  .ro{background:var(--panel-2);border:1px solid var(--rule);border-radius:8px;padding:var(--s3) var(--s4);
+    border-top:3px solid var(--rule-2);}
+  .ro.blue{border-top-color:var(--blue);} .ro.red{border-top-color:var(--red);}
+  .ro.amber{border-top-color:var(--amber);}
+  .ro-k{font-family:var(--serif);font-size:30px;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;}
+  .ro.blue .ro-k{color:var(--blue-soft);} .ro.red .ro-k{color:var(--red-soft);}
+  .ro-l{font-size:12.5px;color:var(--muted);margin-top:7px;line-height:1.4;}
+  @media (max-width:640px){.readouts{grid-template-columns:1fr}}
+
+  /* ---- formula ---- */
+  .formula{font-family:var(--serif);font-size:clamp(20px,3vw,28px);color:var(--ink);
+    text-align:center;padding:var(--s4);background:var(--panel-2);border:1px solid var(--rule);
+    border-radius:8px;margin-bottom:var(--s5);font-variant-numeric:tabular-nums;}
+  .formula .fa{color:var(--blue-soft);} .formula .fr{color:var(--red-soft);}
+  .formula .frac{display:inline-block;text-align:center;vertical-align:middle;margin:0 4px;}
+  .formula .frac .den{border-top:1.5px solid var(--rule-2);display:block;padding-top:2px;font-size:.82em;}
+  .formula .frac .nm{display:block;font-size:.82em;padding-bottom:2px;}
+
+  .pitchbar{position:relative;height:64px;margin:var(--s5) 0 var(--s2);
+    background:linear-gradient(90deg,var(--red-deep),#3a3f5c,var(--blue-deep));
+    border-radius:8px;border:1px solid var(--rule);}
+  .pmark{position:absolute;top:-6px;bottom:-6px;width:3px;transform:translateX(-50%);border-radius:2px;}
+  .pmark .lab{position:absolute;top:-26px;left:50%;transform:translateX(-50%);white-space:nowrap;
+    font-size:11px;font-weight:600;font-family:var(--sans);}
+  .pmark .val{position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);white-space:nowrap;
+    font-size:12px;font-variant-numeric:tabular-nums;font-family:var(--sans);}
+  .pscale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);
+    margin-top:var(--s4);letter-spacing:.04em;}
+  .btn{font-family:var(--sans);font-weight:600;font-size:14px;border-radius:8px;cursor:pointer;
+    padding:10px 20px;border:1px solid transparent;}
+  .btn-primary{background:var(--blue);color:#06122a;}
+  .btn-primary:hover{background:var(--blue-soft);}
+  .btn-ghost{background:transparent;color:var(--ink-2);border-color:var(--rule-2);}
+  .btn-ghost:hover{border-color:var(--blue);color:var(--ink);}
+
+  /* ---- redshift spectrum ---- */
+  #specSvg{display:block;width:100%;height:auto;}
+  .spec-read{display:flex;gap:var(--s5);flex-wrap:wrap;margin-top:var(--s4);align-items:baseline;}
+  .spec-read .big{font-family:var(--serif);font-size:34px;line-height:1;}
+  .spec-read .lbl{font-size:12.5px;color:var(--muted);margin-top:4px;}
+
+  /* ---- quiz ---- */
+  .quiz{max-width:62ch;}
+  .q{margin-bottom:var(--s5);}
+  .q .qt{font-family:var(--serif);font-size:20px;color:var(--ink);margin-bottom:var(--s3);}
+  .opts{display:grid;gap:var(--s2);}
+  .opt{text-align:left;font-family:var(--sans);font-size:15px;color:var(--ink-2);
+    background:var(--panel-2);border:1px solid var(--rule-2);border-radius:8px;
+    padding:12px 16px;cursor:pointer;transition:border-color .15s,background .15s;}
+  .opt:hover{border-color:var(--blue);}
+  .opt.correct{border-color:#3ec98a;background:rgba(62,201,138,.12);color:#bff0d6;}
+  .opt.wrong{border-color:var(--red);background:rgba(255,98,89,.1);color:var(--red-soft);}
+  .opt[disabled]{cursor:default;}
+  .why{font-size:14px;color:var(--muted);margin-top:var(--s2);padding-left:var(--s3);
+    border-left:2px solid var(--rule-2);display:none;}
+  .why.show{display:block;}
+  .qscore{font-family:var(--serif);font-size:18px;color:var(--blue-soft);margin-top:var(--s4);}
+
+  footer{padding:var(--s6) 0;background:var(--space-2);border-top:1px solid var(--rule);}
+  footer h3{font-size:15px;letter-spacing:.04em;color:var(--ink);}
+  footer p,footer li{font-size:13.5px;color:var(--muted);line-height:1.7;}
+  footer ul{margin:var(--s2) 0 0;padding-left:18px;max-width:62ch;}
+
+  @media (max-width:760px){
+    section{padding:var(--s6) 0;}
+    header.hero{padding:var(--s6) 0;}
+    canvas{height:260px;}
+    .demo{padding:var(--s4);}
+  }
+</style>
+</head>
+<body data-review-toggle>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">The Doppler Effect</span>
+    <div class="links" style="display:flex;gap:var(--s4)">
+      <a href="#idea">The idea</a>
+      <a href="#wavefronts">Wavefronts</a>
+      <a href="#formula">The formula</a>
+      <a href="#redshift">Redshift</a>
+      <a href="#quiz">Quiz</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Physics &middot; Waves &amp; motion</p>
+    <h1>The Doppler Effect</h1>
+    <p class="lede">An ambulance does not change the note of its siren as it races past you. Its
+      motion changes how fast the sound waves reach your ear &mdash; and that is what you hear as the
+      pitch dropping the instant it passes.</p>
+    <div class="meta">
+      <span><i class="dot"></i> 8 minute read</span>
+      <span><i class="dot"></i> Settled physics</span>
+      <span><i class="dot"></i> Three playable demos</span>
+    </div>
+  </div>
+</header>
+
+<!-- §1 THE IDEA -->
+<section id="idea">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">&sect;1 &middot; The idea</p>
+      <h2>Pitch is an arrival rate</h2>
+    </div>
+    <div class="idea-grid">
+      <div class="idea-main">
+        <p>A sound's pitch is not a fixed property of the thing making it. It is the rate at which wave
+          crests reach your ear. A higher rate sounds higher; a lower rate sounds lower. Hold that idea
+          and the whole effect follows.</p>
+        <p>A still horn sends crests outward as evenly spaced rings, like ripples from a dropped stone.
+          Every listener around it hears the same pitch. Now let the horn <strong>move</strong>. Between
+          releasing one crest and the next, it travels a little way forward &mdash; so each new crest
+          starts closer to the one ahead of it. Crests <strong class="blue">bunch up in front</strong> and
+          <strong class="red">spread out behind</strong>.</p>
+        <p>An ear in front now catches crests more often than before: a higher pitch. An ear behind
+          catches them less often: a lower pitch. The horn's own note never changed. Only the spacing of
+          the waves it leaves in the air did &mdash; and spacing is everything the ear measures.</p>
+      </div>
+      <aside class="idea-aside">
+        <div class="callout">
+          <div class="t">Common misconception</div>
+          <p>The source does not "play higher" as it approaches. It emits exactly the same frequency the
+            whole time. The shift lives entirely in the gap between source and listener.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- §2 WAVEFRONTS — CENTERPIECE -->
+<section id="wavefronts" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">&sect;2 &middot; See it happen</p>
+      <h2>A source on the move</h2>
+      <p class="lead">Drag the speed slider. The dot emits crests at a steady rate; watch them crowd
+        ahead and stretch behind as it speeds up, and the arrival-rate readouts shift with them.</p>
+    </div>
+    <div class="demo">
+      <canvas id="waveCanvas" aria-label="Animation of a moving source emitting circular wavefronts that bunch ahead and spread behind."></canvas>
+      <div class="ctrl">
+        <label for="machSlider">Source speed</label>
+        <input type="range" id="machSlider" min="0" max="0.9" step="0.01" value="0.5" />
+        <span class="ctrl-val" id="machVal">Mach 0.50</span>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--blue)"></i> Crests reaching the side it moves toward (compressed &rarr; higher pitch)</span>
+        <span><i class="swatch" style="background:var(--red)"></i> Crests left behind (stretched &rarr; lower pitch)</span>
+        <span><i class="chip" style="background:var(--amber)"></i> Source</span>
+      </div>
+      <div class="readouts">
+        <div class="ro blue"><div class="ro-k" id="aheadMul">1.00&times;</div>
+          <div class="ro-l">Arrival rate ahead, vs. a still source</div></div>
+        <div class="ro amber"><div class="ro-k" id="machRead">0.50&times;</div>
+          <div class="ro-l">Source speed as a fraction of the wave speed</div></div>
+        <div class="ro red"><div class="ro-k" id="behindMul">1.00&times;</div>
+          <div class="ro-l">Arrival rate behind, vs. a still source</div></div>
+      </div>
+      <p class="take" style="margin-top:var(--s4)"><b>Takeaway:</b> the faster the source moves, the
+        harder it crowds its own waves ahead &mdash; pitch rises in front and falls behind, and the
+        gap between the two widens with speed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- §3 THE FORMULA -->
+<section id="formula">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">&sect;3 &middot; The math</p>
+      <h2>From speed to pitch</h2>
+      <p class="lead">One short equation turns a speed into a heard frequency. Sound travels at about
+        343 metres per second; <em>v</em> is the source's speed. Use minus while it approaches, plus
+        while it recedes.</p>
+    </div>
+    <div class="demo">
+      <div class="formula">
+        <span class="num">f<sub>heard</sub></span> = <span class="num">f<sub>source</sub></span> &times;
+        <span class="frac"><span class="nm">c</span><span class="den">c <span class="fa">&minus;</span> v</span></span>
+        <span style="color:var(--muted);font-size:.7em">approaching</span>
+        &nbsp;&middot;&nbsp;
+        <span class="frac"><span class="nm">c</span><span class="den">c <span class="fr">+</span> v</span></span>
+        <span style="color:var(--muted);font-size:.7em">receding</span>
+      </div>
+      <p style="font-size:14.5px;color:var(--muted);margin:0 0 var(--s3)">A siren sounds at a steady
+        <strong>700&nbsp;Hz</strong> at the source. Set how fast it is moving:</p>
+      <div class="ctrl">
+        <label for="pitchSlider">Source speed</label>
+        <input type="range" id="pitchSlider" min="0" max="150" step="1" value="34" />
+        <span class="ctrl-val" id="pitchVal">34 m/s &middot; 122 km/h</span>
+      </div>
+      <div class="pitchbar" id="pitchBar" aria-hidden="true">
+        <div class="pmark" id="markRec" style="background:var(--red)">
+          <div class="lab red">Receding</div><div class="val red" id="valRec">487 Hz</div></div>
+        <div class="pmark" id="markSrc" style="background:var(--muted)">
+          <div class="lab" style="color:var(--muted)">At rest</div></div>
+        <div class="pmark" id="markApp" style="background:var(--blue)">
+          <div class="lab blue">Approaching</div><div class="val blue" id="valApp">770 Hz</div></div>
+      </div>
+      <div class="pscale"><span>Lower pitch</span><span>700 Hz</span><span>Higher pitch</span></div>
+      <div class="readouts" style="margin-top:var(--s5)">
+        <div class="ro blue"><div class="ro-k" id="appHz">770 Hz</div>
+          <div class="ro-l" id="appCents">Approaching &middot; +163 cents</div></div>
+        <div class="ro amber"><div class="ro-k">700 Hz</div>
+          <div class="ro-l">What the siren actually emits</div></div>
+        <div class="ro red"><div class="ro-k" id="recHz">487 Hz</div>
+          <div class="ro-l" id="recCents">Receding &middot; &minus;200 cents</div></div>
+      </div>
+      <div style="margin-top:var(--s5);display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap">
+        <button class="btn btn-primary" id="playBtn">Hear the pass-by</button>
+        <span style="font-size:13px;color:var(--muted)">Plays the pitch sweeping from approaching to
+          receding, as if the siren drove past you.</span>
+      </div>
+      <p class="take" style="margin-top:var(--s5)"><b>Takeaway:</b> the drop you hear is the jump from
+        the approaching value to the receding one &mdash; the whole fall happens in the instant the
+        source passes, not gradually.</p>
+    </div>
+  </div>
+</section>
+
+<!-- §4 REDSHIFT -->
+<section id="redshift" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">&sect;4 &middot; Light does it too</p>
+      <h2>Redshift and the moving sky</h2>
+      <p class="lead">Light is a wave, so the same rule applies: motion stretches or compresses it. For
+        light, wave spacing is colour. A source moving away has its light stretched toward
+        <strong class="red">red</strong>; one moving closer is squeezed toward <strong class="blue">blue</strong>.</p>
+    </div>
+    <p class="prose" style="margin-bottom:var(--s5)">Each element absorbs light at fixed, known
+      wavelengths, leaving dark lines in a star's spectrum. Astronomers measure how far those lines
+      have slid from their lab positions. Drag a galaxy's speed below: the dashed marks are where the
+      hydrogen lines belong at rest; the solid lines are where we observe them.</p>
+    <div class="demo">
+      <svg id="specSvg" viewBox="0 0 720 150" role="img"
+        aria-label="Visible spectrum with hydrogen absorption lines shifting toward red as recession speed increases."></svg>
+      <div class="ctrl" style="margin-top:var(--s5)">
+        <label for="zSlider">Galaxy speed</label>
+        <input type="range" id="zSlider" min="-6000" max="24000" step="200" value="9000" />
+        <span class="ctrl-val" id="zVal">9,000 km/s</span>
+      </div>
+      <div class="spec-read">
+        <div><div class="big" id="zBig" style="color:var(--red-soft)">z = 0.030</div>
+          <div class="lbl">Redshift (fractional wavelength stretch)</div></div>
+        <div><div class="big num" id="zDir" style="color:var(--red-soft)">Receding</div>
+          <div class="lbl" id="zNote">Lines slide toward the red end</div></div>
+      </div>
+      <p class="take" style="margin-top:var(--s4)"><b>Takeaway:</b> nearly every distant galaxy is
+        redshifted &mdash; Edwin Hubble's 1929 reading that the more distant ones recede faster is the
+        first direct evidence that the universe is expanding.</p>
+    </div>
+    <p class="prose" style="margin-top:var(--s5);font-size:14.5px;color:var(--muted)">At the speeds
+      shown, the simple wave picture (<em>z</em> &asymp; v/c) is accurate. Near the speed of light the
+      full relativistic formula is needed, and cosmological redshift is better described as the
+      stretching of space itself than as motion through it &mdash; but the intuition is the same.</p>
+  </div>
+</section>
+
+<!-- §5 QUIZ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">&sect;5 &middot; Check yourself</p>
+      <h2>Three quick questions</h2>
+    </div>
+    <div class="quiz" id="quizBox"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <h3>Notes &amp; sources</h3>
+    <p>This is settled physics; the figures are illustrative and rounded. The speed of sound is taken
+      as 343 m/s (dry air, 20&nbsp;&deg;C). The siren frequency and galaxy speeds are chosen to make
+      the effect visible, not from a specific recording or object.</p>
+    <ul>
+      <li>Christian Doppler, &ldquo;&Uuml;ber das farbige Licht der Doppelsterne&rdquo; (1842) &mdash; the original proposal.</li>
+      <li>NASA / Imagine the Universe &mdash; the Doppler effect and astronomical redshift.</li>
+      <li>Hubble, E. (1929), <em>PNAS</em> &mdash; the velocity&ndash;distance relation for galaxies.</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+/* ---------- §2 wavefront simulator ---------- */
+(function(){
+  var cv=document.getElementById('waveCanvas'); if(!cv) return;
+  var ctx=cv.getContext('2d');
+  var DPR=Math.min(2,window.devicePixelRatio||1);
+  var W=0,H=0, c=130, T=0.85, mach=0.5;
+  var waves=[], last=0, lastEmit=0, raf=0, started=false;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function maxR(){ return Math.hypot(W,H)+40; }
+  function resize(){
+    var r=cv.getBoundingClientRect(); W=r.width; H=r.height;
+    cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  var srcX=0;
+  function snapshot(){ // static Doppler pattern, source at centre
+    waves=[]; srcX=W*0.5; var v=mach*c;
+    for(var k=1;k<=9;k++){ if(c*k*T>maxR()) continue; waves.push({x:srcX-v*k*T,y:H/2,t0:-k*T}); }
+  }
+  function drawWave(x,y,r){
+    var a=Math.max(0,1-r/maxR())*0.85; if(a<=0) return;
+    ctx.lineWidth=1.7;
+    ctx.beginPath(); ctx.strokeStyle='rgba(78,163,255,'+a+')'; ctx.arc(x,y,r,-Math.PI/2,Math.PI/2); ctx.stroke();
+    ctx.beginPath(); ctx.strokeStyle='rgba(255,98,89,'+a+')'; ctx.arc(x,y,r,Math.PI/2,Math.PI*1.5); ctx.stroke();
+  }
+  function obs(x,col,txt){
+    ctx.beginPath(); ctx.fillStyle=col; ctx.arc(x,H/2,5,0,7); ctx.fill();
+    ctx.font='11px Inter,sans-serif'; ctx.fillStyle=col; ctx.textAlign='center';
+    ctx.fillText(txt,x,H/2+20);
+  }
+  function draw(now){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<waves.length;i++){ var w=waves[i]; drawWave(w.x,w.y,c*(now-w.t0)); }
+    obs(W-26,'#9cc8ff','higher'); obs(26,'#ffa39c','lower');
+    // source + heading arrow
+    ctx.beginPath(); ctx.fillStyle='#ffce5a'; ctx.arc(srcX,H/2,6.5,0,7); ctx.fill();
+    if(mach>0.01){ ctx.strokeStyle='#ffce5a'; ctx.lineWidth=2; ctx.beginPath();
+      ctx.moveTo(srcX+9,H/2); ctx.lineTo(srcX+22,H/2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(srcX+22,H/2-4); ctx.lineTo(srcX+28,H/2); ctx.lineTo(srcX+22,H/2+4); ctx.fill(); }
+  }
+  function frame(ts){
+    var t=ts/1000; if(!last) last=t; var dt=Math.min(0.05,t-last); last=t;
+    if(t-lastEmit>=T){ lastEmit+=T; waves.push({x:srcX,y:H/2,t0:t}); }
+    srcX+=mach*c*dt;
+    if(srcX>W+40){ srcX=-40; waves=[]; lastEmit=t; }
+    waves=waves.filter(function(w){ return c*(t-w.t0)<=maxR(); });
+    draw(t);
+    raf=requestAnimationFrame(frame);
+  }
+  function readout(){
+    document.getElementById('aheadMul').innerHTML=(1/(1-mach)).toFixed(2)+'&times;';
+    document.getElementById('behindMul').innerHTML=(1/(1+mach)).toFixed(2)+'&times;';
+    document.getElementById('machRead').innerHTML=mach.toFixed(2)+'&times;';
+    document.getElementById('machVal').textContent='Mach '+mach.toFixed(2);
+  }
+  function init(){
+    resize(); snapshot(); draw(0); readout(); // first frame on load
+    if(!reduce){ started=true; last=0; lastEmit=0; waves=[]; srcX=W*0.12; raf=requestAnimationFrame(frame); }
+  }
+  document.getElementById('machSlider').addEventListener('input',function(e){
+    mach=+e.target.value; readout(); if(reduce){ snapshot(); draw(0); }
+  });
+  window.addEventListener('resize',function(){ resize(); if(!started){ snapshot(); draw(0); } });
+  if(document.readyState!=='loading') init(); else window.addEventListener('DOMContentLoaded',init);
+})();
+
+/* ---------- §3 speed to pitch ---------- */
+(function(){
+  var C=343, F0=700, slider=document.getElementById('pitchSlider');
+  var lo=420, hi=1320; // pitch bar Hz range
+  function pos(f){ return Math.max(2,Math.min(98,(f-lo)/(hi-lo)*100)); }
+  function cents(f){ return Math.round(1200*Math.log2(f/F0)); }
+  function set(v){
+    var app=F0*C/(C-v), rec=F0*C/(C+v);
+    document.getElementById('pitchVal').textContent=v+' m/s · '+Math.round(v*3.6)+' km/h';
+    document.getElementById('markApp').style.left=pos(app)+'%';
+    document.getElementById('markRec').style.left=pos(rec)+'%';
+    document.getElementById('markSrc').style.left=pos(F0)+'%';
+    document.getElementById('valApp').textContent=Math.round(app)+' Hz';
+    document.getElementById('valRec').textContent=Math.round(rec)+' Hz';
+    document.getElementById('appHz').textContent=Math.round(app)+' Hz';
+    document.getElementById('recHz').textContent=Math.round(rec)+' Hz';
+    document.getElementById('appCents').innerHTML='Approaching &middot; +'+cents(app)+' cents';
+    document.getElementById('recCents').innerHTML='Receding &middot; '+cents(rec)+' cents';
+    return {app:app,rec:rec};
+  }
+  slider.addEventListener('input',function(e){ set(+e.target.value); });
+  set(+slider.value);
+  // optional audio: a user-initiated pass-by sweep
+  var AC=null;
+  document.getElementById('playBtn').addEventListener('click',function(){
+    var v=+slider.value, r=set(v);
+    try{
+      AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+      if(AC.state==='suspended') AC.resume();
+      var t0=AC.currentTime, osc=AC.createOscillator(), g=AC.createGain();
+      osc.type='sawtooth';
+      osc.frequency.setValueAtTime(r.app,t0);
+      osc.frequency.setValueAtTime(r.app,t0+0.9);
+      osc.frequency.linearRampToValueAtTime(r.rec,t0+1.15); // the pass-by drop
+      g.gain.setValueAtTime(0.0001,t0);
+      g.gain.exponentialRampToValueAtTime(0.18,t0+0.15);
+      g.gain.setValueAtTime(0.18,t0+1.7);
+      g.gain.exponentialRampToValueAtTime(0.0001,t0+2.1);
+      osc.connect(g); g.connect(AC.destination); osc.start(t0); osc.stop(t0+2.15);
+    }catch(err){}
+  });
+})();
+
+/* ---------- §4 redshift spectrum ---------- */
+(function(){
+  var svg=document.getElementById('specSvg'); if(!svg) return;
+  var NS='http://www.w3.org/2000/svg', C=299792.458;
+  var X0=24, X1=696, NM0=380, NM1=720; // band px + wavelength range
+  function x(nm){ return X0+(nm-NM0)/(NM1-NM0)*(X1-X0); }
+  function el(t,a){ var e=document.createElementNS(NS,t); for(var k in a) e.setAttribute(k,a[k]); return e; }
+  // gradient: violet -> red across the visible band
+  var defs=el('defs',{}), grad=el('linearGradient',{id:'spec',x1:0,y1:0,x2:1,y2:0});
+  [['0%','#3a1d6e'],['12%','#3b39c4'],['28%','#2f8fd6'],['42%','#28b58a'],
+   ['56%','#9bcf3a'],['70%','#f2d23a'],['82%','#f08a2a'],['94%','#d83030'],['100%','#7a1414']]
+   .forEach(function(s){ grad.appendChild(el('stop',{offset:s[0],'stop-color':s[1]})); });
+  defs.appendChild(grad); svg.appendChild(defs);
+  svg.appendChild(el('rect',{x:X0,y:14,width:X1-X0,height:62,rx:5,fill:'url(#spec)'}));
+  // band end labels
+  function txt(x,y,t,fill,anchor,size){ var e=el('text',{x:x,y:y,fill:fill,'text-anchor':anchor||'middle','font-family':'Inter,sans-serif','font-size':size||11}); e.textContent=t; return e; }
+  svg.appendChild(txt(X0,96,'violet · 380 nm','#9aa6c8','start'));
+  svg.appendChild(txt(X1,96,'red · 700 nm','#9aa6c8','end'));
+  svg.appendChild(txt((X0+X1)/2,120,'Dashed = lab (rest) wavelength · Solid = observed','#7e8ab0','middle',11.5));
+  // hydrogen Balmer lines
+  var LINES=[410,434,486,656];
+  var rest={}, obsL={};
+  LINES.forEach(function(nm){
+    rest[nm]=el('line',{x1:x(nm),y1:14,x2:x(nm),y2:76,stroke:'#cdd6f0','stroke-width':1.4,'stroke-dasharray':'3 3','opacity':0.6});
+    obsL[nm]=el('line',{x1:x(nm),y1:8,x2:x(nm),y2:82,stroke:'#ffffff','stroke-width':2.4});
+    svg.appendChild(rest[nm]); svg.appendChild(obsL[nm]);
+  });
+  function set(v){
+    var z=v/C, dir=v>=0;
+    LINES.forEach(function(nm){
+      var ob=nm*(1+z), px=x(ob);
+      var vis=ob>=NM0&&ob<=NM1;
+      obsL[nm].setAttribute('x1',px); obsL[nm].setAttribute('x2',px);
+      obsL[nm].setAttribute('opacity',vis?1:0);
+    });
+    document.getElementById('zVal').textContent=(v<0?'':'')+v.toLocaleString()+' km/s';
+    var zb=document.getElementById('zBig'), zd=document.getElementById('zDir'), zn=document.getElementById('zNote');
+    zb.textContent='z = '+z.toFixed(3);
+    var col=dir?'var(--red-soft)':'var(--blue-soft)';
+    zb.style.color=col; zd.style.color=col;
+    zd.textContent=Math.abs(v)<200?'At rest':(dir?'Receding':'Approaching');
+    zn.textContent=Math.abs(v)<200?'Lines sit at their lab positions':(dir?'Lines slide toward the red end':'Lines slide toward the blue end');
+  }
+  var zs=document.getElementById('zSlider');
+  zs.addEventListener('input',function(e){ set(+e.target.value); });
+  set(+zs.value);
+})();
+
+/* ---------- §5 quiz ---------- */
+(function(){
+  var QS=[
+    {q:"An ambulance speeds toward you with its siren on. Compared with the note the siren actually produces, you hear a pitch that is…",
+     opts:["Higher","The same","Lower"],a:0,
+     why:"Approaching, the crests bunch up and reach you more often, so the arrival rate — the pitch — rises."},
+    {q:"At the exact moment the ambulance passes and starts moving away, the pitch you hear…",
+     opts:["Keeps rising","Drops suddenly","Slowly fades higher"],a:1,
+     why:"The shift flips from the approaching value to the receding one as the source goes by, so the fall happens almost instantly."},
+    {q:"A distant galaxy's hydrogen lines appear shifted toward the red. This tells us the galaxy is…",
+     opts:["Moving toward us","Moving away from us","Not moving"],a:1,
+     why:"Redshift means the light waves are stretched — the same as sound spreading out behind a receding source. The galaxy is receding."}
+  ];
+  var box=document.getElementById('quizBox'), done=0, right=0;
+  var score=document.createElement('div'); score.className='qscore';
+  QS.forEach(function(item,qi){
+    var d=document.createElement('div'); d.className='q';
+    d.innerHTML='<div class="qt">'+(qi+1)+'. '+item.q+'</div>';
+    var opts=document.createElement('div'); opts.className='opts';
+    var why=document.createElement('div'); why.className='why'; why.textContent=item.why;
+    item.opts.forEach(function(o,oi){
+      var b=document.createElement('button'); b.className='opt'; b.textContent=o;
+      b.addEventListener('click',function(){
+        if(d.dataset.done) return; d.dataset.done='1'; done++;
+        var btns=opts.querySelectorAll('.opt');
+        btns.forEach(function(x){ x.disabled=true; });
+        btns[item.a].classList.add('correct');
+        if(oi===item.a){ right++; } else { b.classList.add('wrong'); }
+        why.classList.add('show');
+        if(done===QS.length){ score.textContent='You got '+right+' of '+QS.length+'. The pitch is the arrival rate — that one idea answers all three.'; }
+      });
+      opts.appendChild(b);
+    });
+    d.appendChild(opts); d.appendChild(why); box.appendChild(d);
+  });
+  box.appendChild(score);
+})();
+</script>
+
+<!-- Review & edit overlay — injected by assemble.mjs (invariant; do not hand-edit) -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:8px;right:14px;z-index:9002;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes .rv-notes-hd{display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 0}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-collapse{font-family:var(--sans,sans-serif);font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink-faint,#8a8478);background:transparent;border:1px solid var(--line,#ddd5c5);border-radius:7px;padding:5px 10px;cursor:pointer}",
+    "#rv-collapse:hover{color:var(--ink,#23211c);border-color:var(--line-strong,#c8bfab)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:9010;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:9010;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:9020;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+    // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
+    // Scrolling pages: position just below any fixed/sticky top nav instead.
+    requestAnimationFrame(function () {
+      var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
+      if (isDeck) {
+        launch.style.top = "auto";
+        launch.style.right = "auto";
+        launch.style.bottom = "16px";
+        launch.style.left = "14px";
+      } else {
+        var navBottom = 0;
+        document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+          var s = getComputedStyle(el);
+          if (s.position === "fixed" || s.position === "sticky") {
+            navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+          }
+        });
+        if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      }
+    });
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<div class="rv-notes-hd"><h4>Annotations</h4><button id="rv-collapse" title="Collapse panel (your notes are kept)" aria-label="Collapse panel">Collapse &rsaquo;</button></div><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+    // Collapse hides the panel without deleting notes (they persist in
+    // localStorage and reopen via the toolbar's "Notes (N)" button).
+    $("rv-collapse").onclick = function () { $("rv-notes").classList.remove("open"); };
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete this note">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>

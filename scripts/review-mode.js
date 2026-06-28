@@ -65,7 +65,10 @@
     "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
     "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
     "#rv-notes.open{transform:none}",
+    "#rv-notes .rv-notes-hd{display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 0}",
     "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-collapse{font-family:var(--sans,sans-serif);font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink-faint,#8a8478);background:transparent;border:1px solid var(--line,#ddd5c5);border-radius:7px;padding:5px 10px;cursor:pointer}",
+    "#rv-collapse:hover{color:var(--ink,#23211c);border-color:var(--line-strong,#c8bfab)}",
     "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
     "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
     ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
@@ -201,8 +204,11 @@
   function buildPanel() {
     var p = document.createElement("div");
     p.id = "rv-notes";
-    p.innerHTML = '<h4>Annotations</h4><div class="rv-list" id="rv-list"></div>';
+    p.innerHTML = '<div class="rv-notes-hd"><h4>Annotations</h4><button id="rv-collapse" title="Collapse panel (your notes are kept)" aria-label="Collapse panel">Collapse &rsaquo;</button></div><div class="rv-list" id="rv-list"></div>';
     document.body.appendChild(p);
+    // Collapse hides the panel without deleting notes (they persist in
+    // localStorage and reopen via the toolbar's "Notes (N)" button).
+    $("rv-collapse").onclick = function () { $("rv-notes").classList.remove("open"); };
   }
 
   function buildPopover() {
@@ -295,7 +301,7 @@
       var d = document.createElement("div");
       d.className = "rv-note";
       d.innerHTML =
-        '<button class="rv-del" title="Delete">×</button>' +
+        '<button class="rv-del" title="Delete this note">×</button>' +
         '<div class="rv-loc">' + esc(n.loc) + "</div>" +
         '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
         '<div class="rv-txt">' + esc(n.note) + "</div>";
