@@ -43,7 +43,7 @@ body::before{
 .deck{position:fixed; inset:0; overflow:hidden; z-index:1}
 .track{display:flex; height:100%; width:100%; transition:transform .55s cubic-bezier(.7,.02,.27,1)}
 .slide{
-  flex:0 0 100vw; height:100vh; overflow-y:auto; overflow-x:hidden;
+  flex:0 0 100vw; height:100vh; height:100dvh; overflow-y:auto; overflow-x:hidden;
   display:flex; align-items:center; justify-content:center;
   padding:clamp(56px,9vh,96px) clamp(20px,5vw,64px) clamp(72px,11vh,104px);
   scroll-behavior:smooth;
@@ -287,15 +287,27 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   .cols,.econ{grid-template-columns:1fr; gap:var(--s5)}
   .cgrid{grid-template-columns:1fr}
   .src{columns:1}
-  .slide{padding:64px 20px 96px}
+  /* top-align so tall slides scroll from the top instead of clipping their heads;
+     reserve space for the fixed top bar + bottom nav (and notch safe-areas) */
+  .slide{align-items:flex-start;
+    padding:calc(60px + env(safe-area-inset-top)) clamp(16px,5vw,20px) calc(124px + env(safe-area-inset-bottom))}
   .econ .bars{order:2}
   h1{font-size:clamp(2.3rem,9vw,3rem)}
   .jump{display:none}
   .navbar .dots{display:none}
   .stat-line{gap:var(--s5)}
-}
-@media (max-width:780px){
   .topbar .brand .full{display:none}
+  /* gradient scrims so content scrolling under the fixed chrome fades out
+     instead of visibly overlapping the kicker / counter (paper + dark themes) */
+  .deck::before,.deck::after{content:""; position:absolute; left:0; right:0; pointer-events:none; z-index:5}
+  .deck::before{top:0; height:76px; background:linear-gradient(to bottom, var(--paper) 40%, rgba(243,234,217,0))}
+  .deck::after{bottom:0; height:128px; background:linear-gradient(to top, var(--paper) 46%, rgba(243,234,217,0))}
+  body.on-dark-slide .deck::before{background:linear-gradient(to bottom, var(--dark) 40%, rgba(34,26,18,0))}
+  body.on-dark-slide .deck::after{background:linear-gradient(to top, var(--dark) 46%, rgba(34,26,18,0))}
+}
+@media (max-width:560px){
+  /* leave the top-right "Review & edit" pill clear: collapse the kicker to its mark */
+  .topbar .brand .lede{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   .track{transition:none}
@@ -308,7 +320,7 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
 
 <div class="progress" id="progress"></div>
 <div class="topbar">
-  <div class="brand"><b>◆</b> <span class="full">The Gutenberg Press &nbsp;·&nbsp;</span> An Interactive Field Guide</div>
+  <div class="brand"><b>◆</b> <span class="full">The Gutenberg Press &nbsp;·&nbsp;</span> <span class="lede">An Interactive Field Guide</span></div>
 </div>
 <div class="counter"><b id="cNow">1</b> / <span id="cTot">13</span></div>
 

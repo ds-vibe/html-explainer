@@ -47,10 +47,10 @@ body{
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 
 /* ---------- deck mechanics ---------- */
-#deck{height:100vh;width:100vw;overflow:hidden;position:relative;}
+#deck{height:100vh;height:100dvh;width:100vw;overflow:hidden;position:relative;}
 #track{display:flex;height:100%;width:100%;transition:transform .5s cubic-bezier(.7,0,.2,1);will-change:transform;}
 .slide{
-  flex:0 0 100vw;height:100vh;overflow-y:auto;overflow-x:hidden;
+  flex:0 0 100vw;height:100vh;height:100dvh;overflow-y:auto;overflow-x:hidden;
   display:flex;flex-direction:column;
   padding:72px 40px 96px;
 }
@@ -94,6 +94,16 @@ body{
 .dot{width:7px;height:7px;border-radius:50%;background:var(--line-strong);transition:all .3s;pointer-events:auto;cursor:pointer;border:none;padding:0;}
 .dot.active{background:var(--ink);transform:scale(1.35);}
 .dot.seen{background:var(--ink-faint);}
+
+/* ---------- mobile: keep fixed chrome from overlapping scrolling slides ---------- */
+@media (max-width:780px){
+  .slide{padding:calc(58px + env(safe-area-inset-top)) clamp(16px,5vw,20px) calc(110px + env(safe-area-inset-bottom));}
+  #jump-btn{display:none;}            /* the top-right "Review & edit" pill already lives here */
+  /* gradient scrims so content fades under the top bar / bottom nav instead of overlapping */
+  #deck::before,#deck::after{content:"";position:absolute;left:0;right:0;pointer-events:none;z-index:5;}
+  #deck::before{top:0;height:76px;background:linear-gradient(to bottom,var(--paper) 42%,rgba(246,243,236,0));}
+  #deck::after{bottom:0;height:124px;background:linear-gradient(to top,var(--paper) 48%,rgba(246,243,236,0));}
+}
 
 /* jump menu */
 #jump-menu{

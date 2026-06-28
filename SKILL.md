@@ -195,7 +195,8 @@ blanks. What matters most:
 - **Use the horizontal space — proportioned, not a lonely column.** Let the *page* use the width
   while *prose* stays ~60–70ch: give the **centerpiece** room (wide tables/timelines/diagrams), use
   **full-bleed section bands**, reach for **two-column/asymmetric** layouts where they help. Cap the
-  outer container ~1100–1280px with balanced gutters — never a ~720px column stranded in margins.
+  outer container ~1100–1280px with balanced gutters — never a narrow column stranded in margins, or
+  hugged to one side of a wide band with the other half empty (pair it with an aside/visual, or center it).
 - **Motion with purpose:** scroll-reveal/transitions add life; never gratuitous. **Never hide content at `opacity:0` depending on `IntersectionObserver` firing** — it doesn't fire reliably in Playwright full-page screenshots or on some mobile browsers, leaving pages blank. The safe pattern: make `.reveal` a no-op CSS marker only (content always visible by default); use CSS `@keyframes` entrance animations if you want motion on load. Failsafe timers are not reliable enough to fix this — don't rely on them.
 - **Meaningful graphics — the "so what" test, then form follows data.** Every graphic must encode a
   *relationship*, not just store facts. If you can't name its one takeaway in a sentence, it's
@@ -233,6 +234,8 @@ blanks. What matters most:
 - Build the **centerpiece first**, then supporting sections, then polish.
 - **Accessibility & responsive are not optional:** semantic HTML, keyboard-operable controls,
   sufficient contrast, alt text, a real mobile layout (test it — Phase 4).
+- **Fixed chrome must not overlap scrolling content** (the #1 mobile bug): scrim top bars/nav/FABs,
+  pad slides clear of them + `env(safe-area-inset-*)`, use `100dvh` not `100vh`, collapse long kickers.
 - Keep content in **structured data** (a JSON/JS array) separate from presentation wherever there's
   repetition — it makes the loop and edits far easier.
 
@@ -311,54 +314,51 @@ not deliver until all pass:
       **shapes** a wordlist misses (need a fresh-eyes read): **dismiss-and-pivot** ("the real story
       is Y") · **antithesis-to-inflate** ("not X, it's Y"; "not just X") · **setup-then-turn**
       ("…unprecedented. It was not.") · **aphoristic one-liner** ("The structure is the point.") ·
+      **phantom pointer** (lead-in naming something not in this view: "the thing in the right-hand note", or a "left/right" ref that collapses on mobile) ·
       **gating closer** ("only once you see…") · **precious metaphor verbs/nouns** ("doubled as a
       roadmap", "the spine"). Standard: would a human editor at *The Atlantic* flag this?
 - [ ] **Visuals match the words.** Every diagram/chart/demo/metaphor depicts the claim — direction,
       order, magnitude, legend all agree with the caption (don't draw an up-slope under "downhill").
 - [ ] **Accessible & responsive** — semantic HTML, keyboard-operable, alt text, real mobile layout
       (stacks cleanly, no horizontal overflow, tap targets ≥40px).
+- [ ] **Mobile chrome clears content** — scroll a dense slide to its bottom (not just the cover): no
+      overlap/cut-off behind fixed bars/nav/FABs; full-height uses `dvh`, not `vh`.
 - [ ] **Scroll-reveal / mobile visibility** — no content hidden at `opacity:0` or via a class
       depending on `IntersectionObserver`. If `.reveal` exists, it must be a no-op marker (content
       visible by default). All sections must render fully on mobile without interaction.
 - [ ] **Review & edit overlay inlined** — `review-mode.js` is in the page by default (with `<body
       data-review-toggle>`) unless the user opted out; the "Review & edit" launcher should appear.
 
-> **STOP — you must take a screenshot before declaring done.** In Claude Code: `node scripts/shoot.mjs file://<absolute-path-to-assembled.html> <outDir>` then Read every image. Specifically look for: blank sections, empty canvas elements, **SVG text cut off at diagram edges** (viewBox clipping), **overlapping SVG labels** (two labels at the same y-level whose x-ranges collide), clipped text in general, zero-height containers. If any are found, fix and re-screenshot. Do NOT hand over the file until you have seen the screenshots and found no major visual bugs. Skipping this is the #1 reason builds ship broken.
+> **STOP — you must take a screenshot before declaring done.** In Claude Code: `node scripts/shoot.mjs file://<absolute-path-to-assembled.html> <outDir>` then Read every image. Specifically look for: blank sections, empty canvas elements, **SVG text cut off at diagram edges** (viewBox clipping), **overlapping SVG labels** (two labels at the same y-level whose x-ranges collide), clipped text in general, **template-truncated content** (a card/label rendering only the first item of a list plus a dangling "…" — show a complete short value, never a fake-clipped one), zero-height containers. If any are found, fix and re-screenshot. Do NOT hand over the file until you have seen the screenshots and found no major visual bugs. Skipping this is the #1 reason builds ship broken.
 
 Then run the look-and-fix loop:
 1. **Render it for real and look.** Headless-browser screenshot — desktop *and* mobile — including
    **every interactive state** (expanded, filtered, drawers/modals open, nav scrolled). Helper:
-   `node scripts/shoot.mjs <url> <outDir>` (Playwright). Then **Read the screenshots** and judge.
-   **Cheap capability check first — do this before any install attempt:** run
-   `which chromium google-chrome chromium-browser 2>/dev/null | head -1` (≈1s, no download).
-   If nothing is found, **do not attempt to install Playwright or download Chromium** — bail
-   immediately to the no-browser path below. Cowork and sandboxed environments cannot run a
-   browser; the download will fail or time out every time, and retrying wastes 6–10 minutes for
-   nothing. **One failure = bail. Never retry.**
-   Only run `npx playwright install chromium` when the cheap check confirms a browser *could*
-   work (e.g. Claude Code on a real machine).
-   **No browser?** Run Step 0 rigorously, computing contrast from your own tokens; then tell the
-   user the visual pass didn't run and ask them to open the file and confirm demos render.
+   `node scripts/shoot.mjs <url> <outDir>` (Playwright) — auto-detects decks and shoots an interior
+   slide scrolled to its bottom (a cover-only mobile shot hides chrome-overlap bugs). Then **Read the
+   screenshots** and judge.
+   **Check for a browser first:** `which chromium google-chrome chromium-browser 2>/dev/null | head -1`
+   (≈1s). If none, **don't install Playwright** — sandboxed/Cowork envs can't run one and the download
+   wastes 6–10 min; one failure = bail, never retry. Only `npx playwright install chromium` when the
+   check confirms a real machine (e.g. Claude Code). **No browser?** Run Step 0 rigorously (compute
+   contrast from your tokens), then tell the user the visual pass didn't run and to confirm demos render.
 2. **Critique like a human seeing it cold:** What's confusing, barren, cramped, misaligned,
    low-contrast? Is the *order* right? Would a newcomer follow it? Does the mental model land and hold?
 3. **10x the weak spots** — then re-screenshot. Repeat until you'd ship it proudly unprompted.
 4. "It builds / renders text" is **not** "it's good." Real improvements are found by *looking*.
 
-**The QA gate — fresh-eyes passes, not a self-skim.** Listing a standard is not enforcing it: a
-checklist you read once gets pattern-matched as "done," and the pass that wrote the prose is the
-worst judge of whether it is slop (it sees intent, not effect). So before shipping, run the
-pre-flight as **discrete passes**, ideally with fresh eyes (a sub-agent that did not author the
-draft). The passes and where their criteria live above:
+**The QA gate — fresh-eyes passes, not a self-skim.** A checklist you read once gets pattern-matched
+as "done," and the pass that wrote the prose is the worst judge of its own slop (it sees intent, not
+effect). Before shipping, run the pre-flight as **discrete passes**, ideally with fresh eyes (a
+sub-agent that didn't author the draft). The passes and where their criteria live above:
 - **Slop** (phrases + the sentence-shape catalog) · **Structure** (no stacked headers; open on
   substance) · **Redundancy** (one concept/home; throughline exception) · **Graphics** (the "so
   what" test + form-follows-data; plus the inverse check for prose that should be a graphic) ·
   **Synthesis** (a real, sourced, labeled connection where the topic supports it).
 - **Rank findings** blocker / should-fix / optional and fail only on blockers, so the gate doesn't
   drown in nits. **Re-run Slop on any revised section** — slop most often re-enters during edits.
-- Mechanical tells (em-dash density, banned phrases) are lintable with a grep; shapes and tone need
-  the read. Two cheap artifacts make the passes faster: a **concept ledger** (every load-bearing
-  concept and where it lives) and a **graphics inventory** (each graphic + its one-sentence
-  takeaway). **Definition of done = all passes clear**, not "it builds and looks fine."
+- **Slop lint (mechanical, on the *final/edited* file — a self-skim misses these):** flags the negation-flip ("not X. It's Y") + back-to-back em-dashes; read each hit (appositive dashes pass), then a fresh-eyes pass for the **shapes**. **Done = all passes clear**, not "it builds and looks fine."
+  `grep -oE '>[^<]{12,}<' f.html | grep -nEi '\b(not|never|n.t)\b[^.]*\. (it|that|this|they) (is|was|did|are)|—[^—]{1,40}—'`
 
 ## Phase 5 — Verify & ship
 
@@ -455,24 +455,19 @@ file (the bundled copies already do). **These are the single source of truth for
   means manipulate → live result: a slider/input driving a real model, a step-through, a sim, a
   predict-then-reveal. **Toggles, accordions, reveal cards, click-to-expand, and the quiz do NOT
   count toward the floor** — they're lighter disclosure, useful but not demos. Ship fewer than two
-  only when the topic genuinely can't support them, and **say so on the page**. Note: the no-browser
-  path tends to under-build demos (no render loop to iterate on) — hit the floor anyway.
-  Forms: **fill-in / pick-the-answer** ("what comes next?", ideally predict-then-reveal);
-  **live input → live output**; **a slider that reshapes a result** (driven by the *real* formula —
-  use a continuous min/max range with small or absent `step`; never large discrete jumps; update on
-  every `input` event, not just `change`);
-  **click-to-explore**; **step-through**. Keep each tiny and about ONE idea; prefill sensible
-  defaults; label illustrative data as such; keyboard-operable and works on mobile.
+  only when the topic genuinely can't support them, and **say so on the page** (the no-browser path
+  under-builds demos — hit the floor anyway). Forms: **fill-in / pick-the-answer** ("what comes next?",
+  ideally predict-then-reveal); **live input → live output**; **a slider that reshapes a result**
+  (driven by the *real* formula — continuous min/max range, small or absent `step`, update on every
+  `input` not `change`); **click-to-explore**; **step-through**. Keep each tiny and about ONE idea;
+  prefill sensible defaults; label illustrative data as such; keyboard-operable and works on mobile.
 - **Progressive disclosure:** `<details>`/accordion, "go deeper" expanders, tabs.
 - **Filterable table/matrix:** the workhorse centerpiece for "what applies to / what is X".
 - **Timeline:** for sequence/schedule; before-vs-after overlays and a "today" marker when relevant.
   Prefer **true-scale** spacing (position ∝ elapsed time) when the gaps themselves tell a story.
-  **Detail goes in a fixed panel, not a floating tooltip.** A click/hover tooltip anchored to a node
-  collides with neighboring nodes, hides behind the dot's own number, and clips at the track edges
-  (a recurring bug). Default: one shared detail panel below the rail that updates on
-  select/hover. If you must float a label, render it above the row, offset clear of every dot, and
-  clamp it inside the container bounds. When true-scale clustering crowds nodes, dodge them
-  vertically with connector stems and keep date labels on a separate baseline from the node numbers.
+  **Detail goes in one shared panel below the rail, not a floating tooltip** (tooltips collide with
+  neighbors, hide behind the dot's number, and clip at track edges). When true-scale clustering crowds
+  nodes, dodge them vertically with connector stems and keep date labels on a separate baseline.
 - **Dot / strip plot on a shared axis:** plot each item as a colored dot along one meaningful axis
   (e.g. settled→contested, cheap→expensive); the *distribution* and the outliers are the insight.
   Color = category; click or hover a row to update a shared detail panel. Strong, compact centerpiece

@@ -45,9 +45,12 @@ if (!/<body[^>]*\bdata-review-toggle\b/i.test(html)) {
  *    with the deck's own top-right controls (the bug we hand-fixed on fair use). */
 const isDeck = /class="[^"]*\b(slide|deck|deck-viewport)\b|data-deck\b/i.test(html);
 if (isDeck && !/#rv-launch\s*\{[^}]*top:64px/.test(html)) {
+  // review-mode.js parks the deck launcher bottom-left (it assumes decks put nav top-right);
+  // these decks put their counter/nav at the bottom, so override to the empty top-right corner.
+  // !important + bottom/left:auto are required to beat review-mode.js's inline styles.
   html = html.replace(/<\/head>/i,
-    "<style>/* assembler: keep launcher clear of deck chrome */ body #rv-launch{top:64px;right:16px}</style>\n</head>");
-  did.push("deck detected → offset review launcher (no collision)");
+    "<style>/* assembler: keep launcher clear of deck chrome */ body #rv-launch{top:64px!important;right:16px!important;bottom:auto!important;left:auto!important}</style>\n</head>");
+  did.push("deck detected → offset review launcher to top-right (no collision)");
 }
 
 /* 3) inject the invariant drop-in scripts before </body>, escaping literal </script> */

@@ -42,7 +42,7 @@ Built with this skill, hosted on GitHub Pages — each is a self-contained `.htm
 |---|---|---|
 | The machine that multiplied ideas (Gutenberg's press) | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/gutenberg.html) |
 | The Doppler effect (why a siren changes pitch) | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/doppler.html) |
-| How transistors work | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/transistors.html) |
+| The grammar of shadow (reading film noir) | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/film-noir.html) |
 | Two ways to make a color | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/color-mixing.html) |
 | The EU AI Act | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ai-act.html) |
 | What "fair use" actually means | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/fair-use.html) |

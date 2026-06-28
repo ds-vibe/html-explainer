@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Film Noir — Reading the Grammar of Shadow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0a0a0c; --black-2:#0d0d10; --card:#16161a; --card-2:#1d1d22;
+  --line:#26262d; --line-strong:#3a3a44;
+  --ink:#f4f0e7; --ink-soft:#cdc7bb; --ink-faint:#8b877d;
+  --amber:#e9a23b; --amber-bright:#f7c267; --amber-deep:#caa15a;
+  --steel:#79a4c6; --steel-soft:#a6c6df;
+  --serif:"Spectral",Georgia,serif;
+  --display:"Oswald",system-ui,sans-serif;
+  --maxw:1180px;
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s7:48px;--s8:64px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{background:var(--black); color:var(--ink-soft); font-family:var(--serif);
+  -webkit-font-smoothing:antialiased; overflow:hidden}
+
+/* ---------- deck shell ---------- */
+.deck{position:fixed; inset:0; overflow:hidden; z-index:1; background:var(--black)}
+.track{display:flex; height:100%; width:100%; transition:transform .55s cubic-bezier(.7,.02,.27,1)}
+.slide{
+  flex:0 0 100vw; height:100vh; height:100dvh; overflow-y:auto; overflow-x:hidden;
+  display:flex; align-items:center; justify-content:center;
+  padding:clamp(58px,9vh,96px) clamp(20px,5vw,64px) clamp(78px,11vh,108px);
+  position:relative; scroll-behavior:smooth;
+  background:var(--black);
+}
+.slide.top{align-items:flex-start}
+.wrap{width:100%; max-width:var(--maxw); margin:0 auto; position:relative; z-index:2}
+.wrap.narrow{max-width:780px}
+.wrap.mid{max-width:960px}
+
+/* decorative atmosphere (kept subtle; fades to black so chrome scrims stay clean) */
+.glow{position:absolute; inset:0; pointer-events:none; z-index:0}
+.glow.right{background:radial-gradient(60% 80% at 88% 30%, rgba(233,162,59,.13), transparent 70%)}
+.glow.left{background:radial-gradient(58% 80% at 8% 36%, rgba(233,162,59,.12), transparent 70%)}
+.glow.cool{background:radial-gradient(60% 80% at 86% 32%, rgba(121,164,198,.13), transparent 70%)}
+.blinds{position:absolute; inset:0; pointer-events:none; z-index:0; opacity:.5;
+  background:repeating-linear-gradient(8deg, rgba(0,0,0,.62) 0 4px, transparent 4px 26px);
+  -webkit-mask-image:linear-gradient(95deg, #000 0 38%, transparent 72%);
+  mask-image:linear-gradient(95deg, #000 0 38%, transparent 72%)}
+/* minimalist noir cover motif: lone figure under a streetlamp */
+.cover-art{position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden}
+.cover-art svg{position:absolute; top:50%; right:clamp(6px,3vw,60px); transform:translateY(-50%);
+  height:min(84vh,860px); width:auto}
+@media (max-width:980px){ .cover-art{display:none} }
+
+/* ---------- typography ---------- */
+.eyebrow{font-family:var(--display); font-weight:600; font-size:.74rem; letter-spacing:.26em;
+  text-transform:uppercase; color:var(--amber); margin:0 0 var(--s4);
+  display:flex; align-items:center; gap:var(--s3)}
+.eyebrow::before{content:""; width:30px; height:2px; background:currentColor; display:inline-block; flex:none}
+.eyebrow.cool{color:var(--steel)}
+h1{font-family:var(--display); font-weight:700; line-height:.96; letter-spacing:.005em;
+  text-transform:uppercase; color:var(--ink); margin:0 0 var(--s5);
+  font-size:clamp(2.7rem,7vw,5.6rem)}
+h2{font-family:var(--display); font-weight:600; line-height:1.02; letter-spacing:.01em;
+  text-transform:uppercase; color:var(--ink); margin:0 0 var(--s5);
+  font-size:clamp(2rem,4.4vw,3.35rem)}
+h1:focus,h2:focus{outline:none}
+h3{font-family:var(--display); font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--ink); font-size:1.04rem; margin:0 0 var(--s2)}
+p{font-size:clamp(1.04rem,1.45vw,1.22rem); line-height:1.66; margin:0 0 var(--s4); max-width:64ch; color:var(--ink-soft)}
+.lead{font-size:clamp(1.18rem,1.9vw,1.5rem); color:var(--ink); line-height:1.5; font-weight:400}
+.lede{font-family:var(--display); font-weight:300; letter-spacing:.02em; font-size:clamp(1rem,1.4vw,1.16rem);
+  color:var(--ink-soft); margin:0 0 var(--s5); max-width:60ch; text-transform:none}
+strong{color:var(--ink); font-weight:600}
+em{color:var(--amber-bright); font-style:italic}
+.amberword{color:var(--amber-bright)}
+.steelword{color:var(--steel-soft)}
+
+/* ---------- cover ---------- */
+.cover h1{font-size:clamp(2.9rem,8.4vw,6.6rem)}
+.cover .sub{font-family:var(--serif); font-size:clamp(1.15rem,2vw,1.5rem); color:var(--ink-soft);
+  max-width:46ch; line-height:1.5; margin-top:var(--s2)}
+.kicker{font-family:var(--display); font-weight:300; letter-spacing:.42em; text-transform:uppercase;
+  font-size:clamp(.72rem,1.4vw,.92rem); color:var(--amber); margin:0 0 var(--s5)}
+.rule{height:2px; width:96px; background:linear-gradient(90deg,var(--amber),transparent); margin:var(--s6) 0; border:0}
+.meta-row{font-family:var(--display); font-size:.82rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-faint); margin-top:var(--s6); display:flex; gap:var(--s6); flex-wrap:wrap}
+.meta-row b{color:var(--ink); font-weight:600}
+
+/* ---------- layout helpers ---------- */
+.cols{display:grid; grid-template-columns:1fr 1fr; gap:clamp(28px,4.5vw,64px); align-items:center}
+.cols.demo{grid-template-columns:.9fr 1.1fr; align-items:start}
+.cols.lift{align-items:start}
+
+/* high-key vs low-key mini diptych */
+.diptych{display:grid; grid-template-columns:1fr 1fr; gap:var(--s4); margin-top:var(--s2)}
+.swatch{border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--card)}
+.swatch .cap{font-family:var(--display); text-transform:uppercase; letter-spacing:.12em; font-size:.72rem;
+  padding:10px 12px; color:var(--ink-soft); border-top:1px solid var(--line)}
+.swatch svg{display:block; width:100%; height:auto}
+
+/* demo panel */
+.demo-stage{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px;
+  box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.demo-stage svg{display:block; width:100%; height:auto; border-radius:8px; background:#0c0c0e}
+.controls{margin-top:var(--s4)}
+.ctl{margin:0 0 var(--s4)}
+.ctl:last-child{margin-bottom:0}
+.ctl label{display:flex; justify-content:space-between; align-items:baseline;
+  font-family:var(--display); text-transform:uppercase; letter-spacing:.12em; font-size:.74rem;
+  color:var(--ink-soft); margin-bottom:8px}
+.ctl label b{font-family:var(--serif); font-style:italic; font-size:1.02rem; letter-spacing:0; text-transform:none; color:var(--amber-bright)}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:4px; border-radius:4px;
+  background:var(--line-strong); outline:none; cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:20px; height:20px;
+  border-radius:50%; background:var(--amber); border:3px solid var(--black); box-shadow:0 0 0 1px var(--amber), 0 0 14px rgba(233,162,59,.6); cursor:pointer}
+input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; background:var(--amber);
+  border:3px solid var(--black); box-shadow:0 0 14px rgba(233,162,59,.6); cursor:pointer}
+.readout{margin-top:var(--s4); border-left:3px solid var(--amber); background:var(--card-2);
+  border-radius:0 10px 10px 0; padding:14px 16px}
+.readout .rt{font-family:var(--display); text-transform:uppercase; letter-spacing:.1em; font-size:.8rem;
+  color:var(--amber-bright); margin:0 0 6px}
+.readout .rd{font-size:.99rem; line-height:1.55; color:var(--ink-soft); margin:0; max-width:none}
+.caption-sm{font-family:var(--display); font-weight:300; letter-spacing:.06em; font-size:.82rem;
+  color:var(--ink-faint); margin-top:var(--s4); text-transform:none}
+.caption-sm b{color:var(--ink-soft); font-weight:500}
+
+/* annotated frame */
+.frame-shell{position:relative; border:1px solid var(--line-strong); border-radius:12px; overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.55); background:#0a0a0c}
+.frame-shell svg{display:block; width:100%; height:auto}
+.hot{position:absolute; width:34px; height:34px; border-radius:50%; transform:translate(-50%,-50%);
+  border:2px solid var(--amber); background:rgba(10,10,12,.55); color:var(--amber-bright);
+  font-family:var(--display); font-weight:600; font-size:.95rem; cursor:pointer; z-index:3;
+  display:flex; align-items:center; justify-content:center; backdrop-filter:blur(2px);
+  box-shadow:0 0 0 0 rgba(233,162,59,.5); animation:pulse 2.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(233,162,59,.45)}70%{box-shadow:0 0 0 12px rgba(233,162,59,0)}100%{box-shadow:0 0 0 0 rgba(233,162,59,0)}}
+.hot:hover{background:var(--amber); color:#14110a}
+.hot[aria-pressed="true"]{background:var(--amber); color:#14110a; animation:none; box-shadow:0 0 18px rgba(233,162,59,.7)}
+.hot:focus-visible{outline:2px solid var(--amber-bright); outline-offset:3px}
+.frame-panel{margin-top:var(--s4); border-left:3px solid var(--amber); background:var(--card);
+  border-radius:0 10px 10px 0; padding:16px 18px; min-height:96px}
+.frame-panel .ft{font-family:var(--display); text-transform:uppercase; letter-spacing:.1em; color:var(--amber-bright); margin:0 0 6px; font-size:.92rem}
+.frame-panel .fd{margin:0; color:var(--ink-soft); font-size:1.02rem; line-height:1.55; max-width:none}
+
+/* settled vs contested */
+.legend{display:flex; gap:var(--s5); flex-wrap:wrap; margin:0 0 var(--s5); font-family:var(--display);
+  text-transform:uppercase; letter-spacing:.1em; font-size:.76rem}
+.legend span{display:flex; align-items:center; gap:8px; color:var(--ink-soft)}
+.chip{width:13px; height:13px; border-radius:3px; display:inline-block}
+.chip.a{background:var(--amber)} .chip.s{background:var(--steel)}
+.svc{display:grid; grid-template-columns:1fr 1fr; gap:var(--s5)}
+.col-head{font-family:var(--display); text-transform:uppercase; letter-spacing:.1em; font-size:.95rem; margin:0 0 var(--s4); display:flex; align-items:center; gap:10px}
+.col.set .col-head{color:var(--amber-bright)} .col.con .col-head{color:var(--steel-soft)}
+.fact{border-left:3px solid var(--amber); background:var(--card); border-radius:0 8px 8px 0; padding:12px 14px; margin:0 0 var(--s3)}
+.col.con .fact{border-left-color:var(--steel)}
+.fact p{margin:0; font-size:.98rem; line-height:1.5; max-width:none; color:var(--ink-soft)}
+
+/* film reference cards */
+.films{display:grid; grid-template-columns:repeat(2,1fr); gap:var(--s4)}
+.film{border:1px solid var(--line); border-radius:12px; padding:18px 20px; background:var(--card); position:relative; overflow:hidden}
+.film::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--amber)}
+.film .yr{font-family:var(--display); letter-spacing:.14em; font-size:.74rem; color:var(--amber-bright); text-transform:uppercase}
+.film h3{margin:6px 0 4px}
+.film .dir{font-family:var(--display); font-weight:300; letter-spacing:.04em; font-size:.86rem; color:var(--ink-faint); text-transform:uppercase; margin-bottom:10px}
+.film p{margin:0; font-size:.96rem; line-height:1.5; max-width:none}
+
+/* quiz */
+.quiz{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:clamp(20px,3vw,34px); box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.q-top{display:flex; justify-content:space-between; align-items:center; font-family:var(--display);
+  text-transform:uppercase; letter-spacing:.12em; font-size:.76rem; color:var(--ink-faint); margin-bottom:var(--s4)}
+.q-top .score b{color:var(--amber-bright)}
+.qbar{height:4px; background:var(--line-strong); border-radius:4px; overflow:hidden; margin-bottom:var(--s5)}
+.qbar i{display:block; height:100%; background:var(--amber); transition:width .35s}
+.q-text{font-family:var(--serif); font-size:clamp(1.2rem,2.2vw,1.55rem); color:var(--ink); line-height:1.35; margin:0 0 var(--s5)}
+.opts{display:flex; flex-direction:column; gap:10px}
+.opt{display:block; width:100%; text-align:left; font-family:var(--serif); font-size:1.04rem; color:var(--ink-soft);
+  background:var(--card-2); border:1px solid var(--line-strong); border-radius:9px; padding:14px 16px; cursor:pointer; transition:.15s}
+.opt:hover:not(:disabled){border-color:var(--amber); color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:#5fb07a; background:rgba(95,176,122,.12); color:#bfe6cc}
+.opt.wrong{border-color:#c8625b; background:rgba(200,98,91,.12); color:#edc4c0}
+.opt .mk{font-family:var(--display); margin-right:10px; color:var(--ink-faint)}
+.why{margin-top:var(--s4); border-left:3px solid var(--amber); padding:12px 16px; background:var(--card-2);
+  border-radius:0 8px 8px 0; font-size:.99rem; line-height:1.55; color:var(--ink-soft); display:none}
+.why.show{display:block}
+.why b{color:var(--amber-bright); font-family:var(--display); text-transform:uppercase; letter-spacing:.08em; font-size:.78rem; display:block; margin-bottom:4px}
+.q-foot{display:flex; justify-content:space-between; align-items:center; margin-top:var(--s5)}
+.btn{font-family:var(--display); text-transform:uppercase; letter-spacing:.1em; font-size:.84rem; cursor:pointer;
+  border-radius:8px; padding:12px 22px; border:1px solid var(--line-strong); background:transparent; color:var(--ink-soft); transition:.15s}
+.btn:hover:not(:disabled){border-color:var(--ink-soft); color:var(--ink)}
+.btn:disabled{opacity:.32; cursor:default}
+.btn.primary{background:var(--amber); color:#14110a; border-color:var(--amber); font-weight:600}
+.btn.primary:hover:not(:disabled){background:var(--amber-bright); border-color:var(--amber-bright); color:#14110a}
+.quiz-done{text-align:center; padding:var(--s5) 0}
+.quiz-done .big{font-family:var(--display); font-size:clamp(2.4rem,6vw,3.6rem); color:var(--amber-bright); line-height:1}
+.quiz-done p{margin:var(--s4) auto 0; max-width:46ch}
+
+/* close / sources */
+.src{font-size:.92rem; line-height:1.6; color:var(--ink-faint); max-width:62ch}
+.src b{color:var(--ink-soft)}
+.note-strip{display:flex; gap:10px; align-items:flex-start; border:1px solid var(--line); border-radius:10px;
+  background:var(--card); padding:14px 16px; margin-top:var(--s5); max-width:60ch}
+.note-strip .tag{font-family:var(--display); text-transform:uppercase; letter-spacing:.1em; font-size:.7rem; color:var(--amber-bright); border:1px solid var(--amber); border-radius:5px; padding:3px 7px; flex:none}
+.note-strip p{margin:0; font-size:.92rem; color:var(--ink-soft)}
+
+/* ---------- fixed chrome ---------- */
+.progress{position:fixed; top:0; left:0; height:2px; width:0; background:linear-gradient(90deg,var(--amber),var(--amber-bright));
+  z-index:30; transition:width .45s ease; box-shadow:0 0 12px rgba(233,162,59,.7)}
+.topbar{position:fixed; top:0; left:0; right:0; z-index:24; display:flex; justify-content:space-between; align-items:center;
+  padding:15px clamp(16px,5vw,40px); pointer-events:none}
+.brand{font-family:var(--display); font-weight:500; text-transform:uppercase; letter-spacing:.16em;
+  font-size:.82rem; color:var(--ink-soft); display:flex; align-items:center; gap:10px}
+.brand b{color:var(--amber); font-size:.7rem; letter-spacing:0}
+.brand .full{color:var(--ink-faint); font-weight:300}
+.counter{position:fixed; bottom:23px; left:22px; z-index:24; font-family:var(--display); letter-spacing:.14em;
+  font-size:.82rem; color:var(--ink-faint); pointer-events:none}
+.counter b{color:var(--ink); font-weight:600}
+.navbar{position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:24; display:flex; align-items:center; gap:8px;
+  background:rgba(18,18,22,.86); backdrop-filter:blur(8px); border:1px solid var(--line); border-radius:40px; padding:7px 9px}
+.nav{width:46px; height:46px; border-radius:50%; border:1px solid var(--line-strong); background:transparent; color:var(--ink-soft);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.16s}
+.nav:hover:not(:disabled){background:var(--amber); color:#14110a; border-color:var(--amber)}
+.nav:disabled{opacity:.3; cursor:default}
+.nav svg{width:19px; height:19px}
+.dots{display:flex; gap:7px; align-items:center; padding:0 6px}
+.dots button{width:7px; height:7px; border-radius:50%; border:0; background:var(--line-strong); cursor:pointer; padding:0; transition:.2s}
+.dots button[aria-current="true"]{background:var(--amber); transform:scale(1.35)}
+.jump{background:transparent; border:0; color:var(--ink-faint); font-family:var(--display); text-transform:uppercase;
+  letter-spacing:.12em; font-size:.7rem; cursor:pointer; padding:0 10px}
+.jump:hover{color:var(--ink-soft)}
+.hint{position:fixed; bottom:104px; left:50%; transform:translateX(-50%); z-index:23; font-family:var(--display);
+  text-transform:uppercase; letter-spacing:.14em; font-size:.7rem; color:var(--ink-faint);
+  display:flex; gap:8px; align-items:center; transition:opacity .5s}
+.kbd{border:1px solid var(--line-strong); border-radius:4px; padding:1px 7px; color:var(--ink-soft)}
+.visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .cols,.cols.demo,.svc,.films,.diptych{grid-template-columns:1fr; gap:var(--s5)}
+  /* top-align tall slides; reserve fixed top bar + bottom nav + notch */
+  .slide{align-items:flex-start;
+    padding:calc(58px + env(safe-area-inset-top)) clamp(16px,5vw,22px) calc(122px + env(safe-area-inset-bottom))}
+  /* gradient scrims so content scrolling under fixed chrome fades to black */
+  .deck::before,.deck::after{content:""; position:absolute; left:0; right:0; pointer-events:none; z-index:20}
+  .deck::before{top:0; height:74px; background:linear-gradient(to bottom, var(--black) 44%, rgba(10,10,12,0))}
+  .deck::after{bottom:0; height:118px; background:linear-gradient(to top, var(--black) 50%, rgba(10,10,12,0))}
+  .navbar .dots{display:none}
+  .jump{display:none}
+  .cols.demo{display:flex; flex-direction:column}
+  .cols.demo .demo-stage{order:-1}
+  h1{font-size:clamp(2.4rem,11vw,3.4rem)}
+  .meta-row{gap:var(--s5)}
+}
+@media (max-width:560px){
+  .brand .full{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .track{transition:none}
+  .hot{animation:none}
+}
+</style>
+<style>/* assembler: keep launcher clear of deck chrome */ body #rv-launch{top:64px!important;right:16px!important;bottom:auto!important;left:auto!important}</style>
+</head>
+<body data-review-toggle>
+
+<div class="progress" id="progress"></div>
+<div class="topbar">
+  <div class="brand"><b>◆</b> Film Noir <span class="full">· The Grammar of Shadow</span></div>
+</div>
+<div class="counter"><b id="cNow">1</b> / <span id="cTot">15</span></div>
+
+<div class="deck" data-deck>
+<div class="track" id="track">
+
+<!-- 1 · COVER -->
+<section class="slide cover" aria-label="Cover — Film Noir">
+  <div class="blinds"></div>
+  <div class="cover-art" aria-hidden="true">
+    <svg viewBox="0 0 480 840" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="lampGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#f7c267" stop-opacity=".85"/>
+          <stop offset="38%" stop-color="#e9a23b" stop-opacity=".32"/>
+          <stop offset="100%" stop-color="#e9a23b" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="poolGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#e9a23b" stop-opacity=".48"/>
+          <stop offset="60%" stop-color="#caa15a" stop-opacity=".12"/>
+          <stop offset="100%" stop-color="#caa15a" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="coneGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f7c267" stop-opacity=".26"/>
+          <stop offset="100%" stop-color="#e9a23b" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <circle cx="356" cy="120" r="112" fill="url(#lampGlow)"/>
+      <polygon points="344,128 368,128 476,556 248,556" fill="url(#coneGrad)"/>
+      <ellipse cx="360" cy="560" rx="170" ry="34" fill="url(#poolGlow)"/>
+      <!-- lamp -->
+      <rect x="352" y="132" width="5" height="430" fill="#2b271f"/>
+      <rect x="348" y="556" width="13" height="8" rx="2" fill="#2b271f"/>
+      <path d="M338 108 L370 108 L366 134 L342 134 Z" fill="#100e0b" stroke="#caa15a" stroke-width="1.2"/>
+      <rect x="349" y="97" width="10" height="12" rx="2" fill="#100e0b" stroke="#caa15a" stroke-width="1"/>
+      <line x1="354" y1="90" x2="354" y2="97" stroke="#caa15a" stroke-width="1.4"/>
+      <!-- long cast shadow -->
+      <ellipse cx="196" cy="565" rx="142" ry="13" fill="#000" opacity=".5"/>
+      <!-- figure -->
+      <g fill="#070708">
+        <path d="M260 396 Q278 376 296 396 L305 520 L251 520 Z"/>
+        <ellipse cx="278" cy="360" rx="30" ry="7"/>
+        <path d="M261 360 Q263 334 278 332 Q293 334 295 360 Z"/>
+        <rect x="263" y="518" width="9" height="44" rx="1"/>
+        <rect x="284" y="518" width="9" height="44" rx="1"/>
+      </g>
+      <!-- amber rim light on the lamp side -->
+      <path d="M296 396 L305 520" stroke="#caa15a" stroke-width="1.5" opacity=".55"/>
+      <path d="M295 360 Q299 348 293 338" stroke="#caa15a" stroke-width="1.2" opacity=".4" fill="none"/>
+    </svg>
+  </div>
+  <div class="wrap">
+    <p class="kicker">An interactive field guide</p>
+    <h1>Film Noir</h1>
+    <p class="sub">How to <em>read</em> a frame of shadow — the light, the bars, the angle, and the voice that already knows how it ends.</p>
+    <hr class="rule">
+    <div class="meta-row">
+      <span><b>15</b> slides</span>
+      <span><b>3</b> playable demos</span>
+      <span><b>~10</b> min</span>
+      <span><b>4</b> films to watch</span>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · MENTAL MODEL -->
+<section class="slide" aria-label="The mental model">
+  <div class="glow right"></div>
+  <div class="wrap narrow">
+    <p class="eyebrow">The idea</p>
+    <h2>The frame tells the story</h2>
+    <p class="lead">In a noir, the camera is the first character to give the game away.</p>
+    <p>Before the double-cross, before the body, before the confession, the light has already taken a side. A face cut in half by shadow. A room striped with the shadow of a window blind. A horizon tilted a few degrees off true. These are not set dressing — they are the story, told early and told in the dark.</p>
+    <p>Learn to read a handful of devices — the light, the bars, the angle, the framing, the wet street, the doomed voice — and you can call a character's fate from the first close-up. By the time the plot catches up, the image has already told you how it ends.</p>
+  </div>
+</section>
+
+<!-- 3 · ORIGINS -->
+<section class="slide" aria-label="Origins in German Expressionism">
+  <div class="wrap narrow">
+    <p class="eyebrow">Origins</p>
+    <h2>Where the shadows came from</h2>
+    <p>Noir's high-contrast darkness came to Hollywood from Germany. In the 1920s, Expressionist filmmakers like <em>The Cabinet of Dr. Caligari</em> (1920) and Fritz Lang's <em>M</em> (1931) built whole worlds out of painted shadow and warped geometry, pushing a character's dread out onto the screen.</p>
+    <p>When the Nazi regime drove many of those filmmakers west, directors such as <strong>Fritz Lang</strong>, <strong>Robert Siodmak</strong>, <strong>Billy Wilder</strong> and <strong>Otto Preminger</strong> reached Los Angeles with the technique already in hand. Hollywood's cheap crime pictures, adapted from hardboiled pulp, put it to use.</p>
+  </div>
+</section>
+
+<!-- 4 · LOW-KEY LIGHTING -->
+<section class="slide top" aria-label="Low-key lighting and chiaroscuro">
+  <div class="wrap mid">
+    <p class="eyebrow">Device 01 · Light</p>
+    <h2>What the darkness does</h2>
+    <div class="cols lift">
+      <div>
+        <p>Standard Hollywood lit a scene <em>high-key</em>: bright, even, every face fully legible. Noir does the opposite. It kills the <strong>fill light</strong> — the soft secondary light that opens up the shadows — and lets a single hard <strong>key light</strong> do the work.</p>
+        <p>The result is <em>chiaroscuro</em>: deep blacks, a blade of highlight, a face you can only half read. That hidden half is where a character's second nature lives, and you read it before anyone says a word.</p>
+      </div>
+      <div class="diptych">
+        <div class="swatch">
+          <svg viewBox="0 0 120 120" role="img" aria-label="High-key: an evenly lit face">
+            <rect width="120" height="120" fill="#2a2a2e"/>
+            <ellipse cx="60" cy="56" rx="30" ry="37" fill="#c9c4ba"/>
+            <rect x="48" y="86" width="24" height="16" fill="#c9c4ba"/>
+            <circle cx="50" cy="52" r="3.4" fill="#3a3833"/><circle cx="70" cy="52" r="3.4" fill="#3a3833"/>
+            <path d="M60 56 L57 66 L63 66 Z" fill="#a59f93"/>
+            <path d="M52 75 Q60 77 68 75" stroke="#7d7669" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          </svg>
+          <div class="cap">High-key — nothing hidden</div>
+        </div>
+        <div class="swatch">
+          <svg viewBox="0 0 120 120" role="img" aria-label="Low-key: a face split into light and shadow">
+            <rect width="120" height="120" fill="#0c0c0e"/>
+            <ellipse cx="60" cy="56" rx="30" ry="37" fill="#c9c4ba"/>
+            <rect x="48" y="86" width="24" height="16" fill="#c9c4ba"/>
+            <circle cx="50" cy="52" r="3.4" fill="#3a3833"/><circle cx="70" cy="52" r="3.4" fill="#3a3833"/>
+            <path d="M60 56 L57 66 L63 66 Z" fill="#a59f93"/>
+            <path d="M52 75 Q60 77 68 75" stroke="#7d7669" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <rect x="60" y="10" width="60" height="100" fill="#0c0c0e" opacity="0.9"/>
+            <rect x="56" y="10" width="6" height="100" fill="url(#edge4)"/>
+            <defs><linearGradient id="edge4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0c0c0e" stop-opacity="0"/><stop offset="1" stop-color="#0c0c0e" stop-opacity="0.9"/></linearGradient></defs>
+          </svg>
+          <div class="cap">Low-key — half withheld</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · DEMO 1: LIGHT LAB -->
+<section class="slide top" aria-label="Interactive demo: the light lab">
+  <div class="wrap mid">
+    <p class="eyebrow">Try it · The light lab</p>
+    <h2>Take away the fill</h2>
+    <p class="lede">Drag the <b>fill</b> down and swing the <b>key</b> across the face. Watch a safe, evenly lit portrait turn into a noir one.</p>
+    <div class="cols demo">
+      <div class="demo-stage">
+        <svg id="lightSvg" viewBox="0 0 300 340" role="img" aria-label="A portrait re-lit live by the sliders">
+          <defs>
+            <clipPath id="faceClip">
+              <ellipse cx="150" cy="138" rx="76" ry="94"/>
+              <rect x="120" y="210" width="60" height="44"/>
+              <path d="M58 340 Q60 256 150 248 Q240 256 242 340 Z"/>
+            </clipPath>
+            <linearGradient id="shadowGrad" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="0">
+              <stop id="g0" offset="0" stop-color="#000" stop-opacity="0"/>
+              <stop id="g1" offset="0.42" stop-color="#000" stop-opacity="0"/>
+              <stop id="g2" offset="0.58" stop-color="#000" stop-opacity="0.78"/>
+              <stop id="g3" offset="1" stop-color="#000" stop-opacity="0.78"/>
+            </linearGradient>
+          </defs>
+          <rect width="300" height="340" fill="#0c0c0e"/>
+          <!-- base (lit) face -->
+          <path d="M58 340 Q60 256 150 248 Q240 256 242 340 Z" fill="#a39d92"/>
+          <rect x="120" y="210" width="60" height="44" fill="#b3ac9f"/>
+          <ellipse cx="150" cy="138" rx="76" ry="94" fill="#c2bcb0"/>
+          <!-- hair -->
+          <path d="M74 120 Q86 44 150 44 Q214 44 226 120 Q210 86 150 84 Q90 86 74 120 Z" fill="#1d1b18"/>
+          <!-- features -->
+          <g fill="none" stroke="#6f685c" stroke-width="2.4" stroke-linecap="round">
+            <path d="M118 116 Q130 110 142 116"/>
+            <path d="M158 116 Q170 110 182 116"/>
+          </g>
+          <ellipse cx="130" cy="130" rx="9" ry="6" fill="#efe9dc"/>
+          <ellipse cx="170" cy="130" rx="9" ry="6" fill="#efe9dc"/>
+          <circle cx="131" cy="131" r="3.4" fill="#2a2723"/>
+          <circle cx="171" cy="131" r="3.4" fill="#2a2723"/>
+          <path d="M150 138 L143 168 L157 168 Z" fill="#9b9488"/>
+          <path d="M134 189 Q150 192 166 189" stroke="#6a5f54" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M150 178 Q150 184 150 186" stroke="#8a8276" stroke-width="2" fill="none"/>
+          <!-- shadow overlay (clipped to silhouette) -->
+          <rect id="shadowRect" x="0" y="0" width="300" height="340" fill="url(#shadowGrad)" clip-path="url(#faceClip)"/>
+        </svg>
+      </div>
+      <div class="controls">
+        <div class="ctl">
+          <label for="fill">Fill light <b id="fillVal">22</b></label><!-- value synced by JS on load -->
+          <input type="range" id="fill" min="0" max="100" value="22" aria-describedby="lightRead">
+        </div>
+        <div class="ctl">
+          <label for="key">Key angle <b id="keyVal">+32°</b></label>
+          <input type="range" id="key" min="-75" max="75" value="32" aria-describedby="lightRead">
+        </div>
+        <div class="readout" id="lightRead" aria-live="polite">
+          <p class="rt" id="lightTitle">Low-key chiaroscuro</p>
+          <p class="rd" id="lightDesc">Half the face is gone into the black. The light has drawn a moral line down the middle before a word is spoken.</p>
+        </div>
+        <p class="caption-sm"><b>Double Indemnity</b> (1944): Wilder lit Stanwyck and MacMurray so half of nearly every scene falls away into shadow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · BARS & TILT -->
+<section class="slide" aria-label="Venetian blinds and the canted angle">
+  <div class="wrap narrow">
+    <p class="eyebrow">Device 02 · Frame</p>
+    <h2>Bars, and a world off its axis</h2>
+    <p>Two devices do the same job from different directions. The <strong>venetian blind</strong> throws horizontal bars of shadow across a character — a cage drawn in light, often laid over them before any crime has been committed.</p>
+    <p>The <strong>canted angle</strong> — the "Dutch" tilt — leans the camera so the whole frame tips. Nothing stands level, and the unease is built into the geometry rather than acted out. Carol Reed canted shot after shot of <em>The Third Man</em> (1949) until postwar Vienna itself seemed to be sliding off the screen.</p>
+  </div>
+</section>
+
+<!-- 7 · DEMO 2: COMPOSE THE TRAP -->
+<section class="slide top" aria-label="Interactive demo: compose the trap">
+  <div class="wrap mid">
+    <p class="eyebrow">Try it · Compose the trap</p>
+    <h2>Add the bars, tip the frame</h2>
+    <p class="lede">Raise the <b>slat density</b> to cage the figure; turn the <b>tilt</b> to capsize the room. Read the verdict the frame hands down.</p>
+    <div class="cols demo">
+      <div class="demo-stage">
+        <svg id="trapSvg" viewBox="0 0 360 300" role="img" aria-label="A figure in a doorway, caged by blinds and tilted live by the sliders">
+          <defs>
+            <clipPath id="frameClip"><rect x="0" y="0" width="360" height="300"/></clipPath>
+            <linearGradient id="winGlow" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#5a4a2c"/><stop offset="1" stop-color="#2a2114"/>
+            </linearGradient>
+          </defs>
+          <rect width="360" height="300" fill="#0a0a0c"/>
+          <g id="sceneG" clip-path="url(#frameClip)" style="transform-origin:180px 150px">
+            <rect x="-110" y="-90" width="580" height="480" fill="#141318"/>
+            <!-- floor -->
+            <polygon points="-110,235 470,235 470,390 -110,390" fill="#0e0d11"/>
+            <!-- lit window/doorway -->
+            <rect x="206" y="42" width="116" height="186" fill="url(#winGlow)"/>
+            <rect x="206" y="42" width="116" height="186" fill="none" stroke="#3a2f1c" stroke-width="3"/>
+            <line x1="264" y1="42" x2="264" y2="228" stroke="#241c11" stroke-width="3"/>
+            <!-- backlit figure -->
+            <g fill="#060608">
+              <circle cx="150" cy="92" r="24"/>
+              <path d="M120 250 Q122 140 150 122 Q178 140 180 250 Z"/>
+              <rect x="120" y="116" width="60" height="20" rx="8"/>
+            </g>
+            <!-- venetian bars -->
+            <g id="barsG"></g>
+          </g>
+          <rect x="1.5" y="1.5" width="357" height="297" fill="none" stroke="#2a2a31" stroke-width="3"/>
+        </svg>
+      </div>
+      <div class="controls">
+        <div class="ctl">
+          <label for="slats">Slat density <b id="slatsVal">9</b></label>
+          <input type="range" id="slats" min="0" max="18" value="9" aria-describedby="trapRead">
+        </div>
+        <div class="ctl">
+          <label for="tilt">Canted angle <b id="tiltVal">11°</b></label>
+          <input type="range" id="tilt" min="-18" max="18" value="11" aria-describedby="trapRead">
+        </div>
+        <div class="readout" id="trapRead" aria-live="polite">
+          <p class="rt" id="trapTitle">Caged and capsizing</p>
+          <p class="rd" id="trapDesc">Bars across him, the floor tipping out from under him — the frame has already delivered the verdict.</p>
+        </div>
+        <p class="caption-sm"><b>The Third Man</b> (1949): Reed's canted Vienna, plus the barred light of every other noir interior.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · FEMME FATALE -->
+<section class="slide" aria-label="The femme fatale framing">
+  <div class="glow left"></div>
+  <div class="wrap narrow">
+    <p class="eyebrow">Device 03 · Blocking</p>
+    <h2>The femme fatale in focus</h2>
+    <p>The most dangerous person in a noir is usually the one the camera treats as if she is in charge. The <strong>femme fatale</strong> — Phyllis Dietrichson in <em>Double Indemnity</em>, Kathie Moffat in <em>Out of the Past</em> (1947) — is often framed high, lit clean, and placed so the man has to look up at her or cross the room toward her.</p>
+    <p>The composition hands her a power the dialogue keeps pretending she doesn't have. Watch where the camera stands and who it makes you look up to, and you'll know who is steering long before the man does.</p>
+  </div>
+</section>
+
+<!-- 9 · WET STREETS -->
+<section class="slide" aria-label="Wet streets and reflections">
+  <div class="wrap narrow">
+    <p class="eyebrow">Device 04 · Surface</p>
+    <h2>Wet streets, and the city as a mirror</h2>
+    <p>Noir shoots at night, on location — and then makes the wet pavement work. A rain-slicked street doubles every light and every figure, so the world arrives pre-reflected and slightly unreal.</p>
+    <p>Orson Welles opened <em>Touch of Evil</em> (1958) prowling a night-black border town in a single unbroken shot, hard light raking across reflective streets with no dry footing anywhere. The reflection is a quiet threat: there is the world, and there is its double, and the character is caught somewhere between them.</p>
+  </div>
+</section>
+
+<!-- 10 · VOICEOVER -->
+<section class="slide" aria-label="The doomed voiceover">
+  <div class="glow right"></div>
+  <div class="wrap narrow">
+    <p class="eyebrow">Device 05 · Voice</p>
+    <h2>The narrator who already lost</h2>
+    <p>Many noirs are narrated by a man explaining how he got caught — and the voice is fatalistic because the ending has already happened. Walter Neff dictates his confession into an office machine, bleeding from a gunshot, across all of <em>Double Indemnity</em>.</p>
+    <p><em>Sunset Boulevard</em> (1950) goes further: it is narrated by a man who, we soon learn, is already dead. The flashback structure strips out any suspense about whether he survives and replaces it with something heavier — you watch a trap close on someone who knows it's closing and walks in anyway.</p>
+  </div>
+</section>
+
+<!-- 11 · READ THE FRAME (interactive) -->
+<section class="slide top" aria-label="Interactive: read one frame">
+  <div class="wrap mid">
+    <p class="eyebrow">Read it · Putting it together</p>
+    <h2>One frame, five signals</h2>
+    <p class="lede">Tap a marker to read what that part of the composition is telling you — before any line of dialogue is spoken.</p>
+    <div class="cols demo">
+      <div>
+        <div class="frame-shell" id="frameShell">
+          <svg viewBox="0 0 360 300" role="img" aria-label="A composed noir frame: a backlit figure by a barred, tilted window above a wet reflective floor">
+            <defs>
+              <clipPath id="cFrameClip"><rect x="0" y="0" width="360" height="300"/></clipPath>
+              <linearGradient id="cWin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a4a2c"/><stop offset="1" stop-color="#241c11"/></linearGradient>
+              <linearGradient id="cFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1822"/><stop offset="1" stop-color="#08080b"/></linearGradient>
+            </defs>
+            <rect width="360" height="300" fill="#0a0a0c"/>
+            <g clip-path="url(#cFrameClip)" style="transform-origin:180px 150px; transform:rotate(-5deg) scale(1.32)">
+              <rect x="-110" y="-90" width="580" height="430" fill="#131218"/>
+              <!-- wet floor with reflection -->
+              <rect x="-110" y="208" width="580" height="182" fill="url(#cFloor)"/>
+              <!-- lit barred window -->
+              <rect x="208" y="46" width="120" height="168" fill="url(#cWin)"/>
+              <rect x="208" y="46" width="120" height="168" fill="none" stroke="#3a2f1c" stroke-width="3"/>
+              <g fill="#0a0a0c" opacity="0.82">
+                <rect x="200" y="58" width="138" height="11"/><rect x="200" y="86" width="138" height="11"/>
+                <rect x="200" y="114" width="138" height="11"/><rect x="200" y="142" width="138" height="11"/>
+                <rect x="200" y="170" width="138" height="11"/>
+              </g>
+              <!-- backlit figure -->
+              <g fill="#060608"><circle cx="150" cy="96" r="22"/><path d="M122 208 Q124 150 150 124 Q176 150 178 208 Z"/></g>
+              <!-- reflection of figure -->
+              <g fill="#060608" opacity="0.32" transform="translate(0,416) scale(1,-1)"><circle cx="150" cy="96" r="22"/><path d="M122 208 Q124 150 150 124 Q176 150 178 208 Z"/></g>
+              <!-- reflected window streaks -->
+              <g fill="#2e271a" opacity="0.5"><rect x="214" y="216" width="108" height="70"/></g>
+            </g>
+            <rect x="1.5" y="1.5" width="357" height="297" fill="none" stroke="#2a2a31" stroke-width="3"/>
+          </svg>
+          <button class="hot" data-h="0" style="left:42%;top:30%" aria-pressed="false" aria-label="Signal 1: the half-lit face">1</button>
+          <button class="hot" data-h="1" style="left:72%;top:42%" aria-pressed="false" aria-label="Signal 2: bars of shadow">2</button>
+          <button class="hot" data-h="2" style="left:88%;top:14%" aria-pressed="false" aria-label="Signal 3: the canted horizon">3</button>
+          <button class="hot" data-h="3" style="left:44%;top:84%" aria-pressed="false" aria-label="Signal 4: the wet floor">4</button>
+          <button class="hot" data-h="4" style="left:16%;top:62%" aria-pressed="false" aria-label="Signal 5: the empty half">5</button>
+        </div>
+      </div>
+      <div>
+        <div class="frame-panel" id="framePanel" aria-live="polite">
+          <p class="ft" id="frameT">Read the frame</p>
+          <p class="fd" id="frameD">Five devices are working at once in this single image. Tap any numbered marker to hear what it is quietly saying about the figure standing in the light.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · SETTLED VS CONTESTED -->
+<section class="slide top" aria-label="Settled history versus contested meaning">
+  <div class="glow cool"></div>
+  <div class="wrap mid">
+    <p class="eyebrow cool">How we know</p>
+    <h2>History and legend</h2>
+    <p class="lede">Learn the difference between noir facts and critical interpretations.</p>
+    <div class="legend">
+      <span><i class="chip a"></i> Documented history</span>
+      <span><i class="chip s"></i> Critical interpretation</span>
+    </div>
+    <div class="svc">
+      <div class="col set">
+        <h3 class="col-head"><i class="chip a"></i> What's settled</h3>
+        <div class="fact"><p>The term "film noir" was coined by French critics (Nino Frank, 1946) — <em>after</em> the films were made. The filmmakers never called their work noir.</p></div>
+        <div class="fact"><p>Many key directors — Lang, Siodmak, Wilder, Preminger — were German or Austrian émigrés who carried Expressionist technique into Hollywood.</p></div>
+        <div class="fact"><p>The classic cycle runs roughly 1940–1958, often bookended by <em>The Maltese Falcon</em> and <em>Touch of Evil</em>.</p></div>
+        <div class="fact"><p>The techniques are real and documented: low-key lighting, night location shooting, flashback structure, hardboiled-pulp source material.</p></div>
+      </div>
+      <div class="col con">
+        <h3 class="col-head"><i class="chip s"></i> What's argued</h3>
+        <div class="fact"><p>Whether noir is a <strong>genre</strong>, a visual <strong>style</strong>, or a <strong>mood</strong> — critics have never fully agreed.</p></div>
+        <div class="fact"><p>The "postwar anxiety / returning-veteran" reading is influential, but it's an interpretation laid over the films, not a stated intent.</p></div>
+        <div class="fact"><p>The femme fatale as misogynist trope <em>versus</em> a subversive figure of female agency — an open critical debate.</p></div>
+        <div class="fact"><p>Whether noir genuinely expresses existentialist philosophy, or simply borrowed its weather.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · FOUR FILMS -->
+<section class="slide top" aria-label="Four films to watch first">
+  <div class="wrap mid">
+    <p class="eyebrow">A starter reel</p>
+    <h2>Four to watch first</h2>
+    <p class="lede">Four entry points into the classic cycle, each chosen for a different device.</p>
+    <div class="films">
+      <div class="film"><span class="yr">1944</span><h3>Double Indemnity</h3><div class="dir">Billy Wilder</div><p>The blueprint: barred light, a fatal dictaphone voiceover, and the original femme-fatale template in Phyllis Dietrichson.</p></div>
+      <div class="film"><span class="yr">1947</span><h3>Out of the Past</h3><div class="dir">Jacques Tourneur</div><p>Robert Mitchum narrates his way back into a trap he already escaped once. Flashback doom at its purest.</p></div>
+      <div class="film"><span class="yr">1949</span><h3>The Third Man</h3><div class="dir">Carol Reed</div><p>Canted angles, wet cobbles, and a zither score — postwar Vienna staged as a tilted maze.</p></div>
+      <div class="film"><span class="yr">1958</span><h3>Touch of Evil</h3><div class="dir">Orson Welles</div><p>The famous unbroken night tracking shot; widely treated as the closing film of the classic noir cycle.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 · QUIZ -->
+<section class="slide top" aria-label="Knowledge check">
+  <div class="wrap narrow">
+    <p class="eyebrow">Knowledge check</p>
+    <h2>Can you read the dark?</h2>
+    <div class="quiz" id="quiz">
+      <div class="q-top">
+        <span>Question <b id="qNum">1</b> / <span id="qTot">5</span></span>
+        <span class="score">Score <b id="qScore">0</b></span>
+      </div>
+      <div class="qbar"><i id="qBar" style="width:20%"></i></div>
+      <div id="qBody">
+        <p class="q-text" id="qText"></p>
+        <div class="opts" id="qOpts"></div>
+        <div class="why" id="qWhy"></div>
+      </div>
+      <div class="q-foot">
+        <button class="btn" id="qBack" disabled>Back</button>
+        <button class="btn primary" id="qNext" disabled>Check</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 · CLOSE -->
+<section class="slide" aria-label="Close and sources">
+  <div class="blinds"></div>
+  <div class="wrap narrow">
+    <p class="eyebrow">Close</p>
+    <h2>How to watch noir</h2>
+    <p>The next noir you put on, mute the plot for a minute and just read the image. Where is the fill light missing? What's casting bars across a face? Is the horizon level? Who does the camera make you look up to? The frame will tell you who's trapped — and it'll tell you first.</p>
+    <div class="note-strip">
+      <span class="tag">On accuracy</span>
+      <p>Dates, directors, and techniques here are settled film history. Readings of what noir <em>means</em> — genre vs. style, the postwar mood, the femme fatale — are flagged as interpretation, because critics still argue them.</p>
+    </div>
+    <p class="src" style="margin-top:24px"><b>Drawn from widely documented film history</b> — German Expressionist origins and the émigré directors; the French coinage of "film noir" (Nino Frank, 1946); and the four canonical films cited throughout: <em>Double Indemnity</em> (1944), <em>Out of the Past</em> (1947), <em>The Third Man</em> (1949), <em>Touch of Evil</em> (1958).</p>
+  </div>
+</section>
+
+</div><!-- /track -->
+</div><!-- /deck -->
+
+<!-- nav -->
+<div class="navbar">
+  <button class="nav" id="prevBtn" aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <div class="dots" id="dots" role="tablist" aria-label="Slide navigation"></div>
+  <button class="nav" id="nextBtn" aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+  <button class="jump" id="jumpBtn" aria-haspopup="listbox">Jump</button>
+</div>
+<div class="hint" id="hint"><span class="kbd">&larr;</span><span class="kbd">&rarr;</span> arrows, swipe, or dots</div>
+
+<script>
+/* ============ DECK ENGINE ============ */
+(function(){
+  "use strict";
+  var track=document.getElementById('track');
+  var slides=Array.prototype.slice.call(track.children);
+  var N=slides.length, cur=0;
+  var dotsWrap=document.getElementById('dots');
+  var cNow=document.getElementById('cNow'), cTot=document.getElementById('cTot');
+  var prevBtn=document.getElementById('prevBtn'), nextBtn=document.getElementById('nextBtn');
+  var progress=document.getElementById('progress'), hint=document.getElementById('hint');
+  cTot.textContent=N;
+
+  for(var i=0;i<N;i++){(function(i){
+    var b=document.createElement('button');
+    b.setAttribute('role','tab'); b.setAttribute('aria-label','Slide '+(i+1));
+    b.addEventListener('click',function(){go(i);});
+    dotsWrap.appendChild(b);
+  })(i);}
+  var dots=Array.prototype.slice.call(dotsWrap.children);
+
+  function clamp(n){return Math.max(0,Math.min(N-1,n));}
+  function go(n,noHash){
+    cur=clamp(n);
+    track.style.transform='translateX(-'+(cur*100)+'vw)';
+    for(var i=0;i<N;i++){dots[i].setAttribute('aria-current',i===cur?'true':'false');}
+    cNow.textContent=cur+1;
+    progress.style.width=((cur+1)/N*100)+'%';
+    prevBtn.disabled=cur===0; nextBtn.disabled=cur===N-1;
+    if(!noHash){history.replaceState(null,'','#'+(cur+1));}
+    var h=slides[cur].querySelector('h1,h2');
+    if(h){h.setAttribute('tabindex','-1'); try{h.focus({preventScroll:true});}catch(e){h.focus();}}
+    if(cur>0&&hint){hint.style.opacity='0';}
+  }
+  window.goToSlide=go;
+  function next(){go(cur+1);} function prev(){go(cur-1);}
+  nextBtn.addEventListener('click',next); prevBtn.addEventListener('click',prev);
+
+  document.addEventListener('keydown',function(e){
+    if(e.target.isContentEditable||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'||(e.key===' '&&!e.shiftKey)){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'||(e.key===' '&&e.shiftKey)){e.preventDefault();prev();}
+    else if(e.key==='Home'){e.preventDefault();go(0);}
+    else if(e.key==='End'){e.preventDefault();go(N-1);}
+  });
+
+  var x0=null,y0=null;
+  track.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+  track.addEventListener('touchend',function(e){
+    if(x0===null)return;
+    var dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.4){dx<0?next():prev();}
+    x0=null;y0=null;
+  },{passive:true});
+
+  var jumpBtn=document.getElementById('jumpBtn');
+  jumpBtn.addEventListener('click',function(){
+    var labels=slides.map(function(s,i){return (i+1)+'. '+((s.getAttribute('aria-label')||'Slide'));});
+    var pick=window.prompt('Jump to which slide?\n\n'+labels.join('\n'),(cur+1));
+    if(pick){var n=parseInt(pick,10); if(!isNaN(n))go(n-1);}
+  });
+
+  var start=parseInt((location.hash||'').replace('#',''),10);
+  go(!isNaN(start)&&start>=1?start-1:0,true);
+  setTimeout(function(){if(hint&&cur===0)hint.style.opacity='.8';},400);
+  setTimeout(function(){if(hint)hint.style.opacity='0';},9000);
+})();
+
+/* ============ DEMO 1 · LIGHT LAB ============ */
+(function(){
+  var fill=document.getElementById('fill'), key=document.getElementById('key');
+  var fillVal=document.getElementById('fillVal'), keyVal=document.getElementById('keyVal');
+  var g1=document.getElementById('g1'), g2=document.getElementById('g2'), g3=document.getElementById('g3');
+  var grad=document.getElementById('shadowGrad');
+  var title=document.getElementById('lightTitle'), desc=document.getElementById('lightDesc');
+  if(!fill)return;
+
+  function update(){
+    var f=+fill.value, a=+key.value;
+    var ff=f/100;
+    var band=0.03+ff*0.20;                 // hard edge at low fill, soft at high
+    var op=(0.97-ff*0.62).toFixed(3);      // deep shadow at low fill
+    g1.setAttribute('offset',(0.5-band).toFixed(3));
+    g2.setAttribute('offset',(0.5+band).toFixed(3));
+    g2.setAttribute('stop-opacity',op);
+    g3.setAttribute('stop-opacity',op);
+    grad.setAttribute('gradientTransform','rotate('+a+',0.5,0.5)');
+    fillVal.textContent=f;
+    keyVal.textContent=(a>=0?'+':'')+a+'°';
+    var t,d;
+    if(ff>0.62){ t='High-key';
+      d='Flat, even, fully legible — the way most of 1944 Hollywood lit a face. Nothing is hidden, so nothing is implied.'; }
+    else if(ff>0.34){ t='Falling fill';
+      d='The shadow is taking the face back. We are crossing from “safe” into “something is wrong.”'; }
+    else { var ex=Math.abs(a)>54?' Raked hard from the edge, the shadow swallows half the features whole.':'';
+      t='Low-key chiaroscuro';
+      d='Half the face is gone into the black.'+ex+' The light has drawn a moral line down the middle before a word is spoken.'; }
+    title.textContent=t; desc.textContent=d;
+  }
+  fill.addEventListener('input',update); key.addEventListener('input',update);
+  update();
+})();
+
+/* ============ DEMO 2 · COMPOSE THE TRAP ============ */
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var slats=document.getElementById('slats'), tilt=document.getElementById('tilt');
+  var slatsVal=document.getElementById('slatsVal'), tiltVal=document.getElementById('tiltVal');
+  var barsG=document.getElementById('barsG'), sceneG=document.getElementById('sceneG');
+  var title=document.getElementById('trapTitle'), desc=document.getElementById('trapDesc');
+  if(!slats)return;
+
+  function drawBars(n){
+    while(barsG.firstChild)barsG.removeChild(barsG.firstChild);
+    if(n<=0)return;
+    var top=-70, bot=370, span=bot-top, gap=span/n, h=gap*0.46;
+    for(var i=0;i<n;i++){
+      var y=top+i*gap+gap*0.27;
+      var r=document.createElementNS(NS,'rect');
+      r.setAttribute('x',-110); r.setAttribute('y',y);
+      r.setAttribute('width',580); r.setAttribute('height',h);
+      r.setAttribute('fill','#050506'); r.setAttribute('opacity','0.72');
+      barsG.appendChild(r);
+    }
+  }
+  function update(){
+    var n=+slats.value, t=+tilt.value;
+    drawBars(n);
+    sceneG.style.transform='rotate('+t+'deg) scale(1.34)';
+    slatsVal.textContent=n;
+    tiltVal.textContent=(t>=0?'':'')+t+'°';
+    var caged=n>=6, tipped=Math.abs(t)>=7, ti, de;
+    if(caged&&tipped){ ti='Caged and capsizing';
+      de='Bars across him, the floor tipping out from under him — the frame has already delivered the verdict.'; }
+    else if(caged){ ti='Behind the bars';
+      de='The blinds lay a cage of shadow over him. He is behind it before anyone has been arrested.'; }
+    else if(tipped){ ti='World off its axis';
+      de='The canted angle tips the room off level. Equilibrium is gone, and so is his.'; }
+    else { ti='The frame is telling the truth';
+      de='Level horizon, open light, no bars. Nothing is wrong yet — the composition says he is still free.'; }
+    title.textContent=ti; desc.textContent=de;
+  }
+  slats.addEventListener('input',update); tilt.addEventListener('input',update);
+  update();
+})();
+
+/* ============ INTERACTIVE 3 · READ THE FRAME ============ */
+(function(){
+  var data=[
+    {t:'1 · The backlit silhouette',d:'The figure is lit from behind to a flat black shape — handed to you as a silhouette, not a face. Identity withheld is the first thing this composition takes.'},
+    {t:'2 · Bars of shadow',d:'Venetian-blind slats fall across the room as prison bars. He is behind them in the first reel, long before any arrest.'},
+    {t:'3 · The canted horizon',d:'The whole frame is tipped a few degrees off level. Nothing in this world stands straight — and neither does his footing.'},
+    {t:'4 · The wet floor',d:'A rain-slicked, reflective surface doubles everything above it: the city as a mirror he cannot step out of.'},
+    {t:'5 · The empty half',d:'Negative space strands him inside the frame. The composition leaves him alone with whatever he is about to do.'}
+  ];
+  var shell=document.getElementById('frameShell');
+  var fT=document.getElementById('frameT'), fD=document.getElementById('frameD');
+  if(!shell)return;
+  var hots=shell.querySelectorAll('.hot');
+  hots.forEach(function(h){
+    h.addEventListener('click',function(){
+      var i=+h.getAttribute('data-h');
+      hots.forEach(function(o){o.setAttribute('aria-pressed','false');});
+      h.setAttribute('aria-pressed','true');
+      fT.textContent=data[i].t; fD.textContent=data[i].d;
+    });
+  });
+})();
+
+/* ============ QUIZ ============ */
+(function(){
+  var Q=[
+    {q:'What does low-key chiaroscuro lighting do that ordinary high-key lighting does not?',
+     options:['Make the film cheaper to shoot','Let shadow carry meaning, hiding half a character so you sense their second nature','Speed up the editing','Keep every face evenly legible'],
+     answer:1, why:'Killing the fill light lets a hard key split the face. The withheld half is where the film hides a character’s second nature, so you read it before a line is spoken.'},
+    {q:'A venetian-blind shadow laid across a character most often signals what?',
+     options:['Wealth and comfort','That it is daytime','Imprisonment — a cage drawn in light','A flashback is beginning'],
+     answer:2, why:'The horizontal slats read as prison bars, often dropped over a character before any crime is committed — the frame jails them early.'},
+    {q:'The canted, off-level “Dutch” angle is most famously associated with which film?',
+     options:['The Third Man (1949)','Singin’ in the Rain (1952)','Casablanca (1942)','Out of the Past (1947)'],
+     answer:0, why:'Carol Reed tilted shot after shot of The Third Man until postwar Vienna itself seemed to be sliding off the screen.'},
+    {q:'Where did noir’s high-contrast shadow style largely come from?',
+     options:['Italian neorealism','1950s television','1920s German Expressionism, via émigré directors','French New Wave'],
+     answer:2, why:'Expressionist filmmakers built worlds out of painted shadow; émigré directors like Lang, Siodmak and Wilder carried the technique into Hollywood crime pictures.'},
+    {q:'The term “film noir” itself was coined by whom?',
+     options:['The Hollywood studios marketing the films','The directors who made them','French critics, after the fact (Nino Frank, 1946)','1940s American newspaper reviewers'],
+     answer:2, why:'French critics named the style retroactively in 1946. The filmmakers never set out to make “noir” — it was a label applied later.'}
+  ];
+  var qNum=document.getElementById('qNum'), qTot=document.getElementById('qTot'), qScore=document.getElementById('qScore');
+  var qBar=document.getElementById('qBar'), qText=document.getElementById('qText'), qOpts=document.getElementById('qOpts');
+  var qWhy=document.getElementById('qWhy'), qBack=document.getElementById('qBack'), qNext=document.getElementById('qNext');
+  var qBody=document.getElementById('qBody');
+  if(!qText)return;
+  qTot.textContent=Q.length;
+  var idx=0, score=0, answered=false, picked=-1, finished=false;
+
+  function render(){
+    var item=Q[idx];
+    qNum.textContent=idx+1;
+    qBar.style.width=((idx+1)/Q.length*100)+'%';
+    qText.textContent=item.q;
+    qOpts.innerHTML='';
+    answered=false; picked=-1;
+    item.options.forEach(function(opt,i){
+      var b=document.createElement('button');
+      b.className='opt';
+      b.innerHTML='<span class="mk">'+String.fromCharCode(65+i)+'</span>'+opt;
+      b.addEventListener('click',function(){ if(answered)return; picked=i; mark(); });
+      qOpts.appendChild(b);
+    });
+    qWhy.className='why'; qWhy.innerHTML='';
+    qBack.disabled=idx===0;
+    qNext.disabled=true; qNext.textContent='Check';
+  }
+  function mark(){
+    answered=true;
+    var item=Q[idx], opts=qOpts.children;
+    for(var i=0;i<opts.length;i++){
+      opts[i].disabled=true;
+      if(i===item.answer)opts[i].classList.add('correct');
+      else if(i===picked)opts[i].classList.add('wrong');
+    }
+    if(picked===item.answer)score++;
+    qScore.textContent=score;
+    qWhy.innerHTML='<b>'+(picked===item.answer?'Correct':'Not quite')+'</b>'+item.why;
+    qWhy.className='why show';
+    qNext.disabled=false;
+    qNext.textContent=idx===Q.length-1?'See score':'Next question';
+  }
+  function finish(){
+    finished=true;
+    qBody.innerHTML='';
+    var msg = score===Q.length?'You can read the dark.':score>=Q.length-2?'A sharp eye in the shadows.':'Run another reel and watch the light.';
+    var wrap=document.createElement('div');
+    wrap.className='quiz-done';
+    wrap.innerHTML='<div class="big">'+score+' / '+Q.length+'</div><p>'+msg+'</p>';
+    qBody.appendChild(wrap);
+    qBack.style.display='none';
+    qNext.textContent='Try again';
+    qNext.disabled=false;
+  }
+  qNext.addEventListener('click',function(){
+    if(finished){ idx=0;score=0;finished=false; qScore.textContent='0'; qBack.style.display=''; render(); return; }
+    if(!answered){ return; }
+    if(idx===Q.length-1){ finish(); }
+    else { idx++; render(); }
+  });
+  qBack.addEventListener('click',function(){ if(idx>0){idx--; render();} });
+  render();
+})();
+</script>
+
+<!-- Review & edit overlay — injected by assemble.mjs (invariant; do not hand-edit) -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:8px;right:14px;z-index:9002;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes .rv-notes-hd{display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 0}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-collapse{font-family:var(--sans,sans-serif);font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink-faint,#8a8478);background:transparent;border:1px solid var(--line,#ddd5c5);border-radius:7px;padding:5px 10px;cursor:pointer}",
+    "#rv-collapse:hover{color:var(--ink,#23211c);border-color:var(--line-strong,#c8bfab)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:9010;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:9010;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:9020;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+    // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
+    // Scrolling pages: position just below any fixed/sticky top nav instead.
+    requestAnimationFrame(function () {
+      var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
+      if (isDeck) {
+        launch.style.top = "auto";
+        launch.style.right = "auto";
+        launch.style.bottom = "16px";
+        launch.style.left = "14px";
+      } else {
+        var navBottom = 0;
+        document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+          var s = getComputedStyle(el);
+          if (s.position === "fixed" || s.position === "sticky") {
+            navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+          }
+        });
+        if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      }
+    });
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<div class="rv-notes-hd"><h4>Annotations</h4><button id="rv-collapse" title="Collapse panel (your notes are kept)" aria-label="Collapse panel">Collapse &rsaquo;</button></div><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+    // Collapse hides the panel without deleting notes (they persist in
+    // localStorage and reopen via the toolbar's "Notes (N)" button).
+    $("rv-collapse").onclick = function () { $("rv-notes").classList.remove("open"); };
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete this note">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>
