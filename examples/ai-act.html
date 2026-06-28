@@ -441,14 +441,14 @@ const TIERS=[
   {id:"unacc",w:1,name:"Unacceptable risk",cvar:"--t-unacc",count:"Banned",ex:"Social scoring · live facial ID",blurb:"A short list of uses the Act treats as incompatible with EU fundamental rights. Not regulated — forbidden. Enforceable since 2 Feb 2025.",who:["Social scoring by authorities","Manipulative or exploitative systems","Untargeted facial-image scraping","Most real-time public biometric ID"],owes:"Prohibition. Top fine: €35M or 7% of global turnover."},
   {id:"high",w:2,name:"High risk",cvar:"--t-high",count:"Full regime",ex:"Hiring · credit · medical devices",blurb:"Legal but consequential uses in sensitive domains, or AI as a safety component of a regulated product. The Act's centre of gravity.",who:["Employment & hiring","Credit & insurance","Education & exams","Critical infrastructure","Law enforcement","Migration & borders"],owes:"Risk management, data governance, human oversight, conformity assessment, CE marking, EU registration, post-market monitoring."},
   {id:"limited",w:3,name:"Limited risk",cvar:"--t-limited",count:"Disclosure",ex:"Chatbots · deepfakes",blurb:"Low-stakes uses that could nonetheless deceive. The only duty is transparency. Applies from 2 Aug 2026.",who:["Chatbots","Deepfakes & synthetic media","Emotion recognition","Biometric categorisation"],owes:"Tell people they're dealing with AI; label AI-generated content."},
-  {id:"minimal",w:4,name:"Minimal risk",cvar:"--t-minimal",count:"No duties",ex:"Spam filters · recommenders",blurb:"Everything else — the overwhelming majority of AI. No obligations under the Act (beyond cross-cutting AI-literacy duties).",who:["Spam filters","Recommenders","Inventory & logistics","AI in video games"],owes:"Nothing under the Act. Voluntary codes encouraged."}
+  {id:"minimal",w:4,name:"Minimal risk",cvar:"--t-minimal",count:"No new duties",ex:"Spam filters · recommenders",blurb:"Everything else — the overwhelming majority of AI. No obligations under the Act (beyond cross-cutting AI-literacy duties).",who:["Spam filters","Recommenders","Inventory & logistics","AI in video games"],owes:"Nothing under the Act. Voluntary codes encouraged."}
 ];
 
 const TIERMETA={
   unacc:{cvar:"--t-unacc",head:"Prohibited",duties:["No path to compliance — the use cannot be placed on the EU market","Top fine: €35M or 7% of global turnover","Enforceable since 2 Feb 2025"]},
   high:{cvar:"--t-high",head:"High risk · full regime",duties:["Risk management, data governance, logging, human oversight","Conformity assessment, CE marking, EU-database registration","Post-market monitoring; FRIA for certain deployers","Applies 2 Dec 2027 (Annex III) / 2 Aug 2028 (Annex I)"]},
   limited:{cvar:"--t-limited",head:"Limited risk · transparency",duties:["Tell people they're interacting with AI","Label AI-generated or manipulated content","Applies from 2 Aug 2026"]},
-  minimal:{cvar:"--t-minimal",head:"Minimal risk · no duties",duties:["No obligations under the Act","AI-literacy duties (Art 4) still apply","Voluntary codes of conduct encouraged"]}
+  minimal:{cvar:"--t-minimal",head:"Minimal risk · no new duties",duties:["No obligations under the Act","AI-literacy duties (Art 4) still apply","Voluntary codes of conduct encouraged"]}
 };
 
 /* shared example systems — power both the classifier and the worked example */
