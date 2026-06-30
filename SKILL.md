@@ -109,9 +109,15 @@ blanks. What matters most:
   A normal chat with a person (including the Claude app) is **NOT** this case: ask the must-ask set.
 - Collect a **source list** as you go; every non-obvious claim should be traceable.
 - **Prose register (silent — not a user question).** Before writing, auto-select a register based
-  on topic + audience. Never ask the user; never name the authors these draw from. Three registers:
+  on topic + audience. Never ask the user; never name the authors these draw from. Four registers:
   - *Crisp and Clear* — short words, concrete over abstract, no word wasted. Default for technical,
     how-things-work, and policy topics.
+  - *Professional* — concrete-first and reportorial: lead with the fact or the object, state it
+    plainly, let specifics and numbers carry the weight. No reveal structure ("not X, it's Y"), no
+    aphoristic closers, no cutesy motifs; lean sentences, roughly newswire length, at or under the
+    word count a showier draft would use. Prefer it over *Raises the Stakes* when the topic is
+    history or narrative but you want authority without performance. Rewrite from the facts — don't
+    de-slop an existing draft, since editing preserves the slop's sentence-shape.
   - *Cool Observer* — rhythm-forward, the outside eye, slightly fragmentary. For company profiles,
     cultural topics, dossiers, anything with an angle.
   - *Raises the Stakes* — building sentences, moral weight, addresses the reader directly, assumes
