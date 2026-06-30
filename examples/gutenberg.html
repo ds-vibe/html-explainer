@@ -116,6 +116,8 @@ em{color:var(--ox); font-style:italic}
 .cgrid h3{color:var(--ox); font-size:1.18rem; display:flex; align-items:baseline; gap:10px}
 .cgrid h3 .n{font-family:var(--sans); font-size:.8rem; color:var(--gold-ink); font-weight:600}
 .cgrid p{font-size:1rem; margin:0}
+/* dark slides keep light cream cards, so card text must stay dark for contrast */
+.slide.dark .cgrid p{color:var(--ink-soft)}
 
 /* ---------- step-through (the system) ---------- */
 .stepper{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:var(--s5)}
@@ -333,7 +335,7 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
       <div class="cover-orn">Mainz &middot; c. 1450</div>
       <p class="eyebrow">How the Gutenberg printing press worked &amp; changed the world</p>
       <h1>The Machine That<br>Multiplied Ideas</h1>
-      <p class="sub">Johannes Gutenberg did not invent reading, writing, or even printing. He invented a <em>system</em> for making words cheap — and in doing so handed Europe the tool that would crack open religion, science, and power itself.</p>
+      <p class="sub">The goldsmith Johannes Gutenberg worked out how to cast metal letters by the thousand, all the same height. A page of them, pressed onto paper, printed a book in the time a scribe spent on a single page.</p>
       <hr class="rule">
       <div class="meta-row">
         <span><b>13</b> slides · ~9 min</span>
@@ -348,17 +350,17 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
     <div class="wrap cols top">
       <div>
         <p class="eyebrow">Slide 1 · The problem</p>
-        <h2>A book was a year of someone's life</h2>
-        <p class="drop">Before 1450, every book in Europe was copied by hand. A scribe sat in a scriptorium and re-drew a manuscript letter by letter onto animal-skin parchment. A single large Bible could take a skilled copyist well over a year — and that copy might contain hundreds of fresh errors of its own.</p>
-        <p>Books were therefore <strong>rare, costly, and chained to desks.</strong> Knowledge moved at the speed of a quill, and mostly stayed inside monasteries and universities.</p>
+        <h2>Before print, a book took a year</h2>
+        <p class="drop">In 1400, a book meant a scribe and about a year of work. He copied it out by hand onto parchment, prepared animal skin, about three hundred sheets for a big Bible. Even the finished copy held mistakes the next scribe would copy out again.</p>
+        <p>Books like that were <strong>rare and expensive</strong>, and they mostly stayed where they were made: monasteries, a few universities, the libraries of the rich.</p>
       </div>
       <div class="card">
         <div class="stat-line">
           <div class="stat"><div class="num">1+ yr</div><div class="lab">To hand-copy one Bible</div></div>
           <div class="stat"><div class="num">~300</div><div class="lab">Animal skins per Bible</div></div>
         </div>
-        <div class="note">"As many copies as scribes" — the entire bottleneck of human knowledge was the speed of the human hand.</div>
-        <p style="margin:0; font-size:1rem">Woodblock printing existed, but each page had to be carved whole, in reverse, into a single block of wood — useful for a poster, hopeless for a 1,200-page book.</p>
+        <div class="note">A library grew only as fast as its scribes could write.</div>
+        <p style="margin:0; font-size:1rem">Woodblock printing existed, but each page had to be carved whole and backwards into one block. That suited a poster, not a 1,200-page book.</p>
       </div>
     </div>
   </section>
@@ -368,10 +370,10 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
     <div class="wrap cols">
       <div>
         <p class="eyebrow">Slide 2 · The mental model</p>
-        <h2>Think of it as a tray of rearrangeable stamps</h2>
-        <p>Here is the one idea to hold onto. Instead of carving a whole page as a single block, Gutenberg broke the page into its smallest reusable parts: <strong>thousands of tiny metal letters</strong>, each cast separately.</p>
-        <p>You compose a page by lining up these letters like stamps in a tray. You print hundreds of copies. Then you <em>pull the page apart</em> and reuse the very same letters to set the next one. The alphabet becomes a kit you assemble, dismantle, and assemble again — forever.</p>
-        <div class="note">This is "movable type." Carve once, rearrange endlessly — instead of carving every page from scratch.</div>
+        <h2>Break the page into reusable letters</h2>
+        <p>Instead of carving a whole page as one block, Gutenberg broke it into the smallest reusable parts: <strong>thousands of small metal letters</strong>, each cast on its own.</p>
+        <p>You line them up to spell out a page, print as many copies as you want, then <em>break the page apart</em> and use the same letters for the next one. The same few hundred letters set page after page.</p>
+        <div class="note">This is movable type: cast the letters once, then rearrange them for every new page.</div>
       </div>
       <div class="demo" style="text-align:center">
         <div class="demo-label" style="justify-content:center">The idea, in one picture</div>
@@ -380,7 +382,7 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
           <div class="sort space"><span>·</span></div>
           <div class="sort"><span>w</span></div><div class="sort"><span>o</span></div><div class="sort"><span>r</span></div><div class="sort"><span>d</span></div>
         </div>
-        <p class="caption-sm">Each block is one reusable letter, cast in metal — and engraved in <strong>mirror image</strong>, so it prints the right way round. Try it yourself two slides from now.</p>
+        <p class="caption-sm">Each block is one metal letter, engraved in <strong>mirror image</strong> so it prints the right way round. You can try it two slides on.</p>
       </div>
     </div>
   </section>
@@ -390,18 +392,18 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
     <div class="wrap cols">
       <div>
         <p class="eyebrow">Slide 3 · Why him, why then</p>
-        <h2>His real genius wasn't the press — it was the mould</h2>
-        <p>Movable type had been tried before, in China and Korea, centuries earlier. The thing nobody had cracked for the Latin alphabet was how to make <strong>thousands of identical letters</strong> quickly, cheaply, and precisely the same height.</p>
-        <p>Gutenberg, trained as a goldsmith, solved it with an <em>adjustable hand mould</em>. Punch a letter into soft copper to make a mould (a "matrix"), drop it into the mould, pour in molten metal, and seconds later out drops a perfect letter. Adjust the mould's width and you can cast a slim <em>i</em> or a wide <em>m</em> — all exactly type-high.</p>
+        <h2>The real invention was the hand mould</h2>
+        <p>Movable type had been tried before, in China and Korea. The hard part for the Latin alphabet was making <strong>thousands of identical letters</strong> fast and cheap, every one exactly the same height.</p>
+        <p>Gutenberg, a trained goldsmith, did it with an <em>adjustable hand mould</em>. Punch a letter into soft copper to make a mould, called a matrix, set it in the mould, and pour in molten metal. A few seconds later a finished letter drops out. Widen the mould for an <em>m</em> or narrow it for an <em>i</em>, and every letter comes out the same height.</p>
       </div>
       <div class="card" style="background:var(--dark-2); border-color:#3d2f1f">
         <h3 style="color:var(--gold-bright)">The bottleneck he broke</h3>
-        <p style="color:var(--on-dark-soft)">One craftsman with a hand mould could cast several thousand letters a day — the supply of type that mass printing actually required.</p>
+        <p style="color:var(--on-dark-soft)">One worker with a hand mould could cast several thousand letters a day, enough to keep a print shop supplied.</p>
         <div class="stat-line">
           <div class="stat"><div class="num">~3</div><div class="lab">Metals in the alloy: lead, tin, antimony</div></div>
           <div class="stat"><div class="num">∞</div><div class="lab">Reuses per letter</div></div>
         </div>
-        <p style="margin:0; color:var(--on-dark-soft); font-size:1rem">The alloy melted at a low temperature and, crucially, expanded slightly as it set — filling the mould so each letter came out razor-sharp.</p>
+        <p style="margin:0; color:var(--on-dark-soft); font-size:1rem">The alloy melted at a low temperature and expanded a little as it cooled, so it filled the mould and every letter came out sharp.</p>
       </div>
     </div>
   </section>
@@ -409,7 +411,7 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   <!-- 4 THE SYSTEM (step-through) -->
   <section class="slide band" aria-label="The system, step by step">
     <div class="wrap">
-      <p class="eyebrow">Slide 4 · The whole system — click each step</p>
+      <p class="eyebrow">Slide 4 · The whole system · click each step</p>
       <h2>From a steel punch to a printed page</h2>
       <div class="stepper" id="stepper" role="tablist" aria-label="Printing steps"></div>
       <div class="step-panel" id="stepPanel" role="tabpanel" aria-live="polite">
@@ -425,13 +427,13 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
     <div class="wrap">
       <p class="eyebrow">Slide 5 · Hands on</p>
       <h2>Set a line of type yourself</h2>
-      <p style="max-width:64ch">Type a few words below. Watch each letter appear as a metal <strong>sort</strong> in the composing stick — reversed, just as the compositor saw it. Then pull the press and read the printed result.</p>
+      <p style="max-width:64ch">Type a few words. Each one shows up as a metal <strong>sort</strong> in the composing stick, reversed, the way the compositor saw it. Then pull the press to print it.</p>
       <div class="demo">
         <div class="demo-label"><span class="tag">Demo 1</span> The compositor's stick</div>
         <label class="visually-hidden" for="composeIn">Text to set</label>
         <input class="field" id="composeIn" maxlength="22" value="hello world" autocomplete="off" spellcheck="false">
         <div class="stick" id="stick" aria-hidden="true"></div>
-        <p class="caption-sm" id="composeCap">The compositor reads and sets <strong>backwards and mirror-flipped</strong> — so the inked page comes out correct.</p>
+        <p class="caption-sm" id="composeCap">The compositor reads and sets <strong>backwards and mirror-flipped</strong>, so the inked page comes out correct.</p>
         <div class="paper-out" id="paperOut"><span class="ph">Press the lever to print this line →</span><span class="printed" id="printed"></span></div>
         <div class="btn-row">
           <button class="btn" id="printBtn">Pull the press</button>
@@ -445,10 +447,10 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   <section class="slide dark" aria-label="The press itself">
     <div class="wrap cols">
       <div>
-        <p class="eyebrow">Slide 6 · The muscle</p>
-        <h2>A wine press, repurposed for words</h2>
-        <p>With the page of type locked into a frame (the <em>forme</em>), Gutenberg needed even, firm pressure across the whole sheet. He borrowed it from a machine every Rhineland town already had: the <strong>screw press</strong> used to squeeze grapes and olives.</p>
-        <p>Ink the type with leather daubers — using a sticky, <em>oil-based</em> ink Gutenberg formulated so it would cling to metal, not bead off like the scribes' water inks. Lay on a dampened sheet, slide it under the platen, and turn the great screw. One firm pull, and a whole page transfers at once.</p>
+        <p class="eyebrow">Slide 6 · The press</p>
+        <h2>A press borrowed from winemaking</h2>
+        <p>With a page of type locked in its frame (the <em>forme</em>), Gutenberg needed firm, even pressure across the whole sheet. He took it from a machine every Rhineland town already had: the <strong>screw press</strong> used to crush grapes and olives.</p>
+        <p>Dab the type with sticky, <em>oil-based</em> ink, made to hold on metal instead of beading off the way the scribes' water inks did. Lay down a damp sheet, slide it under the platen, and turn the screw. One pull prints the whole page at once.</p>
         <div class="stat-line">
           <div class="stat"><div class="num">~250</div><div class="lab">Sheets printable per day</div></div>
           <div class="stat"><div class="num">1454–55</div><div class="lab">The 42-line Gutenberg Bible</div></div>
@@ -503,9 +505,9 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   <!-- 7 DEMO: economics (centerpiece) -->
   <section class="slide band" aria-label="Demo: the economics of printing">
     <div class="wrap">
-      <p class="eyebrow">Slide 7 · The payoff — hands on</p>
-      <h2>Why this changed everything: the math</h2>
-      <p style="max-width:66ch">The press didn't make the first copy cheaper — setting all that type is slow. Its magic is the <strong>second copy, and the thousandth</strong>. Drag the slider and watch where printing overtakes the scribe.</p>
+      <p class="eyebrow">Slide 7 · The payoff · hands on</p>
+      <h2>Where the savings came from</h2>
+      <p style="max-width:66ch">The first copy isn't cheaper, because setting all that type takes time. The saving comes on the <strong>second copy, and the thousandth</strong>. Drag the slider to see where printing passes the scribe.</p>
       <div class="econ">
         <div>
           <div class="slider-wrap">
@@ -513,18 +515,18 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
             <input type="range" id="copies" min="1" max="1000" value="200" step="1">
           </div>
           <div class="verdict" id="verdict"></div>
-          <p class="caption-sm">Illustrative figures, scaled to show the shape of the change — not exact 15th-century prices.</p>
+          <p class="caption-sm">Illustrative figures, scaled to show the shape of the change, not exact 15th-century prices.</p>
         </div>
         <div class="bars">
           <div class="barline">
             <div class="top"><span>Hand-copied by scribes</span><span class="price" id="scribePrice"></span></div>
             <div class="bartrack"><div class="barfill scribe" id="scribeBar"></div></div>
-            <div class="caption-sm" style="margin-top:7px">Cost-per-book never falls — every copy is a fresh year of labor.</div>
+            <div class="caption-sm" style="margin-top:7px">The cost per book never drops; every copy is another year of work.</div>
           </div>
           <div class="barline">
             <div class="top"><span>Printed on the press</span><span class="price" id="pressPrice"></span></div>
             <div class="bartrack"><div class="barfill press" id="pressBar"></div></div>
-            <div class="caption-sm" style="margin-top:7px">A big setup cost, then nearly free copies — the price collapses as the run grows.</div>
+            <div class="caption-sm" style="margin-top:7px">A big cost up front, then cheap copies, so the price per book falls as the run grows.</div>
           </div>
         </div>
       </div>
@@ -535,9 +537,9 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   <section class="slide" aria-label="The spread across Europe">
     <div class="wrap cols top">
       <div>
-        <p class="eyebrow">Slide 8 · The explosion</p>
-        <h2>Fifty years, a continent rewired</h2>
-        <p style="max-width:58ch">Once the secret was out of Mainz, presses spread along Europe's trade routes faster than almost any technology before them. Books printed before 1501 are called <em>incunabula</em> — "from the cradle."</p>
+        <p class="eyebrow">Slide 8 · The spread</p>
+        <h2>By 1500, presses in 250 towns</h2>
+        <p style="max-width:58ch">Once the method left Mainz, presses followed Europe's trade routes faster than almost any technology before. Books printed before 1501 are called <em>incunabula</em>, from the Latin for cradle.</p>
         <div class="stat-line">
           <div class="stat"><div class="num">~250</div><div class="lab">Towns with presses by 1500</div></div>
           <div class="stat"><div class="num">~20M</div><div class="lab">Volumes printed before 1501</div></div>
@@ -545,11 +547,11 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
       </div>
       <div>
         <div class="tl">
-          <div class="tl-item lit"><div class="tl-year">1377</div><h3>Metal type, already in Korea</h3><p>The <em>Jikji</em> is printed with movable metal type — decades before Mainz. Gutenberg's leap was an independent, complete <em>system</em> built for the alphabet.</p></div>
-          <div class="tl-item lit"><div class="tl-year">c. 1440s</div><h3>Gutenberg perfects the kit</h3><p>Hand mould, oil ink, and adapted press come together in Mainz.</p></div>
-          <div class="tl-item lit"><div class="tl-year">1455</div><h3>The 42-line Bible</h3><p>~180 copies — the first great book of the press age.</p></div>
+          <div class="tl-item lit"><div class="tl-year">1377</div><h3>Metal type, already in Korea</h3><p>The <em>Jikji</em> is printed in Korea with movable metal type, decades before Mainz. Gutenberg worked out a full <em>system</em> of his own, built for the alphabet.</p></div>
+          <div class="tl-item lit"><div class="tl-year">c. 1440s</div><h3>Gutenberg assembles the system</h3><p>Hand mould, oil ink, and adapted press come together in Mainz.</p></div>
+          <div class="tl-item lit"><div class="tl-year">1455</div><h3>The 42-line Bible</h3><p>About 180 copies, the first major book printed this way.</p></div>
           <div class="tl-item lit"><div class="tl-year">1500</div><h3>Presses in ~250 towns</h3><p>From Venice to London, an estimated 20 million books already in circulation.</p></div>
-          <div class="tl-item"><div class="tl-year">1517 →</div><h3>The dam breaks</h3><p>Luther's theses race across Europe in print — the first mass-media event.</p></div>
+          <div class="tl-item"><div class="tl-year">1517 →</div><h3>Luther, in print</h3><p>Luther's theses spread across Europe in print within weeks, the first mass-media event.</p></div>
         </div>
       </div>
     </div>
@@ -559,12 +561,12 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   <section class="slide dark" aria-label="How it changed the world">
     <div class="wrap">
       <p class="eyebrow">Slide 9 · The consequences</p>
-      <h2>What cheap words actually did</h2>
+      <h2>What printing changed</h2>
       <div class="cgrid">
-        <div class="cell"><h3><span class="n">01</span> Cracked the Church's monopoly</h3><p>When anyone could print, Luther's 95 Theses spread in weeks. The Reformation was the first movement carried by mass print — and the Church could no longer control the message.</p></div>
-        <div class="cell"><h3><span class="n">02</span> Made science cumulative</h3><p>Identical diagrams, tables, and star charts could now be reproduced exactly and checked by others. Knowledge could build on a stable, shared record instead of drifting copy to copy.</p></div>
-        <div class="cell"><h3><span class="n">03</span> Standardized language</h3><p>Printing in the vernacular fixed spelling and grammar, helping turn local dialects into national languages — and lifting literacy along the way.</p></div>
-        <div class="cell"><h3><span class="n">04</span> Invented the public</h3><p>Pamphlets, newspapers, almanacs and a culture of authorship and copyright followed. For the first time, ideas could reach strangers at scale — and public opinion became a force.</p></div>
+        <div class="cell"><h3><span class="n">01</span> Cracked the Church's monopoly</h3><p>Once anyone could print, Luther's 95 Theses spread in weeks. The Reformation was the first movement to ride mass printing, and the Church lost its hold on what people read.</p></div>
+        <div class="cell"><h3><span class="n">02</span> Made science cumulative</h3><p>Diagrams, tables, and star charts could be reproduced exactly and checked by others. Each result built on a fixed, shared record instead of drifting from copy to copy.</p></div>
+        <div class="cell"><h3><span class="n">03</span> Standardized language</h3><p>Printing in everyday languages settled spelling and grammar, helped turn local dialects into national languages, and raised literacy along the way.</p></div>
+        <div class="cell"><h3><span class="n">04</span> A reading public</h3><p>Pamphlets, newspapers, and almanacs followed, along with authorship and copyright. Ideas could reach strangers in bulk, and public opinion became a force of its own.</p></div>
       </div>
     </div>
   </section>
@@ -572,12 +574,12 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   <!-- 10 MYTH -->
   <section class="slide" aria-label="A myth corrected">
     <div class="wrap narrow">
-      <p class="eyebrow">Slide 10 · Set the record straight</p>
-      <h2>"Gutenberg invented printing"</h2>
-      <p class="lead">Not quite — and the truth is more interesting.</p>
-      <p>Printing with ink on paper, woodblocks, and even movable type all existed in East Asia <strong>centuries before</strong> Gutenberg. What he assembled around 1450 was a uniquely powerful <em>combination</em> for the Latin alphabet: the reusable type-casting mould, an oil-based ink, and the screw press — engineered to work together at scale.</p>
-      <p>And he didn't get rich from it. Gutenberg borrowed heavily from a financier, <strong>Johann Fust</strong>, lost a lawsuit, and handed over much of his workshop. He died in relative obscurity in 1468 — the man who multiplied everyone's ideas but profited little from his own.</p>
-      <div class="note">The lesson isn't a lone genius with a flash of insight. It's a craftsman combining existing pieces into a system the world wasn't ready for — until it suddenly was.</div>
+      <p class="eyebrow">Slide 10 · A common myth</p>
+      <h2>Korea got there first</h2>
+      <p class="lead">In 1377, a Korean foundry printed a book with movable metal type, seventy years before Mainz.</p>
+      <p>Printing with ink, woodblock pages, even movable type: all of it existed in East Asia first. What Gutenberg did, around 1450, was make it work at scale for the Latin alphabet. The casting mould, the oil-based ink, the made-over winepress all existed already; his part was making them run together as one machine.</p>
+      <p>He never got rich. He borrowed heavily to build the workshop, from a financier named <strong>Johann Fust</strong>; when the loan came due, Fust sued, won, and took the press and the type. Gutenberg died in 1468 with almost nothing.</p>
+      <div class="note">Fust kept the workshop and ran it with Gutenberg's former assistant, Peter Schöffer. In 1457 they printed the Mainz Psalter, the first book to carry a printer's name and date.</div>
     </div>
   </section>
 
@@ -592,7 +594,7 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
         <button class="btn ghost" id="qBack" disabled>Back</button>
         <button class="btn" id="qNext">Next question</button>
       </div>
-      <div class="score" id="score">Pick an answer to check it — instant feedback, and you can change your mind.</div>
+      <div class="score" id="score">Pick an answer to check it. You'll get instant feedback, and you can change your mind.</div>
     </div>
   </section>
 
@@ -600,8 +602,8 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   <section class="slide" aria-label="Sources and close">
     <div class="wrap">
       <p class="eyebrow">Slide 12 · The takeaway</p>
-      <h2>One mould, and the world got louder</h2>
-      <p style="max-width:64ch">Gutenberg's press is the rare invention whose whole point was to make <em>copies</em> — and copies of ideas, it turns out, reshape everything they touch. The mental model is small enough to keep: <strong>break the page into reusable letters, cast them by the thousand, and the cost of a thought falls toward zero.</strong></p>
+      <h2>Why it mattered</h2>
+      <p style="max-width:64ch">The press was built to do one thing: make <em>copies</em>. Once copies were cheap, ideas spread on their own, and over the next century printing reshaped religion, science, and politics. The method is simple to state: <strong>break the page into reusable letters, cast them by the thousand, and the cost of a book falls to almost nothing.</strong></p>
       <h3 style="margin-top:var(--s6); font-size:1.1rem; color:var(--ox)">Sources &amp; further reading</h3>
       <div class="src">
         <p>Elizabeth Eisenstein, <a href="https://www.cambridge.org/core/books/printing-press-as-an-agent-of-change/" target="_blank" rel="noopener"><i>The Printing Press as an Agent of Change</i></a> (Cambridge UP).</p>
@@ -705,13 +707,13 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
 /* ============ STEP-THROUGH (the system) ============ */
 (function(){
   var steps=[
-    {t:"The punch",b:"A letter is engraved in relief, in reverse, onto the end of a hard steel rod — the master from which everything else descends."},
-    {t:"The matrix",b:"The steel punch is struck into a small bar of softer copper, leaving a clean impression of the letter. This negative mould is called the matrix."},
-    {t:"The hand mould",b:"The matrix is clamped into Gutenberg's adjustable mould. Its width slides to fit a narrow 'i' or a wide 'm' — the key invention."},
-    {t:"Casting a sort",b:"Molten alloy of lead, tin and antimony is poured in. It cools in seconds, expanding slightly to fill every detail, and out drops one finished letter — a 'sort'."},
-    {t:"Composing",b:"A compositor lines up sorts in a handheld 'composing stick', adding spaces to justify each line, then locks a whole page of type into a frame: the forme."},
-    {t:"Inking",b:"Leather ink-balls dab sticky, oil-based ink across the raised type. Gutenberg's ink clung to metal where the scribes' water inks would have slid off."},
-    {t:"The pull",b:"A dampened sheet is laid down and the screw press drives the platen onto the forme. One firm pull transfers a full page — repeatable hundreds of times a day."}
+    {t:"The punch",b:"A letter is cut in relief, in reverse, into the end of a hard steel rod. This punch is the master that every later copy comes from."},
+    {t:"The matrix",b:"The punch is struck into a small bar of softer copper, leaving a clean impression. That copper mould is called the matrix."},
+    {t:"The hand mould",b:"The matrix sits in Gutenberg's adjustable mould, which slides wider or narrower to fit any letter. That adjustment is the key part."},
+    {t:"Casting a sort",b:"Molten lead, tin, and antimony is poured in. It cools in seconds and expands to fill the mould, and a finished letter drops out. A single letter is called a sort."},
+    {t:"Composing",b:"A compositor lines the sorts up in a handheld composing stick, adding spaces to even out each line, then locks a full page of type into a frame called the forme."},
+    {t:"Inking",b:"Leather ink-balls dab sticky, oil-based ink over the raised type. Gutenberg's ink stuck to metal, where the scribes' water inks slid off."},
+    {t:"The pull",b:"A damp sheet goes down, and the screw press drives the platen onto the type. One firm pull prints a full page, and you can do it hundreds of times a day."}
   ];
   var sw=document.getElementById('stepper');
   var si=document.getElementById('stepSi'), st=document.getElementById('stepTitle'), sb=document.getElementById('stepBody');
@@ -782,12 +784,12 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
     pBar.style.width=(pressPer/maxPer*100)+'%';
     var cross=Math.ceil(PRESS_SETUP/(SCRIBE_PER-PRESS_PER));
     if(pressPer>scribePer){
-      verdict.innerHTML='At <b>'+n+'</b> cop'+(n===1?'y':'ies')+', the scribe is still cheaper — the press hasn’t earned back its setup yet.';
+      verdict.innerHTML='At <b>'+n+'</b> cop'+(n===1?'y':'ies')+', the scribe is still cheaper, since the press hasn’t earned back its setup yet.';
     }else if(n>=cross && n<cross+40){
-      verdict.innerHTML='Right around <b>'+cross+'</b> copies, the press breaks even. Past here, every extra book is almost free.';
+      verdict.innerHTML='Right around <b>'+cross+'</b> copies, the press breaks even. After that, each extra book is almost free.';
     }else{
       var x=(scribePer/pressPer);
-      verdict.innerHTML='At <b>'+n+'</b> copies, printing is about <b>'+x.toFixed(x<10?1:0)+'×</b> cheaper per book — and the gap keeps widening.';
+      verdict.innerHTML='At <b>'+n+'</b> copies, printing costs about <b>'+x.toFixed(x<10?1:0)+'×</b> less per book, and the gap keeps growing.';
     }
   }
   slider.addEventListener('input',update);
@@ -799,16 +801,16 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   var data=[
     {q:"What was Gutenberg's most important original innovation?",
      opts:["The printing press frame itself","The adjustable hand mould for casting identical letters","Inventing paper","Inventing the alphabet"],
-     a:1, why:"Presses, paper and even movable type already existed. The hand mould let him mass-produce thousands of identical, type-high letters — the real bottleneck he broke."},
+     a:1, why:"Presses, paper, and movable type already existed. The hand mould was what let him turn out thousands of identical, type-high letters, which was the real bottleneck."},
     {q:"Why is each piece of metal type engraved in mirror image?",
      opts:["To save metal","So it prints the right way round on paper","To make it stronger","It was a decorative tradition"],
-     a:1, why:"Type presses face-down onto the page, so a reversed letter transfers as a correctly-readable one — like a rubber stamp."},
+     a:1, why:"Type presses face-down onto the page, so a reversed letter transfers as a correctly-readable one, just like a rubber stamp."},
     {q:"Where does the press's advantage over scribes actually come from?",
      opts:["The very first copy is cheaper","Cheap second, third, and thousandth copies after a costly setup","It never makes mistakes","It needs no ink"],
-     a:1, why:"Setting the type is slow and expensive. The payoff is that every copy after the first is nearly free, so cost-per-book collapses on a long run."},
+     a:1, why:"Setting the type is slow and costly. After that, each copy is nearly free, so the cost per book drops sharply on a long run."},
     {q:"Which upheaval was the first great movement carried by mass printing?",
      opts:["The Renaissance","The Protestant Reformation","The French Revolution","The Industrial Revolution"],
-     a:1, why:"Luther's 95 Theses (1517) and his pamphlets spread across Europe in print within weeks — the first true mass-media event."}
+     a:1, why:"Luther's 95 Theses (1517) and his pamphlets spread across Europe in print within weeks, the first true mass-media event."}
   ];
   var letters=['A','B','C','D'];
   var wrap=document.getElementById('quiz'), scoreEl=document.getElementById('score');
@@ -872,10 +874,10 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   function showResult(){
     showingResult=true;
     var c=correctCount(), n=data.length;
-    var line = c===n ? 'A perfect run — you could set type with Gutenberg himself.'
-             : c>=n-1 ? 'Excellent — you’ve got the mechanics and the consequences down.'
-             : c>=2 ? 'Solid. Skim back through the demos to lock in the rest.'
-             : 'Worth another pass — the hand-mould and economics slides are the keys.';
+    var line = c===n ? 'Full marks. You’ve got the whole process down.'
+             : c>=n-1 ? 'Close to perfect. The mechanics and the consequences are there.'
+             : c>=2 ? 'Solid. A quick pass back through the demos will fill the gaps.'
+             : 'Worth another run. Start with the hand-mould and economics slides.';
     wrap.innerHTML='<div class="qresult"><div class="big">'+c+' / '+n+'</div><p>'+line+'</p>'+
       '<button class="btn" id="qRetry">Try again</button></div>';
     syncNav();
