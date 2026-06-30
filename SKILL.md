@@ -108,15 +108,18 @@ blanks. What matters most:
   form (e.g. Explainer Studio), the answers arrive with the brief — honor them, don't re-interview.
   A normal chat with a person (including the Claude app) is **NOT** this case: ask the must-ask set.
 - Collect a **source list** as you go; every non-obvious claim should be traceable.
-- **Prose register (silent — not a user question).** Before writing, auto-select a register based
-  on topic + audience. Never ask the user; never name the authors these draw from. Three registers:
-  - *Crisp and Clear* — short words, concrete over abstract, no word wasted. Default for technical,
-    how-things-work, and policy topics.
-  - *Cool Observer* — rhythm-forward, the outside eye, slightly fragmentary. For company profiles,
-    cultural topics, dossiers, anything with an angle.
-  - *Raises the Stakes* — building sentences, moral weight, addresses the reader directly, assumes
-    their intelligence. For history, and anything where you want the reader to feel something.
-  The register shapes word choice and sentence rhythm throughout; it is never surfaced in the UI.
+- **Prose voice (silent — not a user question).** One house voice: **Professional**. Concrete-first
+  and reportorial — lead with the fact or the object, state it plainly, and let specifics and numbers
+  carry the weight. No reveal structure ("not X, it's Y"), no aphoristic closers, no cutesy motifs;
+  em-dashes are rare (a comma or a period almost always does the job). Keep sentences lean — roughly
+  newswire length, at or under the word count a showier draft would use; in a deck, treat ~45 words
+  for a cover blurb and ~90 for a body slide as soft ceilings, and if a slide won't compress it is
+  carrying too much prose — give the weight to a demo or cut it. Vary tone only by **temperature and
+  sentence length** (drier vs. warmer, shorter vs. longer), never by adopting a rhetorical posture.
+  **Write from the facts, not by de-slopping a draft:** editing a performed sentence keeps its shape,
+  so rebuild it from what's underneath. The voice is never surfaced in the UI, and the touchstone
+  writers behind it are not named. This sets the target; it does **not** retire the Phase 4 slop pass —
+  keep the de-slop discipline in the loop.
 
 > **Once the interview is answered: think, then immediately write the file. Do NOT output your architecture plan, section order, design token choices, or any "Phase 1/2 thinking" as chat text. All planning happens silently. You may output ONE scope line first — `Scope: [N sections, centerpiece: X, ~N lines]` — nothing more. The next output after that must be a Write call. If your plan would produce a raw file over 700 lines *and the user did not select comprehensive depth*, cut scope before writing.**
 
@@ -303,8 +306,8 @@ not deliver until all pass:
       re-explain. *Throughline exception:* a recurring mental model restated at **new depth** is
       progressive teaching, not repetition. Flag only same-idea-at-same-depth repeats and any
       paragraph that survives deletion with no loss.
-- [ ] **Prose register & slop tells.** Does the writing hit the selected register (Crisp and Clear /
-      Cool Observer / Raises the Stakes)? Scan for overuse of: em-dashes (one or two fine; three per
+- [ ] **Prose voice & slop tells.** Does the writing hold the **Professional** voice (concrete-first,
+      plainly stated, no rhetorical posture)? Scan for overuse of: em-dashes (one or two fine; three per
       paragraph is a tell) · loaded metaphor nouns ("the spine", "load-bearing", "the throughline",
       "connective tissue", "the scaffolding") · "it's not just X — it's Y" contrast framing ·
       staccato comparison sentences · filler openers ("at its core", "put simply", "in short", "at
