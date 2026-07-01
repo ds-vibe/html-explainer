@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The EU AI Act — a risk-tiered compliance brief</title>
-<meta name="description" content="How the EU AI Act regulates AI by risk tier — prohibited practices, high-risk obligations, transparency duties, GPAI rules, penalties, and the post-Digital-Omnibus 2024–2028 timeline. For a technical/legal audience.">
+<title>The EU AI Act: risk tiers, obligations, and the 2026 timeline</title>
+<meta name="description" content="The EU AI Act regulates AI by risk tier: prohibited practices, high-risk obligations, transparency duties, GPAI rules, penalties, and the post-Digital-Omnibus 2024–2028 timeline. For a technical and legal audience.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -252,7 +252,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
     <a href="#pyramid">Risk tiers</a>
     <a href="#classify">Classify</a>
     <a href="#prohibited">Prohibited</a>
-    <a href="#high">High risk</a>
+    <a href="#high">High-risk</a>
     <a href="#gpai">GPAI</a>
     <a href="#fines">Fines</a>
     <a href="#timeline">Timeline</a>
@@ -267,7 +267,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
     <span>Status: phased application</span>
   </div>
   <h1>The EU <span>AI Act</span></h1>
-  <p class="dek">The AI Act is a product-safety law. It regulates technology by the <strong>risk of its use</strong>. It has four tiers, escalating duties, and fines up to €35M or 7% of global turnover — on a timeline just reshaped by the 2026 Digital Omnibus.</p>
+  <p class="dek">The AI Act is a product-safety law, passed in 2024. It regulates AI by the <strong>risk of its use</strong>, sorting systems into four tiers with escalating duties. Penalties reach €35M or 7% of global turnover. The rules phase in through 2028, but the 2026 Digital Omnibus Regulation just pushed back the timeline for high-risk uses.</p>
 
   <div class="tierstrip" id="tierStrip"></div>
 
@@ -285,12 +285,12 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
 <section class="section" id="model"><div class="wrap">
   <div class="two">
     <div>
-      <div class="sechead"><span class="eyebrow">The mental model</span><h2>It regulates uses, not the technology</h2></div>
-      <p>The Act rarely asks <em>what</em> an AI system is. It asks <em>what it is used for</em>, and assigns duties in proportion to the risk that use poses to health, safety, and fundamental rights. The same model — a vision network or a large language model — can sit in any tier depending on how it is deployed.</p>
-      <p>The critical question is: <strong>which tier does this use fall into?</strong> Everything else (the bans, the obligations, the fines) follows from the answer. General-purpose AI models get a parallel regime on top, because they flow into countless downstream uses at once.</p>
+      <div class="sechead"><span class="eyebrow">The mental model</span><h2>Duties follow the use</h2></div>
+      <p>The Act assigns duties by what an AI system is used for, in proportion to the risk that use poses to health, safety, and fundamental rights. The underlying technology rarely matters. The same model, whether a vision network or a large language model, can sit in any tier depending on how it is deployed.</p>
+      <p>Classification drives everything else. Once a use falls into a tier, the bans, the obligations, and the fines all follow from that placement. General-purpose AI models get a parallel regime on top, because a single model feeds many downstream uses at once.</p>
     </div>
     <div>
-      <div class="callout"><div class="t">Read it as a sorting machine</div><p>Each use drops into one of four tiers. The higher the tier, the heavier the duty: from outright <strong style="color:var(--t-unacc)">prohibition</strong>, through a full <strong style="color:var(--t-high)">compliance regime</strong>, to a light <strong style="color:var(--t-limited)">disclosure</strong> rule, to <strong style="color:var(--t-minimal)">nothing at all</strong>.</p></div>
+      <div class="callout"><div class="t">Four tiers, escalating duties</div><p>Each use falls into one of four tiers, and the duty rises with the tier: outright <strong style="color:var(--t-unacc)">prohibition</strong>, a full <strong style="color:var(--t-high)">compliance regime</strong>, a light <strong style="color:var(--t-limited)">disclosure</strong> rule, or <strong style="color:var(--t-minimal)">nothing at all</strong>.</p></div>
     </div>
   </div>
 </div></section>
@@ -309,7 +309,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
   <div class="demo">
     <div class="dh">Interactive · risk classifier</div>
     <h3>Pick a system, see where it lands</h3>
-    <p class="sub">Eight real deployments, sorted by the Act's logic. Select one for its tier, why it lands there, and the duties that follow.</p>
+    <p class="sub">Eight real deployments, sorted by the Act's logic. Select one to see its tier, why it falls there, and the duties that follow.</p>
     <div class="syspick" id="sysPick"></div>
     <div id="clsBody"></div>
   </div>
@@ -325,7 +325,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
 
 <!-- HIGH RISK -->
 <section class="section" id="high"><div class="wrap">
-  <div class="sechead"><span class="eyebrow">§4 · High risk</span><h2>Permitted, but tightly regulated</h2>
+  <div class="sechead"><span class="eyebrow">§4 · High-risk</span><h2>Permitted, but tightly regulated</h2>
     <p class="lede">High-risk systems are legal, but they carry the Act's full compliance regime. A system arrives here by one of two routes.</p></div>
   <div class="routes">
     <div class="route">
@@ -347,7 +347,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
   <div class="wx demo" style="margin-top:var(--s7)">
     <div class="dh">Worked example · high-risk obligations</div>
     <h3>What compliance actually takes</h3>
-    <p class="sub">The obligations are the same for every high-risk system; what they require is not. Pick a system to see each duty turned into the concrete work it demands.</p>
+    <p class="sub">Every high-risk system carries the same nine obligations, but the work each one demands varies by system. Pick one to see each duty turned into concrete steps.</p>
     <div class="wx-tabs" id="wxTabs"></div>
     <div class="wx-head" id="wxHead"></div>
     <div class="wx-obls" id="wxObls"></div>
@@ -378,7 +378,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
 <!-- GPAI -->
 <section class="section" id="gpai"><div class="wrap">
   <div class="sechead"><span class="eyebrow">§7 · The parallel regime</span><h2>General-purpose AI models</h2>
-    <p class="lede">Foundation models don't fit the use-based tiers — one model feeds thousands of downstream uses. So the Act governs them directly, with rules live since 2 August 2025.</p></div>
+    <p class="lede">Foundation models do not fit the use-based tiers, because one model feeds thousands of downstream uses. The Act governs them directly, with rules live since 2 August 2025.</p></div>
   <div class="two">
     <div>
       <p style="color:var(--ink-2)"><strong>Every GPAI model</strong> owes baseline transparency: technical documentation for the AI Office and downstream providers, a policy to respect EU copyright, and a public summary of training-data sources.</p>
@@ -432,21 +432,21 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
 </div></section>
 
 <footer><div class="wrap">
-  <div><div class="mono" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)">EU AI Act · risk-tiered compliance brief</div><div style="margin-top:8px">Prepared June 2026. Regulate the use, not the technology.</div></div>
+  <div><div class="mono" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)">EU AI Act · risk-tiered compliance brief</div><div style="margin-top:8px">Prepared June 2026. A plain-language guide to Regulation (EU) 2024/1689.</div></div>
   <div class="mono" style="font-size:12px;text-align:right;color:var(--ink-3)">Reg. (EU) 2024/1689<br>4 tiers · €35M / 7%</div>
 </div></footer>
 
 <script>
 const TIERS=[
-  {id:"unacc",w:1,name:"Unacceptable risk",cvar:"--t-unacc",count:"Banned",ex:"Social scoring · live facial ID",blurb:"A short list of uses the Act treats as incompatible with EU fundamental rights. Not regulated — forbidden. Enforceable since 2 Feb 2025.",who:["Social scoring by authorities","Manipulative or exploitative systems","Untargeted facial-image scraping","Most real-time public biometric ID"],owes:"Prohibition. Top fine: €35M or 7% of global turnover."},
-  {id:"high",w:2,name:"High risk",cvar:"--t-high",count:"Full regime",ex:"Hiring · credit · medical devices",blurb:"Legal but consequential uses in sensitive domains, or AI as a safety component of a regulated product. The Act's centre of gravity.",who:["Employment & hiring","Credit & insurance","Education & exams","Critical infrastructure","Law enforcement","Migration & borders"],owes:"Risk management, data governance, human oversight, conformity assessment, CE marking, EU registration, post-market monitoring."},
+  {id:"unacc",w:1,name:"Unacceptable risk",cvar:"--t-unacc",count:"Banned",ex:"Social scoring · live facial ID",blurb:"A short list of uses the Act treats as incompatible with EU fundamental rights and bans outright. Enforceable since 2 Feb 2025.",who:["Social scoring by authorities","Manipulative or exploitative systems","Untargeted facial-image scraping","Most real-time public biometric ID"],owes:"Prohibition. Top fine: €35M or 7% of global turnover."},
+  {id:"high",w:2,name:"High-risk",cvar:"--t-high",count:"Full regime",ex:"Hiring · credit · medical devices",blurb:"Legal but consequential uses in sensitive domains, or AI as a safety component of a regulated product. Most of the Act's obligations apply here.",who:["Employment & hiring","Credit & insurance","Education & exams","Critical infrastructure","Law enforcement","Migration & borders"],owes:"Risk management, data governance, human oversight, conformity assessment, CE marking, EU registration, post-market monitoring."},
   {id:"limited",w:3,name:"Limited risk",cvar:"--t-limited",count:"Disclosure",ex:"Chatbots · deepfakes",blurb:"Low-stakes uses that could nonetheless deceive. The only duty is transparency. Applies from 2 Aug 2026.",who:["Chatbots","Deepfakes & synthetic media","Emotion recognition","Biometric categorisation"],owes:"Tell people they're dealing with AI; label AI-generated content."},
   {id:"minimal",w:4,name:"Minimal risk",cvar:"--t-minimal",count:"No new duties",ex:"Spam filters · recommenders",blurb:"Everything else — the overwhelming majority of AI. No obligations under the Act (beyond cross-cutting AI-literacy duties).",who:["Spam filters","Recommenders","Inventory & logistics","AI in video games"],owes:"Nothing under the Act. Voluntary codes encouraged."}
 ];
 
 const TIERMETA={
   unacc:{cvar:"--t-unacc",head:"Prohibited",duties:["No path to compliance — the use cannot be placed on the EU market","Top fine: €35M or 7% of global turnover","Enforceable since 2 Feb 2025"]},
-  high:{cvar:"--t-high",head:"High risk · full regime",duties:["Risk management, data governance, logging, human oversight","Conformity assessment, CE marking, EU-database registration","Post-market monitoring; FRIA for certain deployers","Applies 2 Dec 2027 (Annex III) / 2 Aug 2028 (Annex I)"]},
+  high:{cvar:"--t-high",head:"High-risk · full regime",duties:["Risk management, data governance, logging, human oversight","Conformity assessment, CE marking, EU-database registration","Post-market monitoring; FRIA for certain deployers","Applies 2 Dec 2027 (Annex III) / 2 Aug 2028 (Annex I)"]},
   limited:{cvar:"--t-limited",head:"Limited risk · transparency",duties:["Tell people they're interacting with AI","Label AI-generated or manipulated content","Applies from 2 Aug 2026"]},
   minimal:{cvar:"--t-minimal",head:"Minimal risk · no new duties",duties:["No obligations under the Act","AI-literacy duties (Art 4) still apply","Voluntary codes of conduct encouraged"]}
 };
@@ -542,9 +542,9 @@ const CLOCK=[
 ];
 
 const QUIZ=[
-  {q:"An HR firm uses AI to screen and rank job applicants in the EU. Which tier?",opts:["Minimal risk","Limited risk","High risk","Unacceptable risk"],a:2,why:"Employment and worker management is an Annex III domain, so applicant screening is high risk — full compliance regime, now applying from 2 Dec 2027."},
+  {q:"An HR firm uses AI to screen and rank job applicants in the EU. Which tier?",opts:["Minimal risk","Limited risk","High-risk","Unacceptable risk"],a:2,why:"Employment and worker management is an Annex III domain, so applicant screening is high-risk — full compliance regime, now applying from 2 Dec 2027."},
   {q:"What is the top fine under the Act?",opts:["€10M or 2% of EU turnover","€20M or 4% of global turnover","€35M or 7% of global turnover","€50M flat"],a:2,why:"Article 5 (prohibited practices) breaches carry up to €35M or 7% of global annual turnover, whichever is higher."},
-  {q:"A customer-service chatbot that doesn't decide anything consequential is…",opts:["High risk","Limited risk","Minimal risk","Prohibited"],a:1,why:"It's limited risk: the only duty is transparency — users must be told they're talking to an AI (Article 50)."},
+  {q:"A customer-service chatbot that doesn't decide anything consequential is…",opts:["High-risk","Limited risk","Minimal risk","Prohibited"],a:1,why:"It's limited risk: the only duty is transparency — users must be told they're talking to an AI (Article 50)."},
   {q:"What makes a general-purpose AI model 'systemic risk'?",opts:["Over 1M users","Training compute above 10²⁵ FLOPs","Being closed-source","Earning over €1B"],a:1,why:"Training compute above 10²⁵ FLOPs triggers a rebuttable presumption of systemic risk and the extra GPAI obligations."},
   {q:"Why did high-risk obligations move to 2027–2028?",opts:["A court struck them down","The Digital Omnibus deferred them","The Act was repealed","They were never required"],a:1,why:"The 2026 Digital Omnibus deferred Annex III high-risk duties to 2 Dec 2027 and Annex I to 2 Aug 2028, citing readiness of standards and infrastructure."}
 ];

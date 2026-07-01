@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How color works — light vs. ink (RGB &amp; CMYK)</title>
-<meta name="description" content="A playable field guide to color: how screens add light (RGB) and print subtracts it (CMYK), why the two systems disagree, and what that means in practice.">
+<title>Color on screens and in print (RGB and CMYK)</title>
+<meta name="description" content="How screens add light (RGB) and print subtracts it (CMYK), why the two systems produce different colors, and what that means for design and photo work.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -520,9 +520,9 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
 <!-- ============ HERO ============ -->
 <section class="band hero night" id="top">
   <div class="wrap">
-    <span class="eyebrow hero-eyebrow">A playable field guide to color</span>
-    <h1>How color actually works, in <span class="light-word">light</span> and in ink</h1>
-    <p class="hero-intro">Every color on a screen is made by <b>adding light</b>. Every color in print is made by <b>subtracting it</b>. The two systems run in opposite directions, and that single fact explains nearly everything else, including why the colors never quite match.</p>
+    <span class="eyebrow hero-eyebrow">Color on screens and in print</span>
+    <h1>How color works, in <span class="light-word">light</span> and in ink</h1>
+    <p class="hero-intro">A screen makes color by <b>adding light</b>. Print makes color by <b>subtracting it</b>. The two systems are opposites, which is why the same color on a monitor and on paper rarely matches.</p>
 
     <div class="split">
       <div class="panel add">
@@ -532,7 +532,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
           <div class="blob c2" style="background:#00ff00"></div>
           <div class="blob c3" style="background:#0000ff"></div>
         </div>
-        <p class="pcap">Start in the dark. Add <b>red</b>, <b>green</b>, and <b>blue</b> light. Where all three pile up, you reach <b>white</b>.</p>
+        <p class="pcap">Start in the dark. Add <b>red</b>, <b>green</b>, and <b>blue</b> light. Where all three overlap, you reach <b>white</b>.</p>
       </div>
       <div class="panel sub">
         <div class="panel-tag"><span class="ptitle">Print · subtract light</span><span class="pdir">white → black</span></div>
@@ -541,13 +541,13 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
           <div class="blob c2" style="background:#ff00ff"></div>
           <div class="blob c3" style="background:#ffff00"></div>
         </div>
-        <p class="pcap">Start with white paper. Add <b>cyan</b>, <b>magenta</b>, and <b>yellow</b> ink. Where all three pile up, you reach <b>black</b>.</p>
+        <p class="pcap">Start from white paper. Add <b>cyan</b>, <b>magenta</b>, and <b>yellow</b> ink. Where all three overlap, you reach <b>black</b>.</p>
       </div>
     </div>
 
     <div class="throughline">
-      <div class="tl-cell add"><span class="k">The one idea · screens</span><span class="v">Pixels begin <b>black</b> and emit light. More light means a brighter color, all the way up to <b>white</b>.</span></div>
-      <div class="tl-cell sub"><span class="k">The one idea · print</span><span class="v">Paper begins <b>white</b> and reflects light. More ink means less escapes, all the way down to <b>black</b>.</span></div>
+      <div class="tl-cell add"><span class="k">The rule · screens</span><span class="v">Pixels start <b>black</b> and emit light. More light gives a brighter color, up to <b>white</b>.</span></div>
+      <div class="tl-cell sub"><span class="k">The rule · print</span><span class="v">Paper starts <b>white</b> and reflects light. More ink lets less escape, down to <b>black</b>.</span></div>
     </div>
   </div>
 </section>
@@ -556,9 +556,9 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
 <section class="band" id="light">
   <div class="wrap">
     <div class="section-head measure">
-      <span class="eyebrow">First, what color even is</span>
-      <h2>Color is light, and your eye keeps only three numbers</h2>
-      <p class="lede">White light is a blend of every wavelength, from deep red to violet. Drag across the spectrum below. Your eye does not measure each wavelength on its own. It carries just three kinds of color sensor, tuned roughly to red, green, and blue.</p>
+      <span class="eyebrow">What color is</span>
+      <h2>Color is light, and your eye reads it with three sensors</h2>
+      <p class="lede">White light is a mix of every wavelength, from deep red to violet. Drag across the spectrum below. Your eye does not measure each wavelength separately. It has three kinds of color sensor, tuned roughly to red, green, and blue.</p>
     </div>
 
     <div class="spectrum-wrap">
@@ -569,11 +569,11 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
       <div class="spec-scale"><span>380 nm · violet</span><span>490 · cyan</span><span>540 · green</span><span>620 · red</span><span>700 nm · deep red</span></div>
     </div>
 
-    <p class="measure" style="margin-top:var(--s6)">Every color you have ever seen is your brain reading three signals from those sensors. That is the loophole every screen exploits. It never reproduces a true wavelength. It just lights three dots, red, green, and blue, in the right proportion so your three sensors fire the same way they would for the real thing.</p>
+    <p class="measure" style="margin-top:var(--s6)">Every color you see is your brain combining three signals from those sensors. Screens depend on this. A screen never reproduces a real wavelength. It lights three dots, red, green, and blue, in proportions that make your three sensors respond the same way they would to the real color.</p>
 
     <div class="cones">
       <div class="cone"><div class="ch"><span class="dot" style="background:var(--r)"></span> Long &middot; "red"</div><p>Peaks in the yellow-red range. Carries most of the warmth in a scene.</p></div>
-      <div class="cone"><div class="ch"><span class="dot" style="background:var(--g)"></span> Medium &middot; "green"</div><p>Peaks in green. Your most sensitive channel, and where fine detail lives.</p></div>
+      <div class="cone"><div class="ch"><span class="dot" style="background:var(--g)"></span> Medium &middot; "green"</div><p>Peaks in green. Your most sensitive channel, and the one that carries fine detail.</p></div>
       <div class="cone"><div class="ch"><span class="dot" style="background:var(--b)"></span> Short &middot; "blue"</div><p>Peaks in blue-violet. The sparsest sensor, and the weakest in dim light.</p></div>
     </div>
   </div>
@@ -584,13 +584,13 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
   <div class="wrap">
     <div class="section-head measure">
       <span class="eyebrow">01 &middot; Screens &middot; additive</span>
-      <h2>On a screen, you add light to the dark</h2>
-      <p class="lede">A pixel begins as black, emitting nothing. Behind it sit three tiny lights: red, green, and blue. Turn them up and the light adds together. Two at full make a bright secondary; all three at full make white.</p>
+      <h2>On a screen, you add light to black</h2>
+      <p class="lede">A pixel starts black. It emits nothing at all. Behind it sit three tiny lights: red, green, and blue. Turn them up, and the light adds together. Two at full make a bright secondary; all three make white.</p>
     </div>
 
     <div class="note warn">
-      <span class="nt">A common surprise</span>
-      <p>Red plus green should make brown, right? In paint, yes. In <b>light</b>, red and green make <b>yellow</b>, because your red and green sensors both fire and your brain reads that combination as yellow. No yellow lamp is involved.</p>
+      <span class="nt">A common mistake</span>
+      <p>Red and green paint mix to brown. In <b>light</b>, red and green make <b>yellow</b>: both your red and green sensors fire, and your brain reads that pair as yellow. No yellow lamp is involved.</p>
     </div>
 
     <!-- RGB MIXER -->
@@ -629,7 +629,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
       </div>
       <div class="callout" id="rgbCallout">
         <span class="badge" id="rgbBadge"></span>
-        <div class="ctxt"><span class="cname" id="rgbCname">Neutral gray</span><span id="rgbCdesc">Equal red, green, and blue light always reads as gray. Push them apart to find a color.</span></div>
+        <div class="ctxt"><span class="cname" id="rgbCname">Neutral gray</span><span id="rgbCdesc">Equal red, green, and blue light always reads as gray. Move the sliders apart to find a color.</span></div>
       </div>
     </div>
 
@@ -638,7 +638,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
       <div class="sec"><span class="sw" style="background:#ff00ff"></span> R + B = <span class="mono">magenta</span></div>
       <div class="sec"><span class="sw" style="background:#00ffff"></span> G + B = <span class="mono">cyan</span></div>
     </div>
-    <p class="measure" style="margin-top:var(--s5);color:var(--night-ink-2)">Hold onto those three results. Yellow, magenta, and cyan, the colors a screen makes by combining its primaries, are exactly the three inks a printer starts with. The next section is the same wheel, read backwards.</p>
+    <p class="measure" style="margin-top:var(--s5);color:var(--night-ink-2)">Those three results matter. Yellow, magenta, and cyan, the colors a screen makes by combining its primaries, are exactly the three inks a printer starts with. The next section runs the same relationship in reverse.</p>
   </div>
 </section>
 
@@ -648,7 +648,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
     <div class="section-head measure">
       <span class="eyebrow">02 &middot; Print &middot; subtractive</span>
       <h2>On paper, you take light away</h2>
-      <p class="lede">Paper has no light of its own. White paper looks white because it reflects every wavelength back at you. Ink is a filter: each layer absorbs part of the light and returns less. Cyan absorbs red, magenta absorbs green, yellow absorbs blue. Stack all three and almost nothing escapes.</p>
+      <p class="lede">Paper has no light of its own. It looks white because it reflects every wavelength straight back at you. Ink is a filter. Each layer absorbs part of the light and returns less: cyan absorbs red, magenta absorbs green, yellow absorbs blue. Stack all three, and almost nothing escapes.</p>
     </div>
 
     <!-- CMY MIXER -->
@@ -688,17 +688,17 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
       </div>
       <div class="toggle-row">
         <label class="switch"><input type="checkbox" id="cmyReal" aria-label="Toggle realistic ink"><span class="track"></span><span class="knob"></span></label>
-        <span>Show <b>real ink</b> &mdash; imperfect pigments make a muddy near-black instead of true black</span>
+        <span>Show <b>real ink</b>. Imperfect pigments make a muddy near-black rather than true black</span>
       </div>
       <div class="callout" id="cmyCallout">
         <span class="badge" id="cmyBadge"></span>
-        <div class="ctxt"><span class="cname" id="cmyCname">Bare paper</span><span id="cmyCdesc">No ink at all. The paper reflects every wavelength, so you see white. Lay down ink to start subtracting.</span></div>
+        <div class="ctxt"><span class="cname" id="cmyCname">Bare paper</span><span id="cmyCdesc">No ink at all. The paper reflects every wavelength, so you see white. Add ink to start subtracting.</span></div>
       </div>
     </div>
 
     <div class="note ink">
       <span class="nt">Why CMYK has a fourth letter</span>
-      <p>In theory, cyan plus magenta plus yellow at full strength absorbs everything and gives black. Real pigments are imperfect, so all three together make a muddy dark brown and soak the paper. So printers add a dedicated black, the <b>K</b> in CMYK, for true blacks, crisp text, and far less ink.</p>
+      <p>In theory, cyan plus magenta plus yellow at full strength absorbs everything and comes out black. Real pigments fall short. All three together make a muddy dark brown that soaks the paper. So printers add a dedicated black, the <b>K</b> in CMYK, for true blacks, crisp text, and far less ink.</p>
     </div>
   </div>
 </section>
@@ -707,9 +707,9 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
 <section class="band paper2" id="mirror">
   <div class="wrap">
     <div class="section-head measure">
-      <span class="eyebrow">The bridge</span>
+      <span class="eyebrow">How the two connect</span>
       <h2>The two sets of primaries are mirror images</h2>
-      <p class="lede">Screens build from red, green, blue. Print builds from cyan, magenta, yellow. These are not two unrelated lists. Each print primary is one screen primary taken away from white. Tap a color to see its opposite.</p>
+      <p class="lede">Screens build from red, green, and blue. Print builds from cyan, magenta, and yellow. The two sets are linked: each print primary is one screen primary subtracted from white. Tap a color to see its opposite.</p>
     </div>
 
     <div class="wheel-grid">
@@ -729,7 +729,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
           <span class="pcell"><span class="sw" id="wheelSwB" style="background:#00d2e6"></span> <span id="wheelNameB">Cyan ink</span></span>
         </div>
         <div class="wheel-eq" id="wheelEq">cyan = white &minus; red</div>
-        <p id="wheelDesc">Cyan ink is whatever is left of white light once you remove red. That is why a printer needs cyan to control the red in an image, and why these two can never both be strong in the same spot.</p>
+        <p id="wheelDesc">Cyan ink is white light with the red removed. Printers lean on it to hold down red. The two can never both run strong in the same spot.</p>
         <p style="color:var(--ink-3);font-size:.92rem">Across the wheel: <span class="mono">R&harr;C</span>, <span class="mono">G&harr;M</span>, <span class="mono">B&harr;Y</span>. Opposite sides, same wheel.</p>
       </div>
     </div>
@@ -742,7 +742,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
     <div class="section-head measure">
       <span class="eyebrow">03 &middot; The mismatch</span>
       <h2>Why your screen and your printer disagree</h2>
-      <p class="lede">A screen emits light, so it can reach colors that glow. Ink only redirects light that is already in the room, so it cannot. The full range a device can produce is its <b>gamut</b>, and screens have a wider one, especially for saturated blues, greens, and neons. Pick a color and watch what survives the trip to paper.</p>
+      <p class="lede">A screen emits light, so it can reach colors that seem to glow. Ink only redirects light already in the room. It cannot glow. The full range a device can produce is its <b>gamut</b>, and screens have the wider one, especially for saturated blues, greens, and neons. Pick a color and see how much of it print can hold.</p>
     </div>
 
     <div class="gamut-grid">
@@ -814,15 +814,15 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
   <div class="wrap">
     <div class="section-head measure">
       <span class="eyebrow">In practice</span>
-      <h2>What this means when you actually make things</h2>
-      <p class="lede">The same image lives in two worlds. Here is how the light-versus-ink split shows up in everyday work.</p>
+      <h2>What this means when you make things</h2>
+      <p class="lede">A single image often has to work both on screens and in print. These four cases are where the light-versus-ink split shows up most.</p>
     </div>
 
     <div class="cards">
       <div class="card">
         <div class="ic" style="background:#eaf0ff;color:#3a6dff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"></rect><path d="M8 20h8M12 16v4"></path></svg></div>
         <h3>Designing for screens</h3>
-        <p>Screens work in RGB, almost always the sRGB standard. Use hex codes, lean on the brightest colors the screen allows, and trust that most modern displays will show them nearly the same.</p>
+        <p>Screens work in RGB, almost always the sRGB standard. Use hex codes. Lean on the brightest colors the screen allows, and trust that most modern displays will show them nearly the same.</p>
       </div>
       <div class="card">
         <div class="ic" style="background:#fdeaf4;color:#c01f76"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V4h12v5"></path><rect x="4" y="9" width="16" height="7" rx="1.5"></rect><path d="M7 16h10v4H7z"></path></svg></div>
@@ -832,7 +832,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
       <div class="card">
         <div class="ic" style="background:#e9f7ee;color:#1f9a4d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="8.5" cy="10" r="1.5"></circle><path d="M21 16l-5-5L5 19"></path></svg></div>
         <h3>Editing photos</h3>
-        <p>That neon sign or electric sunset often sits outside the print gamut. Editors flag it as "out of gamut" and map it to the nearest ink color they can reach, which is why a print can look flatter than the glowing version on screen.</p>
+        <p>That neon sign or electric sunset often sits outside the print gamut. Editors flag it as "out of gamut." They map it to the nearest ink color they can reach, which is why the print looks flatter than the glowing version on screen.</p>
       </div>
       <div class="card">
         <div class="ic" style="background:#efeaff;color:#6b46ff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"></path></svg></div>
@@ -875,8 +875,8 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
 <footer class="foot">
   <div class="wrap">
     <h3>About this guide</h3>
-    <p>This is a settled-physics explainer; the core ideas about additive and subtractive color are stable and need no sourcing. The print preview is a simplified model built for intuition, not a color-managed proof. Screen values assume the sRGB standard; real print output depends on paper, ink, and the press profile.</p>
-    <p class="fmeta">Light &amp; Ink &middot; a field guide to color &middot; RGB adds &middot; CMYK subtracts</p>
+    <p>This is a settled-physics explainer. The core ideas about additive and subtractive color are stable and need no sourcing. The print preview is a simplified model, built for intuition rather than a color-managed proof. Screen values assume sRGB; real print output depends on paper, ink, and the press profile.</p>
+    <p class="fmeta">Light &amp; Ink &middot; color on screens and in print &middot; RGB adds &middot; CMYK subtracts</p>
   </div>
 </footer>
 
@@ -900,8 +900,8 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
     function classify(r,g,b){
       var hi=200, lo=55;
       var Rh=r>=hi,Gh=g>=hi,Bh=b>=hi, Rl=r<=lo,Gl=g<=lo,Bl=b<=lo;
-      if(Rl&&Gl&&Bl) return ["Black","No light at all. A screen showing black is a screen emitting nothing, every channel off."];
-      if(Rh&&Gh&&Bh) return ["White","All three lights at full. Equal, maximal red, green, and blue light blend into white."];
+      if(Rl&&Gl&&Bl) return ["Black","No light at all. Every channel is off, so the screen emits nothing."];
+      if(Rh&&Gh&&Bh) return ["White","All three lights at full. Equal red, green, and blue at maximum blend into white."];
       if(Rh&&Gh&&Bl) return ["Yellow","Red and green light together, no blue. Your screen makes yellow with no yellow light source."];
       if(Rh&&Bh&&Gl) return ["Magenta","Red and blue light, no green. This is a screen secondary, and a printer primary."];
       if(Gh&&Bh&&Rl) return ["Cyan","Green and blue light, no red. Another screen secondary that doubles as a printer ink."];
@@ -954,7 +954,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
       var c=+C.value,m=+M.value,y=+Y.value;
       [C,M,Y].forEach(setFill);
       // Real pigments are imperfect: at full ink each channel bottoms out above
-      // zero, so the triple overlap / result lands on a muddy near-black
+      // zero, so the triple overlap / result comes out a muddy near-black
       // (#3F3127 = 63,49,39) instead of true black. "Show real ink" lifts those
       // floors; off = perfect inks that reach pure 0 (true black).
       var rf=real.checked?192:255, gf=real.checked?206:255, bf=real.checked?216:255;
@@ -1035,7 +1035,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
       {n:"Blue light",  col:"#1a4dff"},
       {n:"Magenta ink", col:"#ff00cc"}
     ];
-    var redCyan="Cyan ink is whatever is left of white light once you remove red. A printer uses cyan to control the red in an image, and these two can never both be strong in the same spot.";
+    var redCyan="Cyan ink is white light with the red removed. Printers lean on it to hold down red. The two can never both run strong in the same spot.";
     var grnMag="Magenta ink is white with the green removed. To dial down green in a print, you add magenta. Light's green primary and ink's magenta primary are exact opposites.";
     var bluYel="Yellow ink is white minus blue. It absorbs blue light and reflects the rest. Blue, a screen primary, and yellow, an ink primary, sit straight across from each other.";
     var pairs={
@@ -1151,22 +1151,22 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
     var QS=[
       {q:"A screen is showing pure white. What are its red, green, and blue subpixels doing?",
        o:["All three are off","All three are at full brightness","Only the red one is on"], a:1,
-       w:"White on a screen is every channel at maximum. Add all the light at once and the result is white. Black is the opposite: every channel off."},
+       w:"White on a screen means every channel at maximum. Add all the light at once, and you get white. Black is the opposite. Every channel off."},
       {q:"You mix red light and green light on a screen. What color appears?",
        o:["Brown","Yellow","Magenta"], a:1,
        w:"In light, red plus green makes yellow. Both your red and green sensors fire, and your brain reads that pair as yellow. Paint behaves differently because paint subtracts light."},
       {q:"A blank sheet of paper looks white before any ink touches it. Why?",
        o:["It emits a faint white light","It reflects every wavelength back to your eye","It contains tiny white pixels"], a:1,
-       w:"Paper makes no light of its own. It looks white because it reflects all wavelengths. Ink works by absorbing some of them, so less light comes back."},
+       w:"Paper makes no light of its own. It looks white because it reflects every wavelength. Ink changes that. It absorbs some wavelengths, so less light comes back."},
       {q:"In theory, cyan, magenta, and yellow ink together make black. Why do printers still add a separate K ink?",
        o:["Real inks make a muddy brown and waste ink","Black is brighter than the three combined","Paper cannot hold three inks"], a:0,
-       w:"Real pigments are imperfect, so all three at full make a muddy, soggy near-black. A dedicated black, K, gives true blacks, crisp text, and uses far less ink."},
+       w:"Real pigments are imperfect. All three at full make a muddy, soggy near-black. A dedicated black, K, gives true blacks, crisp text, and far less ink."},
       {q:"Cyan ink controls the red in an image. How does it actually do that?",
        o:["It adds red light to the page","It absorbs red light and reflects the rest","It turns red pixels off"], a:1,
-       w:"Cyan ink is white minus red: it absorbs red light and reflects green and blue. That is why cyan and red sit on opposite sides of the color wheel."},
+       w:"Cyan ink is white minus red. It absorbs red light and reflects green and blue. That puts cyan and red on opposite sides of the wheel."},
       {q:"A neon-blue you designed on screen prints noticeably duller. What happened?",
        o:["The printer ran low on cyan","That blue is outside the CMYK gamut","Your monitor was too bright"], a:1,
-       w:"Glowing, saturated blues sit outside what ink can reproduce. The color is out of gamut, so the printer maps it to the nearest ink color it can reach, which looks calmer."}
+       w:"Glowing, saturated blues sit outside what ink can reproduce. The color is out of gamut. The printer maps it to the nearest ink it can reach, which comes back calmer."}
     ];
     var i=0, score=0, answered=false;
     var qEl=$("quizQ"), oEl=$("quizOpts"), whyEl=$("quizWhy"), whyTxt=$("quizWhyTxt");
@@ -1196,7 +1196,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
     }
     function finish(){
       var pct=Math.round(score/QS.length*100);
-      var msg = pct===100? "Flawless. You have the whole model." : pct>=67? "Strong. The core idea has landed." : pct>=34? "Getting there. Re-skim the two mixers." : "Worth another pass through the demos.";
+      var msg = pct===100? "Perfect score. You have the full model." : pct>=67? "Strong. The main idea is clear." : pct>=34? "Partway there. Re-skim the two mixers." : "Worth another pass through the demos.";
       qEl.style.display="none"; oEl.style.display="none"; whyEl.style.display="none"; whyEl.classList.remove("show");
       var done=document.createElement("div"); done.className="quiz-done";
       var big=document.createElement("div"); big.className="big"; big.textContent=score+" / "+QS.length;
