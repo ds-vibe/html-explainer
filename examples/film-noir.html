@@ -185,6 +185,13 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; 
 .opt.correct{border-color:#5fb07a; background:rgba(95,176,122,.12); color:#bfe6cc}
 .opt.wrong{border-color:#c8625b; background:rgba(200,98,91,.12); color:#edc4c0}
 .opt .mk{font-family:var(--display); margin-right:10px; color:var(--ink-faint)}
+.opt .mark{float:right; margin-left:12px; font-weight:bold}
+.opt.correct .mark{color:#5fb07a}
+.opt.wrong .mark{color:#c8625b}
+.verdict{display:none; margin-top:var(--s4); font-family:var(--display); text-transform:uppercase; letter-spacing:.08em; font-size:.86rem}
+.verdict.show{display:block}
+.verdict.ok{color:#5fb07a}
+.verdict.no{color:#c8625b}
 .why{margin-top:var(--s4); border-left:3px solid var(--amber); padding:12px 16px; background:var(--card-2);
   border-radius:0 8px 8px 0; font-size:.99rem; line-height:1.55; color:var(--ink-soft); display:none}
 .why.show{display:block}
@@ -661,6 +668,7 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; 
       <div id="qBody">
         <p class="q-text" id="qText"></p>
         <div class="opts" id="qOpts"></div>
+        <div class="verdict" id="qVerdict"></div>
         <div class="why" id="qWhy"></div>
       </div>
       <div class="q-foot">
@@ -888,7 +896,7 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; 
   ];
   var qNum=document.getElementById('qNum'), qTot=document.getElementById('qTot'), qScore=document.getElementById('qScore');
   var qBar=document.getElementById('qBar'), qText=document.getElementById('qText'), qOpts=document.getElementById('qOpts');
-  var qWhy=document.getElementById('qWhy'), qBack=document.getElementById('qBack'), qNext=document.getElementById('qNext');
+  var qWhy=document.getElementById('qWhy'), qVerdict=document.getElementById('qVerdict'), qBack=document.getElementById('qBack'), qNext=document.getElementById('qNext');
   var qBody=document.getElementById('qBody');
   if(!qText)return;
   qTot.textContent=Q.length;
@@ -909,6 +917,7 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; 
       qOpts.appendChild(b);
     });
     qWhy.className='why'; qWhy.innerHTML='';
+    qVerdict.className='verdict'; qVerdict.innerHTML='';
     qBack.disabled=idx===0;
     qNext.disabled=true; qNext.textContent='Check';
   }
@@ -917,12 +926,15 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; 
     var item=Q[idx], opts=qOpts.children;
     for(var i=0;i<opts.length;i++){
       opts[i].disabled=true;
-      if(i===item.answer)opts[i].classList.add('correct');
-      else if(i===picked)opts[i].classList.add('wrong');
+      if(i===item.answer){opts[i].classList.add('correct'); opts[i].innerHTML+='<span class="mark">&#10003;</span>';}
+      else if(i===picked){opts[i].classList.add('wrong'); opts[i].innerHTML+='<span class="mark">&#10007;</span>';}
     }
     if(picked===item.answer)score++;
     qScore.textContent=score;
-    qWhy.innerHTML='<b>'+(picked===item.answer?'Correct':'Not quite')+'</b>'+item.why;
+    var right=picked===item.answer;
+    qVerdict.innerHTML=right?'&#10003; Correct':'&#10007; Not quite — the right answer is highlighted';
+    qVerdict.className='verdict show '+(right?'ok':'no');
+    qWhy.innerHTML='<b>'+(right?'Correct':'Not quite')+'</b>'+item.why;
     qWhy.className='why show';
     qNext.disabled=false;
     qNext.textContent=idx===Q.length-1?'See score':'Next question';

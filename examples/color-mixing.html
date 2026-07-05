@@ -443,6 +443,13 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
 .opt.correct .mk{border-color:#3ddc7f;color:#3ddc7f}
 .opt.wrong{border-color:#ff5a82;background:#311221}
 .opt.wrong .mk{border-color:#ff5a82;color:#ff5a82}
+.opt .mark{margin-left:auto;font-size:1.1rem;font-weight:700;line-height:1}
+.opt.correct .mark{color:#3ddc7f}
+.opt.wrong .mark{color:#ff5a82}
+.verdict{display:none;margin-top:var(--s5);font-family:"Space Mono",monospace;font-size:.85rem;font-weight:700;letter-spacing:.04em}
+.verdict.show{display:block;animation:rise .35s ease both}
+.verdict.right{color:#3ddc7f}
+.verdict.wrong{color:#ff5a82}
 .why{margin-top:var(--s5);padding:var(--s5);border-radius:12px;background:var(--night-3);border-left:4px solid #b6a4ff;display:none}
 .why.show{display:block;animation:rise .35s ease both}
 .why .wl{font-family:"Space Mono",monospace;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#b6a4ff;display:block;margin-bottom:6px}
@@ -860,6 +867,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
       <div class="quiz-body" id="quizBody">
         <div class="quiz-q" id="quizQ"></div>
         <div class="opts" id="quizOpts"></div>
+        <div class="verdict" id="quizVerdict" role="status" aria-live="polite"></div>
         <div class="why" id="quizWhy"><span class="wl">Why</span><p id="quizWhyTxt"></p></div>
       </div>
       <div class="quiz-foot">
@@ -1169,7 +1177,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
        w:"Glowing, saturated blues sit outside what ink can reproduce. The color is out of gamut. The printer maps it to the nearest ink it can reach, which comes back calmer."}
     ];
     var i=0, score=0, answered=false;
-    var qEl=$("quizQ"), oEl=$("quizOpts"), whyEl=$("quizWhy"), whyTxt=$("quizWhyTxt");
+    var qEl=$("quizQ"), oEl=$("quizOpts"), whyEl=$("quizWhy"), whyTxt=$("quizWhyTxt"), verdictEl=$("quizVerdict");
     var counter=$("quizCounter"), nextBtn=$("quizNext"), scoreEl=$("quizScore");
     $("quizTotal").textContent=QS.length;
     var letters=["A","B","C","D"];
@@ -1177,7 +1185,7 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
       var item=QS[i];
       counter.textContent="Question "+(i+1)+" of "+QS.length;
       qEl.textContent=item.q; oEl.innerHTML=""; answered=false;
-      whyEl.classList.remove("show"); nextBtn.disabled=true;
+      whyEl.classList.remove("show"); verdictEl.className="verdict"; verdictEl.textContent=""; nextBtn.disabled=true;
       nextBtn.textContent=(i===QS.length-1)? "See results":"Next question";
       item.o.forEach(function(opt,k){
         var b=document.createElement("button");
@@ -1190,14 +1198,15 @@ input[type=range]:focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--tra
     function choose(k,btn){
       if(answered) return; answered=true;
       var item=QS[i], all=oEl.querySelectorAll(".opt");
-      all.forEach(function(b,idx){ b.disabled=true; if(idx===item.a) b.classList.add("correct"); });
-      if(k===item.a){ score++; scoreEl.textContent=score; } else { btn.classList.add("wrong"); }
+      all.forEach(function(b,idx){ b.disabled=true; if(idx===item.a){ b.classList.add("correct"); b.insertAdjacentHTML("beforeend",'<span class="mark">&#10003;</span>'); } });
+      if(k===item.a){ score++; scoreEl.textContent=score; verdictEl.className="verdict right show"; verdictEl.textContent="✓ Correct"; }
+      else { btn.classList.add("wrong"); btn.insertAdjacentHTML("beforeend",'<span class="mark">&#10007;</span>'); verdictEl.className="verdict wrong show"; verdictEl.textContent="✗ Not quite — the right answer is highlighted"; }
       whyTxt.textContent=item.w; whyEl.classList.add("show"); nextBtn.disabled=false;
     }
     function finish(){
       var pct=Math.round(score/QS.length*100);
       var msg = pct===100? "Perfect score. You have the full model." : pct>=67? "Strong. The main idea is clear." : pct>=34? "Partway there. Re-skim the two mixers." : "Worth another pass through the demos.";
-      qEl.style.display="none"; oEl.style.display="none"; whyEl.style.display="none"; whyEl.classList.remove("show");
+      qEl.style.display="none"; oEl.style.display="none"; whyEl.style.display="none"; whyEl.classList.remove("show"); verdictEl.classList.remove("show");
       var done=document.createElement("div"); done.className="quiz-done";
       var big=document.createElement("div"); big.className="big"; big.textContent=score+" / "+QS.length;
       var lbl=document.createElement("div"); lbl.className="lbl"; lbl.textContent=msg;

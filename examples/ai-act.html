@@ -226,6 +226,13 @@ input[type=range]{width:100%;accent-color:var(--accent);height:6px}
 .q-dot{width:9px;height:9px;border-radius:50%;background:var(--line-2);transition:.2s}
 .q-dot.cur{box-shadow:0 0 0 3px var(--raise)}
 .q-dot.ok{background:var(--t-minimal)} .q-dot.no{background:var(--t-unacc)}
+.q-opt .mark{float:right;font-weight:700;margin-left:10px}
+.q-opt.correct .mark{color:var(--t-minimal)}
+.q-opt.wrong .mark{color:var(--t-unacc)}
+.verdict[hidden]{display:none}
+.verdict{margin-top:var(--s4);font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.verdict.correct{color:var(--t-minimal)}
+.verdict.wrong{color:var(--t-unacc)}
 .q-why{margin-top:var(--s4);font-size:14.5px;color:var(--ink-2);background:var(--surface);border-radius:8px;padding:var(--s4);border:1px solid var(--line)}
 .q-foot{display:flex;justify-content:flex-end;align-items:center;margin-top:var(--s5)}
 .cls-result.quiz-res{--c:var(--t-minimal);--cdim:var(--t-minimal-dim)}
@@ -672,15 +679,17 @@ function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=nu
   function render(){
     const q=QUIZ[i];answered=false;
     box.innerHTML=`<div class="q-prog"><span>Question ${i+1} of ${QUIZ.length}</span>${dots()}</div>`+
-      `<div class="q-stem">${q.q}</div><div class="q-opts" id="qo"></div><div id="qw"></div>`+
+      `<div class="q-stem">${q.q}</div><div class="q-opts" id="qo"></div><div class="verdict" id="qv" hidden></div><div id="qw"></div>`+
       `<div class="q-foot"><span id="qnav"></span></div>`;
     const qo=document.getElementById("qo");
     q.opts.forEach((o,k)=>{const b=el("button","q-opt",o);b.onclick=()=>pick(k,b);qo.appendChild(b)});
   }
   function pick(k,b){
     if(answered)return;answered=true;const q=QUIZ[i];
-    [...document.getElementById("qo").children].forEach((c,k2)=>{c.style.pointerEvents="none";if(k2===q.a)c.classList.add("correct");});
-    if(k===q.a){score++;marks[i]=" ok"}else{b.classList.add("wrong");marks[i]=" no"}
+    [...document.getElementById("qo").children].forEach((c,k2)=>{c.style.pointerEvents="none";if(k2===q.a){c.classList.add("correct");c.insertAdjacentHTML("beforeend",`<span class="mark">&#10003;</span>`)}});
+    if(k===q.a){score++;marks[i]=" ok"}else{b.classList.add("wrong");b.insertAdjacentHTML("beforeend",`<span class="mark">&#10007;</span>`);marks[i]=" no"}
+    const qv=document.getElementById("qv");qv.className="verdict "+(k===q.a?"correct":"wrong");qv.hidden=false;
+    qv.innerHTML=k===q.a?`&#10003; Correct`:`&#10007; Not quite — the right answer is highlighted`;
     document.querySelector(".q-prog").innerHTML=`<span>Question ${i+1} of ${QUIZ.length}</span>${dots()}`;
     document.getElementById("qw").innerHTML=`<div class="q-why"><strong>${k===q.a?"Correct.":"Not quite."}</strong> ${q.why}</div>`;
     document.getElementById("qnav").innerHTML=`<button class="btn btn-yes" id="qn">`+(i<QUIZ.length-1?"Next →":"See score")+`</button>`;

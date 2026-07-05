@@ -198,6 +198,13 @@ details .body{padding:0 var(--s4) var(--s4);font-size:16px;color:var(--ink-soft)
 .opt:disabled{cursor:default}
 .why{font-size:14.5px;color:var(--ink-soft);margin-top:var(--s2);padding-left:var(--s3);border-left:2px solid var(--gold);display:none}
 .why.show{display:block}
+.verdict{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:0.04em;margin-top:var(--s3);display:none}
+.verdict.show{display:block}
+.verdict.correct{color:var(--vault)}
+.verdict.wrong{color:var(--burgundy)}
+.mark{font-weight:700;margin-right:var(--s2)}
+.opt.correct .mark{color:var(--vault)}
+.opt.wrong .mark{color:var(--burgundy)}
 .score{text-align:center;font-family:var(--mono);font-size:15px;margin-top:var(--s5);color:var(--vault);font-weight:600}
 
 /* footer */
@@ -552,20 +559,27 @@ footer ol{margin:0;padding-left:18px;line-height:1.9}
     var card=document.createElement('div'); card.className='q';
     var h='<div class="qn">Q'+(qi+1)+' of '+QUIZ.length+'</div><h3>'+item.q+'</h3>';
     card.innerHTML=h;
+    function mark(btn,ent){btn.insertAdjacentHTML('afterbegin','<span class="mark">'+ent+'</span>');}
     item.options.forEach(function(opt,oi){
       var b=document.createElement('button'); b.className='opt'; b.type='button'; b.textContent=opt;
       b.addEventListener('click',function(){
         if(card.dataset.done)return; card.dataset.done='1';
         var btns=card.querySelectorAll('.opt');
         btns.forEach(function(x){x.disabled=true;});
-        if(oi===item.answer){b.classList.add('correct');correct++;}
-        else{b.classList.add('wrong');btns[item.answer].classList.add('correct');}
+        var verdict=card.querySelector('.verdict');
+        if(oi===item.answer){b.classList.add('correct');mark(b,'&#10003;');correct++;
+          verdict.textContent='✓ Correct';verdict.classList.add('correct');}
+        else{b.classList.add('wrong');mark(b,'&#10007;');btns[item.answer].classList.add('correct');mark(btns[item.answer],'&#10003;');
+          verdict.textContent='✗ Not quite — the right answer is highlighted';verdict.classList.add('wrong');}
+        verdict.classList.add('show');
         card.querySelector('.why').classList.add('show');
         answered++;
         scoreEl.textContent='Score: '+correct+' / '+answered+(answered===QUIZ.length?'  — all done.':'');
       });
       card.appendChild(b);
     });
+    var verdict=document.createElement('div'); verdict.className='verdict';
+    card.appendChild(verdict);
     var why=document.createElement('div'); why.className='why'; why.innerHTML='<strong>Why:</strong> '+item.why;
     card.appendChild(why);
     mount.appendChild(card);

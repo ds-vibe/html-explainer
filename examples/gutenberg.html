@@ -235,6 +235,13 @@ input[type=range]{width:100%; accent-color:var(--ox); height:26px}
 .why{margin-top:var(--s4); font-size:1rem; color:var(--ink-soft); padding:13px 16px; background:var(--paper); border-radius:3px; border:1px dashed var(--line); display:none}
 .why.show{display:block}
 .why b{color:var(--ox)}
+.opt .mark{font-family:var(--sans); font-weight:700; margin-left:auto; display:none}
+.opt.correct .mark{display:block; color:#6f7d3f}
+.opt.wrong .mark{display:block; color:var(--ox)}
+.qverdict{font-family:var(--sans); font-weight:600; font-size:.95rem; margin-top:var(--s4); display:none}
+.qverdict.show{display:block}
+.qverdict.correct{color:#6f7d3f}
+.qverdict.wrong{color:var(--ox)}
 .score{font-family:var(--sans); font-weight:600; color:var(--ink-soft); margin-top:var(--s4)}
 .quiznav{display:flex; align-items:center; gap:12px; margin-top:var(--s5)}
 .qprog-dots{display:flex; gap:7px; margin-right:auto}
@@ -830,9 +837,9 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
     var item=data[cur];
     var html='<div class="q"><div class="qn">Question '+(cur+1)+' of '+data.length+'</div><h3>'+item.q+'</h3><div class="opts">';
     item.opts.forEach(function(o,oi){
-      html+='<button class="opt" data-o="'+oi+'"><span class="mk">'+letters[oi]+'</span><span>'+o+'</span></button>';
+      html+='<button class="opt" data-o="'+oi+'"><span class="mk">'+letters[oi]+'</span><span>'+o+'</span><span class="mark"></span></button>';
     });
-    html+='</div><div class="why" id="whyNow"><b>Why:</b> '+item.why+'</div></div>';
+    html+='</div><div class="qverdict" id="verdictNow"></div><div class="why" id="whyNow"><b>Why:</b> '+item.why+'</div></div>';
     wrap.innerHTML=html;
     // restore prior answer state for this question
     if(choice[cur]!==null) applyAnswer(choice[cur],false);
@@ -842,12 +849,19 @@ body.on-dark-slide .dots button[aria-current="true"]{background:var(--gold-brigh
   function applyAnswer(oi,record){
     var item=data[cur];
     if(record) choice[cur]=oi;
+    var correct=(oi===item.a);
     var opts=wrap.querySelectorAll('.opt');
     opts.forEach(function(o){
       var t=+o.dataset.o; o.classList.remove('correct','wrong');
-      if(t===item.a)o.classList.add('correct');
-      if(t===oi&&oi!==item.a)o.classList.add('wrong');
+      var mark=o.querySelector('.mark'); if(mark) mark.innerHTML='';
+      if(t===item.a){ o.classList.add('correct'); if(mark) mark.innerHTML='&#10003;'; }
+      if(t===oi&&oi!==item.a){ o.classList.add('wrong'); if(mark) mark.innerHTML='&#10007;'; }
     });
+    var v=document.getElementById('verdictNow');
+    if(v){
+      v.className='qverdict show '+(correct?'correct':'wrong');
+      v.innerHTML=correct?'&#10003; Correct':'&#10007; Not quite — the right answer is highlighted';
+    }
     document.getElementById('whyNow').classList.add('show');
     syncNav();
   }

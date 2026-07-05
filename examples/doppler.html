@@ -141,6 +141,10 @@
   .opt.correct{border-color:#3ec98a;background:rgba(62,201,138,.12);color:#bff0d6;}
   .opt.wrong{border-color:var(--red);background:rgba(255,98,89,.1);color:var(--red-soft);}
   .opt[disabled]{cursor:default;}
+  .opt .mark{float:right;font-weight:700;margin-left:10px;}
+  .verdict{font-weight:700;font-size:15px;margin-top:var(--s3);display:none;letter-spacing:.01em;}
+  .verdict.show{display:block;}
+  .verdict.ok{color:#3ec98a;} .verdict.no{color:var(--red-soft);}
   .why{font-size:14px;color:var(--muted);margin-top:var(--s2);padding-left:var(--s3);
     border-left:2px solid var(--rule-2);display:none;}
   .why.show{display:block;}
@@ -553,6 +557,7 @@
     var d=document.createElement('div'); d.className='q';
     d.innerHTML='<div class="qt">'+(qi+1)+'. '+item.q+'</div>';
     var opts=document.createElement('div'); opts.className='opts';
+    var verdict=document.createElement('div'); verdict.className='verdict';
     var why=document.createElement('div'); why.className='why'; why.textContent=item.why;
     item.opts.forEach(function(o,oi){
       var b=document.createElement('button'); b.className='opt'; b.textContent=o;
@@ -560,14 +565,18 @@
         if(d.dataset.done) return; d.dataset.done='1'; done++;
         var btns=opts.querySelectorAll('.opt');
         btns.forEach(function(x){ x.disabled=true; });
-        btns[item.a].classList.add('correct');
-        if(oi===item.a){ right++; } else { b.classList.add('wrong'); }
+        var correct=btns[item.a]; correct.classList.add('correct');
+        correct.insertAdjacentHTML('beforeend','<span class="mark">&#10003;</span>');
+        var ok=oi===item.a;
+        if(ok){ right++; } else { b.classList.add('wrong'); b.insertAdjacentHTML('beforeend','<span class="mark">&#10007;</span>'); }
+        verdict.textContent=ok?'✓ Correct':'✗ Not quite — the right answer is highlighted';
+        verdict.classList.add('show', ok?'ok':'no');
         why.classList.add('show');
         if(done===QS.length){ score.textContent='You got '+right+' of '+QS.length+'. The pitch is the arrival rate — that one idea answers all three.'; }
       });
       opts.appendChild(b);
     });
-    d.appendChild(opts); d.appendChild(why); box.appendChild(d);
+    d.appendChild(opts); d.appendChild(verdict); d.appendChild(why); box.appendChild(d);
   });
   box.appendChild(score);
 })();

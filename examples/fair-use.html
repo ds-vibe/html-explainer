@@ -326,6 +326,13 @@ strong,b{color:var(--ink);font-weight:600}
 .qopt.correct .qk{color:var(--favor)}
 .qopt.wrong{background:var(--against-soft);border-color:var(--against);color:var(--against)}
 .qopt.wrong .qk{color:var(--against)}
+.qopt .mark{margin-left:auto;font-weight:700;flex:0 0 auto}
+.qopt.correct .mark{color:var(--favor)}
+.qopt.wrong .mark{color:var(--against)}
+.verdict{display:none;margin-top:var(--s4);font-family:var(--sans);font-weight:700;font-size:1rem;line-height:1.4}
+.verdict.show{display:block}
+.verdict.correct{color:var(--favor)}
+.verdict.wrong{color:var(--against)}
 .qwhy{margin-top:var(--s4);padding:var(--s4) var(--s5);border-radius:11px;background:var(--accent-soft);
   border:1px solid var(--accent-line);font-size:.93rem;line-height:1.55;color:var(--ink);display:none}
 .qwhy.show{display:block;animation:fadeUp .35s ease}
@@ -1026,8 +1033,9 @@ function renderQuiz(){
       </div>
       <p class="qq">${item.q}</p>
       <div class="qopts">
-        ${item.options.map((o,oi)=>`<button class="qopt" data-oi="${oi}"><span class="qk">${KEYS[oi]}</span><span>${o}</span></button>`).join('')}
+        ${item.options.map((o,oi)=>`<button class="qopt" data-oi="${oi}"><span class="qk">${KEYS[oi]}</span><span>${o}</span><span class="mark"></span></button>`).join('')}
       </div>
+      <div class="verdict" id="qverdict"></div>
       <div class="qwhy" id="qwhy"></div>
       <div class="qfoot">
         <span class="qscore">Score: <b>${qScore}</b> / ${QUIZ.length}</span>
@@ -1039,9 +1047,16 @@ function renderQuiz(){
     opt.addEventListener('click',()=>{
       if(answered) return; answered=true;
       const oi=+opt.dataset.oi, correct = oi===item.answer;
-      if(correct){ opt.classList.add('correct'); qScore++; }
-      else{ opt.classList.add('wrong'); quiz.querySelectorAll('.qopt')[item.answer].classList.add('correct'); }
+      if(correct){ opt.classList.add('correct'); opt.querySelector('.mark').innerHTML='&#10003;'; qScore++; }
+      else{
+        opt.classList.add('wrong'); opt.querySelector('.mark').innerHTML='&#10007;';
+        const right=quiz.querySelectorAll('.qopt')[item.answer];
+        right.classList.add('correct'); right.querySelector('.mark').innerHTML='&#10003;';
+      }
       quiz.querySelectorAll('.qopt').forEach(x=>x.disabled=true);
+      const verdict=document.getElementById('qverdict');
+      verdict.className='verdict show '+(correct?'correct':'wrong');
+      verdict.innerHTML = correct ? '&#10003; Correct' : '&#10007; Not quite — the right answer is highlighted';
       const why=document.getElementById('qwhy'); why.classList.add('show');
       why.innerHTML = `<b style="color:${correct?'var(--favor)':'var(--against)'}">${correct?'Correct. ':'Not quite. '}</b>${item.why}`;
       quiz.querySelector('.qscore').innerHTML = `Score: <b>${qScore}</b> / ${QUIZ.length}`;
