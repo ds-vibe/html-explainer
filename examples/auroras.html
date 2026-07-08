@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How the northern lights happen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* --- night substrate --- */
+  --night:#060912;
+  --night-2:#0a1020;
+  --band:#080d1a;
+  --panel:#0f1830;
+  --panel-2:#152340;
+  --border:rgba(122,152,224,0.16);
+  --border-2:rgba(122,152,224,0.28);
+  /* --- ink (per-surface) --- */
+  --ink:#eaf1ff;
+  --ink-2:#aebbdb;
+  --ink-3:#7688ad;
+  /* --- semantic aurora palette: colour = atom + altitude --- */
+  --o-green:#4fe8a0;   /* atomic oxygen ~100-150 km, 557.7 nm */
+  --o-red:#ff5d73;     /* atomic oxygen  >200 km, 630.0 nm */
+  --n-violet:#9d80ff;  /* molecular nitrogen <100 km, 427.8 nm */
+  --n-blue:#5bb0ff;    /* ionised nitrogen, blue fringe */
+  --n-pink:#ff77c2;    /* nitrogen, lower-border pink */
+  /* --- type --- */
+  --display:"Fraunces",Georgia,serif;
+  --body:"Sora",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  /* --- spacing scale (8pt) --- */
+  --s1:8px;--s2:16px;--s3:24px;--s4:32px;--s5:48px;--s6:64px;--s7:96px;--s8:128px;
+  --wrap:1180px;--measure:66ch;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--night);color:var(--ink-2);
+  font-family:var(--body);font-size:17px;line-height:1.72;
+  font-weight:400;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* deep night gradient toward the horizon */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(1200px 700px at 78% -10%, rgba(79,232,160,0.06), transparent 60%),
+    radial-gradient(1000px 800px at 10% 110%, rgba(157,128,255,0.06), transparent 60%),
+    linear-gradient(180deg,#070b16 0%,#060912 45%,#04060d 100%);
+}
+h1,h2,h3{font-family:var(--display);color:var(--ink);font-weight:600;line-height:1.05;margin:0}
+p{margin:0 0 var(--s3)}
+a{color:var(--o-green);text-decoration:none}
+a:hover{text-decoration:underline}
+strong{color:var(--ink);font-weight:600}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 var(--s4)}
+.measure{max-width:var(--measure)}
+.reveal{opacity:1} /* no-op marker: content always visible */
+
+/* ============ NAV ============ */
+nav{
+  position:sticky;top:0;z-index:40;
+  backdrop-filter:blur(12px);
+  background:linear-gradient(180deg,rgba(6,9,18,0.92),rgba(6,9,18,0.72));
+  border-bottom:1px solid var(--border);
+}
+.nav-in{max-width:var(--wrap);margin:0 auto;padding:12px var(--s4);display:flex;align-items:center;gap:var(--s3)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink);font-weight:600}
+.brand .beacon{width:10px;height:10px;border-radius:50%;background:var(--o-green);box-shadow:0 0 12px 2px var(--o-green)}
+.nav-links{margin-left:auto;display:flex;gap:var(--s3);flex-wrap:wrap}
+.nav-links a{font-family:var(--mono);font-size:12px;letter-spacing:0.06em;color:var(--ink-3);text-transform:uppercase}
+.nav-links a:hover{color:var(--o-green);text-decoration:none}
+@media(max-width:760px){.nav-links{display:none}}
+
+/* ============ HERO ============ */
+.hero{position:relative;min-height:92vh;min-height:92dvh;display:flex;align-items:flex-end;overflow:hidden}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
+.hero-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(6,9,18,0.35) 0%,rgba(6,9,18,0.05) 30%,rgba(6,9,18,0.55) 72%,rgba(6,9,18,0.96) 100%),
+             linear-gradient(90deg,rgba(6,9,18,0.85) 0%,rgba(6,9,18,0.35) 46%,transparent 70%)}
+.hero-in{position:relative;z-index:2;padding:0 0 var(--s7);width:100%}
+.eyebrow{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--o-green);margin:0 0 var(--s3)}
+.hero-lede{font-family:var(--display);font-weight:400;font-size:clamp(20px,2.5vw,27px);line-height:1.5;color:var(--ink);max-width:30ch;margin:0 0 var(--s3);text-shadow:0 2px 30px rgba(0,0,0,0.6)}
+.hero h1{font-size:clamp(52px,9vw,124px);letter-spacing:-0.02em;font-weight:600;margin:0 0 var(--s3);text-shadow:0 4px 40px rgba(0,0,0,0.5)}
+.hero h1 .turn{font-style:italic;color:var(--o-green)}
+.hero-sub{font-size:19px;color:var(--ink-2);max-width:52ch;margin:0 0 var(--s5)}
+.meta{display:flex;gap:var(--s5);flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--ink-3);border-top:1px solid var(--border);padding-top:var(--s3);max-width:640px}
+.meta b{color:var(--ink);font-weight:600}
+.meta span{display:flex;flex-direction:column;gap:2px}
+.scroll-cue{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:2;font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:var(--ink-3);text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:6px;animation:bob 2.4s ease-in-out infinite}
+.scroll-cue .arrow{width:1px;height:26px;background:linear-gradient(180deg,transparent,var(--o-green))}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
+
+/* ============ SECTION SHELL ============ */
+section{position:relative}
+.sec{padding:var(--s8) 0}
+.sec.band{background:linear-gradient(180deg,var(--band),var(--night-2));border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.kicker{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--o-green);margin:0 0 var(--s2);display:flex;align-items:center;gap:10px}
+.kicker .n{color:var(--ink-3)}
+.sec h2{font-size:clamp(32px,4.4vw,52px);letter-spacing:-0.015em;margin:0 0 var(--s3);max-width:20ch}
+.lead{font-size:20px;color:var(--ink);line-height:1.6;max-width:60ch;margin:0 0 var(--s4)}
+.prose{font-size:17px;color:var(--ink-2);max-width:var(--measure)}
+.prose p+p{margin-top:0}
+
+/* two-column asymmetric */
+.split{display:grid;grid-template-columns:1.05fr 0.95fr;gap:var(--s6);align-items:start}
+.split.wide-right{grid-template-columns:0.85fr 1.15fr}
+@media(max-width:900px){.split,.split.wide-right{grid-template-columns:1fr;gap:var(--s5)}}
+
+/* ============ LIFTED PANELS / CARDS ============ */
+.panel{background:linear-gradient(180deg,var(--panel),#0c1428);border:1px solid var(--border);border-radius:var(--radius);padding:var(--s4);box-shadow:0 24px 60px -30px rgba(0,0,0,0.8)}
+.panel-label{font-family:var(--mono);font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 var(--s3);display:flex;align-items:center;gap:8px}
+
+/* neon-sign mental-model row */
+.gases{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3);margin-top:var(--s2)}
+@media(max-width:760px){.gases{grid-template-columns:1fr}}
+.gas{border:1px solid var(--border);border-radius:14px;padding:var(--s3);background:#0c1428;position:relative;overflow:hidden}
+.gas .tube{height:6px;border-radius:6px;margin-bottom:var(--s2)}
+.gas h3{font-family:var(--display);font-size:22px;margin:0 0 4px}
+.gas .wl{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-bottom:var(--s2)}
+.gas p{font-size:14.5px;color:var(--ink-2);margin:0}
+
+/* ============ FIGURE / DEMO FRAME ============ */
+.demo{background:linear-gradient(180deg,#0e1730,#0a1224);border:1px solid var(--border-2);border-radius:var(--radius);padding:var(--s4);box-shadow:0 30px 80px -40px rgba(0,0,0,0.9)}
+.demo-head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2);margin-bottom:var(--s3);flex-wrap:wrap}
+.demo-tag{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#04110a;background:var(--o-green);padding:5px 10px;border-radius:6px}
+.demo-hint{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:0.04em}
+.canvas-shell{position:relative;border-radius:12px;overflow:hidden;background:#03050c;border:1px solid var(--border)}
+canvas.stage{display:block;width:100%;height:auto}
+
+/* controls */
+.ctrl{margin-top:var(--s3)}
+.ctrl-row{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);margin-bottom:8px}
+.ctrl-name{font-family:var(--mono);font-size:13px;letter-spacing:0.04em;color:var(--ink)}
+.ctrl-val{font-family:var(--mono);font-size:13px;color:var(--o-green);font-weight:600}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,#1a2748,#26365f);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--o-green);border:3px solid #06140d;box-shadow:0 0 0 3px rgba(79,232,160,0.25),0 0 16px rgba(79,232,160,0.6);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--o-green);border:3px solid #06140d;box-shadow:0 0 16px rgba(79,232,160,0.6);cursor:pointer}
+.scale-ends{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:6px;letter-spacing:0.03em}
+
+.btn{font-family:var(--body);font-size:14px;font-weight:600;border-radius:10px;padding:11px 18px;cursor:pointer;border:1px solid var(--border-2);transition:.15s}
+.btn.primary{background:var(--o-green);color:#04110a;border-color:var(--o-green);box-shadow:0 0 24px -6px rgba(79,232,160,0.6)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink-2)}
+.btn.ghost:hover{border-color:var(--o-green);color:var(--o-green)}
+
+/* readout strip */
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);margin-top:var(--s3)}
+@media(max-width:640px){.readout{grid-template-columns:1fr}}
+.stat{background:#0b1428;border:1px solid var(--border);border-radius:12px;padding:14px 16px;border-top:2px solid var(--stat,var(--o-green))}
+.stat .k{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+.stat .v{font-family:var(--display);font-size:26px;color:var(--ink);line-height:1}
+.stat .v small{font-family:var(--mono);font-size:13px;color:var(--ink-2);font-weight:400}
+
+.takeaway{margin-top:var(--s3);padding:var(--s3);border-left:3px solid var(--o-green);background:rgba(79,232,160,0.06);border-radius:0 12px 12px 0;font-size:15px;color:var(--ink-2)}
+.takeaway b{color:var(--o-green)}
+
+.legend{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s3);font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.legend span{display:flex;align-items:center;gap:8px}
+.dot{width:12px;height:12px;border-radius:50%;box-shadow:0 0 10px 1px currentColor}
+
+/* altitude ladder demo layout */
+.ladder-grid{display:grid;grid-template-columns:340px 1fr;gap:var(--s5);align-items:stretch}
+@media(max-width:820px){.ladder-grid{grid-template-columns:1fr}}
+#ladder-svg{width:100%;height:auto;display:block}
+
+/* funnel / oval demo */
+.oval-grid{display:grid;grid-template-columns:1fr 320px;gap:var(--s5);align-items:center}
+@media(max-width:820px){.oval-grid{grid-template-columns:1fr}}
+#oval-svg{width:100%;height:auto;display:block}
+.city-list{display:flex;flex-direction:column;gap:8px;margin-top:var(--s2)}
+.city{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;font-family:var(--mono);font-size:13px;color:var(--ink-3);transition:.2s}
+.city .lat{color:var(--ink-3)}
+.city.lit{border-color:var(--o-green);background:rgba(79,232,160,0.08);color:var(--ink)}
+.city.lit .lat{color:var(--o-green)}
+.city.lit .name::after{content:" · overhead";color:var(--o-green);font-size:11px}
+
+/* misconception callout */
+.myth{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border-2);border-radius:var(--radius);overflow:hidden;margin-top:var(--s4)}
+@media(max-width:640px){.myth{grid-template-columns:1fr}}
+.myth>div{padding:var(--s3)}
+.myth .wrong{background:rgba(255,93,115,0.07);border-right:1px solid var(--border)}
+.myth .right{background:rgba(79,232,160,0.07)}
+.myth h4{font-family:var(--mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 8px}
+.myth .wrong h4{color:var(--o-red)}
+.myth .right h4{color:var(--o-green)}
+.myth p{font-size:15px;margin:0;color:var(--ink-2)}
+
+/* facts strip */
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s3);margin-top:var(--s4)}
+@media(max-width:820px){.facts{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:460px){.facts{grid-template-columns:1fr}}
+.fact{border:1px solid var(--border);border-radius:12px;padding:var(--s3);background:#0b1326}
+.fact .big{font-family:var(--display);font-size:34px;color:var(--o-green);line-height:1;margin-bottom:6px}
+.fact .lbl{font-size:14px;color:var(--ink-2)}
+
+/* details / go deeper */
+details{border:1px solid var(--border);border-radius:12px;background:#0b1428;margin-top:var(--s3)}
+details summary{cursor:pointer;padding:14px var(--s3);font-family:var(--mono);font-size:13px;letter-spacing:0.04em;color:var(--o-green);list-style:none;display:flex;align-items:center;gap:10px}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"+";font-size:18px;color:var(--o-green);width:16px}
+details[open] summary::before{content:"–"}
+details .body{padding:0 var(--s3) var(--s3);font-size:15px;color:var(--ink-2)}
+
+/* ============ QUIZ ============ */
+.quiz-q{border:1px solid var(--border);border-radius:14px;background:#0c1428;padding:var(--s3);margin-bottom:var(--s3)}
+.quiz-q .qn{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:0.08em;margin-bottom:8px}
+.quiz-q .qt{font-family:var(--display);font-size:20px;color:var(--ink);margin-bottom:var(--s3);line-height:1.3}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;padding:13px 15px;border:1px solid var(--border);border-radius:10px;background:#0a1122;color:var(--ink-2);font-family:var(--body);font-size:15px;cursor:pointer;transition:.15s}
+.opt:hover:not(:disabled){border-color:var(--border-2);background:#0e1830}
+.opt .mark{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink-3);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;flex:0 0 auto}
+.opt.correct{border-color:var(--o-green);background:rgba(79,232,160,0.1);color:var(--ink)}
+.opt.correct .mark{border-color:var(--o-green);background:var(--o-green);color:#04110a}
+.opt.wrong{border-color:var(--o-red);background:rgba(255,93,115,0.1);color:var(--ink)}
+.opt.wrong .mark{border-color:var(--o-red);background:var(--o-red);color:#150407}
+.opt:disabled{cursor:default}
+.verdict{margin-top:var(--s3);padding:13px 16px;border-radius:10px;font-size:15px;display:none}
+.verdict.show{display:block}
+.verdict.ok{background:rgba(79,232,160,0.1);border:1px solid var(--o-green)}
+.verdict.no{background:rgba(255,93,115,0.1);border:1px solid var(--o-red)}
+.verdict .lab{font-family:var(--mono);font-weight:600;letter-spacing:0.04em}
+.verdict.ok .lab{color:var(--o-green)}
+.verdict.no .lab{color:var(--o-red)}
+.verdict .why{color:var(--ink-2);display:block;margin-top:5px}
+.quiz-score{font-family:var(--mono);font-size:14px;color:var(--ink);margin-top:var(--s3);display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+
+/* footer / sources */
+footer{border-top:1px solid var(--border);background:var(--band);padding:var(--s7) 0 var(--s6)}
+.src{font-size:14px;color:var(--ink-3);line-height:1.9}
+.src a{color:var(--ink-2)}
+.disclaimer{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:var(--s4);max-width:70ch;line-height:1.7}
+
+/* entrance animation (load-time, not IO-gated) */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.rise{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+@media(prefers-reduced-motion:reduce){.rise,.scroll-cue{animation:none}}
+</style>
+</head>
+<body data-review-toggle>
+
+<nav>
+  <div class="nav-in">
+    <div class="brand"><span class="beacon"></span> Aurora</div>
+    <div class="nav-links">
+      <a href="#model">The idea</a>
+      <a href="#source">The source</a>
+      <a href="#funnel">The funnel</a>
+      <a href="#colors">The colours</a>
+      <a href="#curtains">The curtains</a>
+      <a href="#quiz">Test yourself</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-scrim"></div>
+  <div class="hero-in">
+    <div class="wrap">
+      <p class="eyebrow rise">A field guide to the sky</p>
+      <p class="hero-lede rise">On a cold, clear night far from any city, the sky begins to move. Sheets of green light ripple overhead, folding and unfolding like a curtain in a slow wind.</p>
+      <h1 class="rise">The northern <span class="turn">lights</span></h1>
+      <p class="hero-sub rise">That glow is the atmosphere itself, lit up where the Sun has struck it. Here is how particles from ninety-three million miles away end up painting the polar sky.</p>
+      <div class="meta rise">
+        <span><b>~9 min</b> read</span>
+        <span><b>3</b> playable demos</span>
+        <span><b>1</b> knowledge check</span>
+        <span><b>557.7 nm</b> the classic green</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue">Scroll<div class="arrow"></div></div>
+</header>
+
+<!-- ============ 1 · MENTAL MODEL ============ -->
+<section class="sec" id="model">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <p class="kicker"><span class="n">§1</span> The idea</p>
+        <h2>The sky is a neon sign</h2>
+        <p class="prose">A neon sign works on one simple trick. Run an electric current through a sealed tube of gas, and the current hands energy to the atoms inside. The atoms cannot hold that energy for long, so they let it go as light. The colour is fixed by the gas: neon glows red-orange, argon glows blue. Change the gas and you change the colour.</p>
+        <p class="prose">The aurora is the same trick at the scale of a planet. The tube is the thin upper air a hundred kilometres above your head. The current is a stream of charged particles from the Sun. And the colour, once again, is set by the gas that gets hit: oxygen and nitrogen, each glowing its own signature shade. Keep that one picture in mind and the rest of the aurora falls into place.</p>
+      </div>
+      <div class="panel">
+        <p class="panel-label">Each gas, one signature colour</p>
+        <div class="gases">
+          <div class="gas">
+            <div class="tube" style="background:var(--o-green);box-shadow:0 0 16px var(--o-green)"></div>
+            <h3 style="color:var(--o-green)">Oxygen</h3>
+            <p class="wl">557.7 nm · ~100–150 km</p>
+            <p>The everyday aurora. Atomic oxygen at middle altitude glows the familiar vivid green.</p>
+          </div>
+          <div class="gas">
+            <div class="tube" style="background:var(--o-red);box-shadow:0 0 16px var(--o-red)"></div>
+            <h3 style="color:var(--o-red)">Oxygen, higher up</h3>
+            <p class="wl">630.0 nm · &gt;200 km</p>
+            <p>The same atom, far higher, where the air is thin, emits deep red instead.</p>
+          </div>
+          <div class="gas">
+            <div class="tube" style="background:linear-gradient(90deg,var(--n-violet),var(--n-blue));box-shadow:0 0 16px var(--n-violet)"></div>
+            <h3 style="color:var(--n-violet)">Nitrogen</h3>
+            <p class="wl">427.8 nm · &lt;100 km</p>
+            <p>Molecular nitrogen, low and energetic, edges the curtains with blue, violet and pink.</p>
+          </div>
+        </div>
+        <div class="legend">
+          <span style="color:var(--o-green)"><span class="dot" style="background:var(--o-green)"></span>Oxygen, green</span>
+          <span style="color:var(--o-red)"><span class="dot" style="background:var(--o-red)"></span>Oxygen, red</span>
+          <span style="color:var(--n-violet)"><span class="dot" style="background:var(--n-violet)"></span>Nitrogen, violet</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 · THE SOURCE ============ -->
+<section class="sec band" id="source">
+  <div class="wrap">
+    <p class="kicker"><span class="n">§2</span> The source</p>
+    <h2>It begins as a wind from the Sun</h2>
+    <p class="lead">The Sun does not simply shine. It also leaks. A steady stream of charged particles, mostly electrons and protons, boils off its outer atmosphere and blows outward across the solar system in every direction. This is the solar wind.</p>
+    <div class="split wide-right">
+      <div class="prose">
+        <p>At Earth's distance the solar wind moves at roughly 400 kilometres per second, and it never stops. Most of the time it is a light breeze. But the Sun is a violent star. Flares and vast eruptions called coronal mass ejections fling billions of tonnes of charged gas into space at once. When one of those gusts reaches Earth, two or three days later, the aurora flares up and pushes far beyond its usual haunts.</p>
+        <p>The particles arrive carrying energy, but they cannot simply rain straight down. Something stands between the Sun's wind and the air we breathe: the planet's own magnetic field.</p>
+        <details>
+          <summary>Go deeper: why the wind takes days to arrive</summary>
+          <div class="body">Light crosses the Sun–Earth gap in about eight minutes, but the solar wind is matter, not light, and travels far slower. A typical gust covers the distance in two to three days. That lag is what space-weather forecasters use: when a large coronal mass ejection is seen leaving the Sun, they can warn of a possible auroral storm before it arrives.</div>
+        </details>
+      </div>
+      <div class="facts">
+        <div class="fact"><div class="big">~400</div><div class="lbl">km/s — everyday solar-wind speed at Earth</div></div>
+        <div class="fact"><div class="big">2–3</div><div class="lbl">days for a solar gust to reach us</div></div>
+        <div class="fact"><div class="big">~8 min</div><div class="lbl">for the Sun's light, by contrast</div></div>
+        <div class="fact"><div class="big">1M °C</div><div class="lbl">temperature of the wind's source, the corona</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 · THE FUNNEL (DEMO 1) ============ -->
+<section class="sec" id="funnel">
+  <div class="wrap">
+    <p class="kicker"><span class="n">§3</span> The funnel</p>
+    <h2>Why the lights ring the poles</h2>
+    <p class="lead">Earth sits inside a magnetic bubble, the magnetosphere, generated by molten iron churning in its core. That bubble deflects most of the solar wind around the planet like water parting at the bow of a ship. But magnetic field lines are not a solid wall. They dive into the atmosphere at the north and south magnetic poles, and charged particles, forced to travel along those lines, are funnelled down toward both poles at once.</p>
+    <p class="prose measure">The result is not a cap over the pole but a <strong>ring</strong> around it, the auroral oval, sitting near 65 to 70 degrees of magnetic latitude. When the solar wind is calm the ring is thin and tight. When a storm hits, the ring brightens and swells outward toward the equator, and people who never see the aurora suddenly do. Drive the storm below and watch the oval reach south.</p>
+
+    <div class="demo" style="margin-top:var(--s4)">
+      <div class="demo-head">
+        <span class="demo-tag">Demo 1 · The auroral oval</span>
+        <span class="demo-hint">drag the storm strength · looking down on the north pole</span>
+      </div>
+      <div class="oval-grid">
+        <div class="canvas-shell" style="padding:6px">
+          <svg id="oval-svg" viewBox="-16 -16 532 532" role="img" aria-label="Top-down view of the north pole showing the auroral oval expanding as the storm strengthens">
+            <defs>
+              <radialGradient id="ovalGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#4fe8a0" stop-opacity="0"/>
+                <stop offset="55%" stop-color="#4fe8a0" stop-opacity="0"/>
+                <stop offset="78%" stop-color="#4fe8a0" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#2fae76" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="earthG" cx="38%" cy="34%" r="75%">
+                <stop offset="0%" stop-color="#16305a"/>
+                <stop offset="70%" stop-color="#0c1c3a"/>
+                <stop offset="100%" stop-color="#07122a"/>
+              </radialGradient>
+            </defs>
+            <!-- globe disk -->
+            <circle cx="250" cy="250" r="240" fill="url(#earthG)" stroke="rgba(122,152,224,0.25)" stroke-width="1"/>
+            <!-- latitude rings 40/50/60/70/80 -->
+            <g id="lat-rings" fill="none" stroke="rgba(122,152,224,0.22)" stroke-width="1"></g>
+            <g id="lat-labels" font-family="'JetBrains Mono',monospace" font-size="11" fill="#7688ad"></g>
+            <!-- auroral oval glow ring -->
+            <circle id="oval-ring" cx="250" cy="250" r="60" fill="none" stroke="url(#ovalGlow)" stroke-width="46"/>
+            <!-- pole marker -->
+            <circle cx="250" cy="250" r="4.5" fill="none" stroke="#eaf1ff" stroke-width="1.4"/>
+            <line x1="243" y1="250" x2="257" y2="250" stroke="#eaf1ff" stroke-width="1"/>
+            <line x1="250" y1="243" x2="250" y2="257" stroke="#eaf1ff" stroke-width="1"/>
+            <text x="250" y="278" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#7688ad" letter-spacing="1">MAGNETIC POLE</text>
+            <!-- cities plotted by latitude -->
+            <g id="city-dots"></g>
+          </svg>
+        </div>
+        <div>
+          <div class="ctrl">
+            <div class="ctrl-row"><span class="ctrl-name">Storm strength (Kp)</span><span class="ctrl-val" id="kp-val">Kp 3</span></div>
+            <input type="range" id="kp" min="0" max="9" step="1" value="3">
+            <div class="scale-ends"><span>quiet</span><span>severe storm</span></div>
+          </div>
+          <div class="readout" style="grid-template-columns:1fr">
+            <div class="stat" style="--stat:var(--o-green)">
+              <div class="k">Oval reaches down to</div>
+              <div class="v" id="edge-lat">58°<small> magnetic latitude</small></div>
+            </div>
+          </div>
+          <p style="font-family:var(--mono);font-size:12px;color:var(--ink-3);margin:16px 0 8px;letter-spacing:0.06em">CITIES NOW UNDER THE OVAL</p>
+          <div class="city-list" id="city-list"></div>
+        </div>
+      </div>
+      <div class="takeaway"><b>Takeaway:</b> the aurora is not a lid on the pole, it is a ring around it, because the funnel follows the magnetic field lines down where they crowd together. A stronger storm widens the ring toward the equator, which is why a big event can bring the lights to places that normally never see them.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 · THE COLOURS (DEMO 2) ============ -->
+<section class="sec band" id="colors">
+  <div class="wrap">
+    <p class="kicker"><span class="n">§4</span> The colours</p>
+    <h2>Height decides the colour</h2>
+    <p class="lead">When a particle from the funnel finally strikes an atom, it hands over energy and the atom glows. Which colour comes out depends on two things that travel together: how deep the particle drives before it hits something, and which gas is waiting at that depth. Energy sets the depth, depth sets the gas, and the gas sets the colour.</p>
+
+    <div class="demo" style="margin-top:var(--s4)">
+      <div class="demo-head">
+        <span class="demo-tag">Demo 2 · The colour ladder</span>
+        <span class="demo-hint">raise the particle energy · watch where it stops and what it lights</span>
+      </div>
+      <div class="ladder-grid">
+        <div class="canvas-shell" style="padding:10px;display:flex;align-items:center;justify-content:center">
+          <svg id="ladder-svg" viewBox="-8 -8 296 476" role="img" aria-label="Atmospheric cross-section showing which gas emits which colour at each altitude">
+            <defs>
+              <linearGradient id="atmo" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0a1330"/>
+                <stop offset="100%" stop-color="#030814"/>
+              </linearGradient>
+            </defs>
+            <rect x="70" y="0" width="210" height="460" rx="8" fill="url(#atmo)" stroke="rgba(122,152,224,0.2)"/>
+            <!-- altitude bands: y=0 is 400km top, y=460 is ground -->
+            <g id="bands"></g>
+            <!-- axis ticks -->
+            <g id="alt-axis" font-family="'JetBrains Mono',monospace" font-size="11" fill="#7688ad"></g>
+            <!-- descending particle beam -->
+            <line id="beam" x1="175" y1="0" x2="175" y2="120" stroke="#eaf1ff" stroke-width="2" stroke-dasharray="4 5" opacity="0.85"/>
+            <polygon id="beam-head" points="175,120 170,110 180,110" fill="#eaf1ff"/>
+            <!-- emission burst -->
+            <circle id="burst" cx="175" cy="120" r="30" fill="#4fe8a0" opacity="0.55"/>
+            <circle id="burst2" cx="175" cy="120" r="14" fill="#f2fff8" opacity="0.9"/>
+          </svg>
+        </div>
+        <div>
+          <div class="ctrl">
+            <div class="ctrl-row"><span class="ctrl-name">Incoming particle energy</span><span class="ctrl-val" id="energy-val">medium</span></div>
+            <input type="range" id="energy" min="0" max="100" step="1" value="45">
+            <div class="scale-ends"><span>gentle → stops high</span><span>energetic → drives deep</span></div>
+          </div>
+          <div class="readout">
+            <div class="stat" id="s-alt" style="--stat:var(--o-green)">
+              <div class="k">Stops at</div>
+              <div class="v" id="out-alt">140<small> km</small></div>
+            </div>
+            <div class="stat" id="s-gas" style="--stat:var(--o-green)">
+              <div class="k">Gas hit</div>
+              <div class="v" id="out-gas" style="font-size:20px">Atomic oxygen</div>
+            </div>
+            <div class="stat" id="s-wl" style="--stat:var(--o-green)">
+              <div class="k">Colour emitted</div>
+              <div class="v" id="out-wl" style="font-size:20px"><span id="out-color">Green</span> <small id="out-nm">557.7 nm</small></div>
+            </div>
+          </div>
+          <div class="legend">
+            <span style="color:var(--o-red)"><span class="dot" style="background:var(--o-red)"></span>&gt;200 km · oxygen red</span>
+            <span style="color:var(--o-green)"><span class="dot" style="background:var(--o-green)"></span>100–200 km · oxygen green</span>
+            <span style="color:var(--n-violet)"><span class="dot" style="background:var(--n-violet)"></span>&lt;100 km · nitrogen violet</span>
+          </div>
+          <div class="takeaway"><b>Why the same atom, two colours?</b> A struck oxygen atom needs a moment to release its red light. High up, where the air is thin, it has time. Lower down it gets bumped by a neighbour before it can, and that energy comes out as green instead. Physicists call the lost glow "quenching."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 · THE CURTAINS (DEMO 3) ============ -->
+<section class="sec" id="curtains">
+  <div class="wrap">
+    <p class="kicker"><span class="n">§5</span> The curtains</p>
+    <h2>Why it hangs in curtains, and why it dances</h2>
+    <div class="split">
+      <div class="prose">
+        <p>The aurora almost never appears as a flat wash. It hangs in tall, rippling curtains with sharp vertical folds. That shape is the magnetic field made visible. Particles can only slide <em>along</em> field lines, not across them, so each glowing streak traces one nearly vertical line of force. A whole sheet of neighbouring lines becomes a curtain, and its lower edge marks the altitude where the particles finally stop.</p>
+        <p>The dancing is a matter of supply. The stream of particles is gusty and uneven, surging and fading from second to second as currents shift in the magnetosphere far overhead. Where the flow strengthens, the curtain brightens and sharpens; where it eases, the curtain dims. Because that changes faster than the eye can settle, the whole display seems to shiver and flow.</p>
+        <div class="myth">
+          <div class="wrong">
+            <h4>The myth</h4>
+            <p>The aurora is warm, or close enough to touch, or makes a crackling sound as it moves.</p>
+          </div>
+          <div class="right">
+            <h4>What is true</h4>
+            <p>It glows 100 kilometres up in air so thin it is nearly a vacuum. It carries almost no heat, and it is far higher than any cloud or aircraft.</p>
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-tag">Demo 3 · Live curtains</span>
+          <span class="demo-hint">turn up the wind · watch it dance</span>
+        </div>
+        <div class="canvas-shell">
+          <canvas id="curtain-canvas" class="stage"></canvas>
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-row"><span class="ctrl-name">Solar-wind gusts</span><span class="ctrl-val" id="wind-val">breezy</span></div>
+          <input type="range" id="wind" min="0" max="100" step="1" value="42">
+          <div class="scale-ends"><span>calm · faint arc</span><span>storm · wild curtains</span></div>
+        </div>
+        <div style="margin-top:var(--s3);display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn primary" id="gust-btn">Send a gust</button>
+          <button class="btn ghost" id="reseed-btn">New night sky</button>
+        </div>
+        <div class="legend">
+          <span style="color:var(--o-red)"><span class="dot" style="background:var(--o-red)"></span>red tops</span>
+          <span style="color:var(--o-green)"><span class="dot" style="background:var(--o-green)"></span>green body</span>
+          <span style="color:var(--n-violet)"><span class="dot" style="background:var(--n-violet)"></span>violet hem</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 · SEEING THEM ============ -->
+<section class="sec band" id="seeing">
+  <div class="wrap">
+    <p class="kicker"><span class="n">§6</span> Chasing them</p>
+    <h2>What it takes to catch a show</h2>
+    <p class="lead">You now have every ingredient. Catching the lights in person is a matter of stacking the odds: get under the oval, get the sky dark, and get the Sun cooperating.</p>
+    <div class="facts" style="grid-template-columns:repeat(3,1fr)">
+      <div class="fact"><div class="big">Dark</div><div class="lbl">A clear, moonless sky far from city light. The faint green washes out under glare.</div></div>
+      <div class="fact"><div class="big">High</div><div class="lbl">Under or near the oval: northern Scandinavia, Iceland, Alaska, northern Canada. Or its southern twin below Tasmania and New Zealand.</div></div>
+      <div class="fact"><div class="big">Active</div><div class="lbl">A high Kp forecast, more likely around the equinoxes in spring and autumn, when the Sun's field couples most easily to Earth's.</div></div>
+    </div>
+    <details>
+      <summary>Go deeper: why your eyes see grey where the camera sees green</summary>
+      <div class="body">In dim light your eyes rely on rod cells, which are sharp at detecting motion and brightness but almost blind to colour. A faint aurora often looks like moving pale-grey smoke to the naked eye, while a camera, gathering light over a long exposure, records the vivid green that was there all along. A strong display overwhelms even the rods, and then you see the colour directly.</div>
+    </details>
+    <div class="takeaway" style="max-width:70ch"><b>The southern twin:</b> everything here happens at the south magnetic pole at the same instant. The aurora australis is the mirror image of the aurora borealis, fed by the same particles funnelling down the other end of the same field lines.</div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="sec" id="quiz">
+  <div class="wrap" style="max-width:820px">
+    <p class="kicker"><span class="n">§7</span> Test yourself</p>
+    <h2>Four questions</h2>
+    <p class="prose" style="margin-bottom:var(--s5)">No score is kept anywhere but this page. Pick an answer to see whether it holds, and why.</p>
+    <div id="quiz-list"></div>
+    <div class="quiz-score" id="quiz-score" style="display:none">
+      <span id="score-text"></span>
+      <button class="btn ghost" id="quiz-reset">Try again</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <p class="kicker"><span class="n">§</span> Sources &amp; notes</p>
+    <h2 style="font-size:28px;margin-bottom:var(--s4)">Where this comes from</h2>
+    <div class="split">
+      <div class="src">
+        The physics here is settled science, drawn from standard space-physics references:
+        <ul style="margin:12px 0;padding-left:20px">
+          <li>NASA Science — <a href="https://science.nasa.gov/sun/auroras/">Auroras</a> and heliophysics overviews</li>
+          <li>NOAA Space Weather Prediction Center — the <a href="https://www.swpc.noaa.gov/products/planetary-k-index">planetary K-index</a> and aurora forecasts</li>
+          <li>University Corporation for Atmospheric Research (UCAR) — atmospheric emission and altitude data</li>
+          <li>Emission wavelengths: atomic oxygen 557.7 nm and 630.0 nm; molecular nitrogen bands near 427.8 nm</li>
+        </ul>
+      </div>
+      <div class="src">
+        <p class="disclaimer" style="margin-top:0">Altitudes and the Kp-to-latitude mapping in the demos are rounded to teach the pattern, not to forecast a specific night. The auroral oval is offset from the geographic pole and shifts with conditions; the demo shows a clean, symmetric version around the geomagnetic pole. For a real forecast, check NOAA's live aurora dashboard.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   HERO AURORA + CURTAIN DEMO — one engine, two canvases
+   ========================================================= */
+(function(){
+  // shared curtain renderer
+  function makeAurora(canvas, opts){
+    const ctx = canvas.getContext("2d");
+    let W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
+    let stars=[];
+    let curtains=[];
+    let activity = opts.activity;          // 0..1 base
+    let gust = 0;                          // decays over time
+    const nCurt = opts.curtains;
+
+    function resize(){
+      const rect = canvas.getBoundingClientRect();
+      W = Math.max(1, rect.width);
+      H = opts.fixedHeight ? opts.fixedHeight : Math.max(1, rect.height);
+      canvas.width = Math.round(W*dpr);
+      canvas.height = Math.round(H*dpr);
+      if(opts.fixedHeight){ canvas.style.height = H+"px"; }
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      seedStars();
+    }
+    function seedStars(){
+      stars=[];
+      const n = Math.round(W*H/9000);
+      for(let i=0;i<n;i++){
+        stars.push({x:Math.random()*W,y:Math.random()*H*0.9,r:Math.random()*1.3+0.2,tw:Math.random()*Math.PI*2});
+      }
+    }
+    function seedCurtains(){
+      curtains=[];
+      for(let i=0;i<nCurt;i++){
+        curtains.push({
+          x: (i+0.5)/nCurt * W + (Math.random()-0.5)*40,
+          phase: Math.random()*Math.PI*2,
+          phase2: Math.random()*Math.PI*2,
+          drift: (Math.random()-0.5)*0.00012,
+          width: (0.42+Math.random()*0.4) * (W/nCurt),
+          speed: 0.00025 + Math.random()*0.0004,
+          hue: Math.random(),      // slight per-curtain variation
+          bright: 0.6+Math.random()*0.4
+        });
+      }
+    }
+    function setActivity(a){ activity=a; }
+    function sendGust(){ gust = 1; }
+    function reseed(){ seedStars(); seedCurtains(); }
+
+    function draw(t){
+      const act = Math.min(1, activity + gust*0.6);
+      gust *= 0.985;
+      // night backdrop
+      ctx.globalCompositeOperation="source-over";
+      const bg = ctx.createLinearGradient(0,0,0,H);
+      bg.addColorStop(0,"#04060f"); bg.addColorStop(1,"#02040a");
+      ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+      // stars
+      for(const s of stars){
+        const tw = 0.5+0.5*Math.sin(t*0.002 + s.tw);
+        ctx.globalAlpha = 0.25+0.55*tw;
+        ctx.fillStyle="#cdd9ff";
+        ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+      }
+      ctx.globalAlpha=1;
+      // curtains — additive glow
+      ctx.globalCompositeOperation="lighter";
+      const baseY = H*0.14;             // top of curtains
+      const bandH = H*0.72;             // vertical extent
+      for(const c of curtains){
+        c.x += c.drift * W;
+        const sway = Math.sin(t*c.speed + c.phase) * (28 + act*70)
+                   + Math.sin(t*c.speed*1.9 + c.phase2) * (10 + act*30);
+        const cx = c.x + sway;
+        // colour stops by altitude: red top, green body, violet hem
+        const grad = ctx.createLinearGradient(0,baseY,0,baseY+bandH);
+        const rt = 0.30 + c.hue*0.12;   // red strength varies
+        grad.addColorStop(0.00, "rgba(255,93,115,0)");
+        grad.addColorStop(0.10, "rgba(255,93,115,"+(0.10*rt+0.05).toFixed(3)+")");
+        grad.addColorStop(0.32, "rgba(79,232,160,"+(0.30+0.30*act).toFixed(3)+")");
+        grad.addColorStop(0.62, "rgba(79,232,160,"+(0.34+0.34*act).toFixed(3)+")");
+        grad.addColorStop(0.86, "rgba(120,220,170,"+(0.16+0.18*act).toFixed(3)+")");
+        grad.addColorStop(0.98, "rgba(157,128,255,"+(0.14+0.16*act).toFixed(3)+")");
+        grad.addColorStop(1.00, "rgba(157,128,255,0)");
+        // vertical rays across the curtain width
+        const slices = 26;
+        for(let i=0;i<slices;i++){
+          const fx = i/(slices-1);
+          const x = cx - c.width/2 + fx*c.width;
+          // ray flicker: high-freq shimmer + gust sharpening
+          const ray = 0.35 + 0.65*Math.abs(Math.sin(fx*Math.PI*7 + t*(0.004+0.006*act) + c.phase));
+          const edge = Math.sin(fx*Math.PI);        // fade at curtain edges
+          ctx.globalAlpha = ray*edge*c.bright*(0.35+0.65*act);
+          ctx.fillStyle = grad;
+          ctx.fillRect(x, baseY, c.width/slices*1.4, bandH*(0.9+0.1*Math.sin(t*0.001+fx*3)));
+        }
+      }
+      ctx.globalAlpha=1;
+      ctx.globalCompositeOperation="source-over";
+    }
+
+    let raf;
+    function loop(t){ draw(t); raf=requestAnimationFrame(loop); }
+    resize(); seedCurtains();
+    // kick off immediately
+    raf=requestAnimationFrame(loop);
+    let rt;
+    window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(resize,150);});
+    return {setActivity,sendGust,reseed};
+  }
+
+  function boot(){
+    // Hero: ambient, taller, more curtains
+    const hero = document.getElementById("hero-canvas");
+    if(hero){
+      const a = makeAurora(hero,{activity:0.5,curtains:5,fixedHeight:hero.getBoundingClientRect().height});
+      // keep hero sized to its box
+      window.addEventListener("resize",()=>{});
+    }
+    // Demo canvas: interactive
+    const dc = document.getElementById("curtain-canvas");
+    if(dc){
+      dc.style.height = "300px";
+      const eng = makeAurora(dc,{activity:0.42,curtains:4,fixedHeight:300});
+      const wind = document.getElementById("wind");
+      const wv = document.getElementById("wind-val");
+      const label = v => v<20?"calm":v<45?"breezy":v<72?"gusty":"storm";
+      function upd(){ const v=+wind.value; eng.setActivity(0.12+v/100*0.88); wv.textContent=label(v); }
+      wind.addEventListener("input",upd); upd();
+      document.getElementById("gust-btn").addEventListener("click",()=>eng.sendGust());
+      document.getElementById("reseed-btn").addEventListener("click",()=>eng.reseed());
+    }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot);
+  else boot();
+})();
+
+/* =========================================================
+   DEMO 1 — AURORAL OVAL (funnel)
+   ========================================================= */
+(function(){
+  const R=240, cx=250, cy=250;
+  // latitude -> radius from pole. pole(90deg)=0, equator(0)=R. linear in colatitude.
+  const latToR = lat => (90-lat)/90 * R;
+  const cities = [
+    {name:"Tromsø",   lat:69, ang:0.6},
+    {name:"Oslo",     lat:60, ang:2.5},
+    {name:"Reykjavík",lat:64, ang:3.5},
+    {name:"Yellowknife",lat:62, ang:4.4},
+    {name:"Fairbanks",lat:65, ang:5.5},
+    {name:"Edinburgh",lat:56, ang:0.95},
+    {name:"Hamburg",  lat:53, ang:2.05},
+    {name:"London",   lat:51, ang:3.15},
+    {name:"Paris",    lat:49, ang:4.05},
+    {name:"New York", lat:41, ang:5.15}
+  ];
+  // Kp -> equatorward edge of oval (approx magnetic latitude), teaching values
+  const kpEdge = [67,66,64,62,60,58,56,54,52,50];
+  const svg = document.getElementById("oval-svg");
+  if(!svg) return;
+  const SVGNS="http://www.w3.org/2000/svg";
+
+  // build latitude rings + labels
+  const rings=document.getElementById("lat-rings");
+  const rlabels=document.getElementById("lat-labels");
+  [80,70,60,50,40].forEach(lat=>{
+    const r=latToR(lat);
+    const c=document.createElementNS(SVGNS,"circle");
+    c.setAttribute("cx",cx);c.setAttribute("cy",cy);c.setAttribute("r",r);
+    rings.appendChild(c);
+    const tx=document.createElementNS(SVGNS,"text");
+    tx.setAttribute("x",cx+2);tx.setAttribute("y",cy-r+13);
+    tx.textContent=lat+"°";
+    rlabels.appendChild(tx);
+  });
+
+  // city dots
+  const dotG=document.getElementById("city-dots");
+  const cityEls=cities.map(ct=>{
+    const r=latToR(ct.lat);
+    const x=cx+r*Math.cos(ct.ang), y=cy+r*Math.sin(ct.ang);
+    const g=document.createElementNS(SVGNS,"g");
+    const d=document.createElementNS(SVGNS,"circle");
+    d.setAttribute("cx",x);d.setAttribute("cy",y);d.setAttribute("r",4);
+    d.setAttribute("fill","#7688ad");
+    const t=document.createElementNS(SVGNS,"text");
+    t.setAttribute("x",x+7);t.setAttribute("y",y+3.5);
+    t.setAttribute("font-family","'JetBrains Mono',monospace");
+    t.setAttribute("font-size","10.5");t.setAttribute("fill","#7688ad");
+    t.textContent=ct.name;
+    g.appendChild(d);g.appendChild(t);
+    dotG.appendChild(g);
+    return {ct,dot:d,label:t};
+  });
+
+  const ring=document.getElementById("oval-ring");
+  const kp=document.getElementById("kp");
+  const kpVal=document.getElementById("kp-val");
+  const edgeLat=document.getElementById("edge-lat");
+  const list=document.getElementById("city-list");
+
+  function update(){
+    const k=+kp.value;
+    const edge=kpEdge[k];
+    const rEdge=latToR(edge);
+    const rInner=latToR(edge+7);          // ring ~7deg wide
+    const rMid=(rEdge+rInner)/2;
+    ring.setAttribute("r",rMid);
+    ring.setAttribute("stroke-width",Math.max(20,rEdge-rInner+18));
+    kpVal.textContent="Kp "+k;
+    edgeLat.innerHTML=edge+"°<small> magnetic latitude</small>";
+    // light cities inside the oval's equatorward edge
+    const lit=[];
+    cityEls.forEach(({ct,dot,label})=>{
+      const under = ct.lat>=edge-1;
+      dot.setAttribute("fill",under?"#4fe8a0":"#7688ad");
+      dot.setAttribute("r",under?5:4);
+      if(under){dot.setAttribute("filter","");dot.style.filter="drop-shadow(0 0 6px #4fe8a0)";}
+      else dot.style.filter="";
+      label.setAttribute("fill",under?"#eaf1ff":"#7688ad");
+      if(under)lit.push(ct);
+    });
+    // build side list (top latitudes first)
+    list.innerHTML="";
+    cities.slice().sort((a,b)=>b.lat-a.lat).forEach(ct=>{
+      const under=ct.lat>=edge-1;
+      const row=document.createElement("div");
+      row.className="city"+(under?" lit":"");
+      row.innerHTML='<span class="name">'+ct.name+'</span><span class="lat">'+ct.lat+'°N</span>';
+      list.appendChild(row);
+    });
+  }
+  kp.addEventListener("input",update);
+  update();
+})();
+
+/* =========================================================
+   DEMO 2 — COLOUR LADDER (altitude/energy)
+   ========================================================= */
+(function(){
+  const svg=document.getElementById("ladder-svg");
+  if(!svg) return;
+  const SVGNS="http://www.w3.org/2000/svg";
+  const TOP=400, X=70, Wd=210, top=0, bot=460;     // km 400..0 over y 0..460
+  const kmToY = km => (TOP-km)/TOP * bot;
+  // altitude bands (km ranges) with colour
+  const bands=[
+    {a:400,b:200,c:"rgba(255,93,115,0.16)",lab:"Oxygen · red"},
+    {a:200,b:100,c:"rgba(79,232,160,0.16)",lab:"Oxygen · green"},
+    {a:100,b:0,  c:"rgba(157,128,255,0.16)",lab:"Nitrogen · violet"}
+  ];
+  const bG=document.getElementById("bands");
+  bands.forEach(bd=>{
+    const y=kmToY(bd.a), h=kmToY(bd.b)-kmToY(bd.a);
+    const r=document.createElementNS(SVGNS,"rect");
+    r.setAttribute("x",X);r.setAttribute("y",y);r.setAttribute("width",Wd);r.setAttribute("height",h);
+    r.setAttribute("fill",bd.c);
+    bG.appendChild(r);
+    const t=document.createElementNS(SVGNS,"text");
+    t.setAttribute("x",X+Wd-8);t.setAttribute("y",y+16);
+    t.setAttribute("text-anchor","end");
+    t.setAttribute("font-family","'JetBrains Mono',monospace");
+    t.setAttribute("font-size","10.5");
+    t.setAttribute("fill","#aebbdb");
+    t.textContent=bd.lab;
+    bG.appendChild(t);
+  });
+  // axis ticks
+  const ax=document.getElementById("alt-axis");
+  [400,300,200,100,0].forEach(km=>{
+    const y=kmToY(km);
+    const t=document.createElementNS(SVGNS,"text");
+    t.setAttribute("x",0);t.setAttribute("y",y+4);
+    t.textContent=km+(km===400?" km":"");
+    ax.appendChild(t);
+    const ln=document.createElementNS(SVGNS,"line");
+    ln.setAttribute("x1",X-6);ln.setAttribute("y1",y);ln.setAttribute("x2",X);ln.setAttribute("y2",y);
+    ln.setAttribute("stroke","rgba(122,152,224,0.3)");
+    ax.appendChild(ln);
+  });
+
+  const beam=document.getElementById("beam");
+  const head=document.getElementById("beam-head");
+  const burst=document.getElementById("burst");
+  const burst2=document.getElementById("burst2");
+  const energy=document.getElementById("energy");
+  const eVal=document.getElementById("energy-val");
+  const outAlt=document.getElementById("out-alt");
+  const outGas=document.getElementById("out-gas");
+  const outColor=document.getElementById("out-color");
+  const outNm=document.getElementById("out-nm");
+  const sAlt=document.getElementById("s-alt"), sGas=document.getElementById("s-gas"), sWl=document.getElementById("s-wl");
+
+  function state(alt){
+    if(alt>=200) return {gas:"Atomic oxygen",color:"Red",nm:"630.0 nm",css:"var(--o-red)",hex:"#ff5d73"};
+    if(alt>=100) return {gas:"Atomic oxygen",color:"Green",nm:"557.7 nm",css:"var(--o-green)",hex:"#4fe8a0"};
+    return {gas:"Molecular nitrogen",color:"Violet",nm:"427.8 nm",css:"var(--n-violet)",hex:"#9d80ff"};
+  }
+  function update(){
+    const e=+energy.value;                 // 0..100
+    // higher energy => lower altitude. map 0->300km, 100->85km
+    const alt=Math.round(300 - e/100*(300-85));
+    const y=kmToY(alt);
+    beam.setAttribute("y2",y);
+    head.setAttribute("points",[175,y,170,y-10,180,y-10].join(" "));
+    const st=state(alt);
+    burst.setAttribute("cy",y);burst2.setAttribute("cy",y);
+    burst.setAttribute("fill",st.hex);burst2.setAttribute("fill","#f2fff8");
+    burst.setAttribute("r",22);
+    eVal.textContent = e<33?"gentle":e<67?"medium":"energetic";
+    outAlt.innerHTML=alt+"<small> km</small>";
+    outGas.textContent=st.gas;
+    outColor.textContent=st.color;
+    outNm.textContent=st.nm;
+    [sAlt,sGas,sWl].forEach(s=>s.style.setProperty("--stat",st.css));
+    outColor.style.color=st.css;
+  }
+  energy.addEventListener("input",update);
+  update();
+})();
+
+/* =========================================================
+   QUIZ
+   ========================================================= */
+(function(){
+  const QS=[
+    {q:"What actually produces the aurora's light?",
+     options:["Sunlight reflecting off polar ice and clouds","Gas atoms high in the atmosphere glowing after being struck by charged particles","Heat rising from the warm equator toward the cold poles","Ice crystals bending moonlight into colours"],
+     answer:1,
+     why:"Charged particles from the Sun hand energy to oxygen and nitrogen atoms in the upper atmosphere, which release it as light. It is emission, not reflection."},
+    {q:"Why do the lights form a ring around the pole rather than a cap over it?",
+     options:["The pole is too cold for the gases to glow","Earth's shadow blocks the exact pole","Magnetic field lines funnel particles down where they crowd together, near 65–70° latitude","The solar wind avoids the geographic pole"],
+     answer:2,
+     why:"Particles follow magnetic field lines, which dip into the atmosphere in a ring around the magnetic pole. That ring is the auroral oval."},
+    {q:"The same oxygen atom can glow green or red. What sets which?",
+     options:["The atom's temperature","The altitude: high and thin air lets it emit red before a collision, lower down it comes out green","The time of night","Whether it is over land or ocean"],
+     answer:1,
+     why:"Oxygen needs time to release its red light. High up, where collisions are rare, it can. Lower down it gets bumped first and emits green instead, an effect called quenching."},
+    {q:"A powerful solar storm is forecast. What happens to the aurora?",
+     options:["It shrinks tightly onto the pole","Nothing changes; the oval is fixed","The oval brightens and expands toward the equator, so lower latitudes can see it","It turns off until the storm passes"],
+     answer:2,
+     why:"A stronger solar wind pushes the oval equatorward and brightens it, which is how big storms bring the lights to places that rarely see them."}
+  ];
+  const host=document.getElementById("quiz-list");
+  const scoreBox=document.getElementById("quiz-score");
+  const scoreText=document.getElementById("score-text");
+  let answered=0, correct=0;
+
+  function render(){
+    answered=0;correct=0;host.innerHTML="";scoreBox.style.display="none";
+    QS.forEach((item,qi)=>{
+      const card=document.createElement("div");card.className="quiz-q";
+      card.innerHTML='<div class="qn">Question '+(qi+1)+' of '+QS.length+'</div><div class="qt">'+item.q+'</div>';
+      const opts=document.createElement("div");opts.className="opts";
+      item.options.forEach((op,oi)=>{
+        const b=document.createElement("button");b.className="opt";
+        b.innerHTML='<span class="mark">'+String.fromCharCode(65+oi)+'</span><span>'+op+'</span>';
+        b.addEventListener("click",()=>pick(card,opts,item,oi,b));
+        opts.appendChild(b);
+      });
+      card.appendChild(opts);
+      const v=document.createElement("div");v.className="verdict";
+      card.appendChild(v);
+      host.appendChild(card);
+    });
+  }
+  function pick(card,opts,item,oi,btn){
+    if(card.dataset.done)return;
+    card.dataset.done="1";answered++;
+    const right=oi===item.answer;
+    if(right)correct++;
+    [...opts.children].forEach((b,i)=>{
+      b.disabled=true;
+      if(i===item.answer){b.classList.add("correct");b.querySelector(".mark").textContent="✓";}
+      if(i===oi&&!right){b.classList.add("wrong");b.querySelector(".mark").textContent="✗";}
+    });
+    const v=card.querySelector(".verdict");
+    v.classList.add("show",right?"ok":"no");
+    v.innerHTML='<span class="lab">'+(right?"✓ Correct":"✗ Not quite")+'</span><span class="why">'+item.why+'</span>';
+    if(answered===QS.length){
+      scoreBox.style.display="flex";
+      scoreText.textContent="You got "+correct+" of "+QS.length+" right.";
+    }
+  }
+  document.getElementById("quiz-reset").addEventListener("click",render);
+  render();
+})();
+</script>
+
+<!-- Review & edit overlay — injected by assemble.mjs (invariant; do not hand-edit) -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:8px;right:14px;z-index:9002;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes .rv-notes-hd{display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 0}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-collapse{font-family:var(--sans,sans-serif);font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink-faint,#8a8478);background:transparent;border:1px solid var(--line,#ddd5c5);border-radius:7px;padding:5px 10px;cursor:pointer}",
+    "#rv-collapse:hover{color:var(--ink,#23211c);border-color:var(--line-strong,#c8bfab)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:9010;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:9010;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:9020;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+    // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
+    // Scrolling pages: position just below any fixed/sticky top nav instead.
+    requestAnimationFrame(function () {
+      var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
+      if (isDeck) {
+        launch.style.top = "auto";
+        launch.style.right = "auto";
+        launch.style.bottom = "16px";
+        launch.style.left = "14px";
+      } else {
+        var navBottom = 0;
+        document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+          var s = getComputedStyle(el);
+          if (s.position === "fixed" || s.position === "sticky") {
+            navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+          }
+        });
+        if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      }
+    });
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<div class="rv-notes-hd"><h4>Annotations</h4><button id="rv-collapse" title="Collapse panel (your notes are kept)" aria-label="Collapse panel">Collapse &rsaquo;</button></div><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+    // Collapse hides the panel without deleting notes (they persist in
+    // localStorage and reopen via the toolbar's "Notes (N)" button).
+    $("rv-collapse").onclick = function () { $("rv-notes").classList.remove("open"); };
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete this note">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Explainer examples</title>
-<meta name="description" content="A small gallery of interactive web explainers built with the html-explainer skill.">
+<meta name="description" content="Interactive web explainers built with the html-explainer skill — self-contained, source-grounded, single-file pages.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -22,13 +22,12 @@ header{padding:80px 0 40px;border-bottom:1px solid var(--line)}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 1rem;display:flex;align-items:center;gap:9px}
 .eyebrow::before{content:"";width:22px;height:1.5px;background:var(--accent)}
 h1{font-family:var(--display);font-weight:500;font-size:clamp(38px,6vw,62px);letter-spacing:-.02em;line-height:1.05;margin:0 0 1rem}
-h1 em{font-style:italic;color:var(--accent)}
 .lede{font-size:clamp(18px,2vw,21px);color:var(--ink-soft);max-width:60ch;margin:0}
-.section{font-family:var(--display);font-weight:500;font-size:clamp(20px,2.6vw,27px);letter-spacing:-.01em;color:var(--ink);margin:0;padding:44px 0 0;border-top:1px solid var(--line)}
-.section:first-of-type{border-top:0;padding-top:40px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding:18px 0 12px}
 a.card{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line-strong);border-radius:14px;padding:26px 28px;transition:transform .15s,box-shadow .15s,border-color .15s}
 a.card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.07);border-color:var(--accent)}
+a.card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){a.card{transition:none}a.card:hover{transform:none}}
 .card .tag{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:14px}
 .card h2{font-family:var(--display);font-weight:500;font-size:25px;margin:0 0 .4rem;letter-spacing:-.01em}
 .card p{font-size:14.5px;color:var(--ink-soft);margin:0 0 16px;flex:1}
@@ -39,17 +38,23 @@ footer a{color:var(--accent)}
 </head>
 <body>
 <header><div class="wrap">
-  <p class="eyebrow">A small gallery</p>
-  <h1>Interactive <em>explainers</em>.</h1>
-  <p class="lede">Single-page web explainers — visually varied, source-grounded, and lightly interactive. Each one was built with the <a href="https://github.com/ds-vibe/html-explainer" style="color:var(--accent)">html-explainer</a> skill. Every page has a built-in <strong>Review &amp; edit</strong> button so you can mark it up in place.</p>
+  <p class="eyebrow">Examples</p>
+  <h1>Interactive explainers</h1>
+  <p class="lede">Single-page web explainers built with the <a href="https://github.com/ds-vibe/html-explainer" style="color:var(--accent)">html-explainer</a> skill. Each is one self-contained file, source-grounded and lightly interactive. Every page has a <strong>Review &amp; edit</strong> button so you can mark it up in place.</p>
 </div></header>
 
 <main class="wrap">
   <div class="grid" style="padding-top:40px">
+    <a class="card" href="./examples/auroras.html">
+      <span class="tag">Atmospheric physics</span>
+      <h2>How the northern lights happen</h2>
+      <p>Charged particles from the Sun, steered down the magnetic field, make the air glow. With a storm dial that widens the auroral oval, an altitude cross-section that shows why height decides the colour, and a four-question quiz.</p>
+      <span class="go">Open the explainer &rarr;</span>
+    </a>
     <a class="card" href="./examples/gutenberg.html">
       <span class="tag">History · slide deck</span>
       <h2>The machine that multiplied ideas</h2>
-      <p>How Gutenberg's press worked — movable type, the hand mold, the ink, the press — and why it broke the Church's monopoly on knowledge. Bold editorial style.</p>
+      <p>How Gutenberg's press worked — movable type, the hand mold, the ink, the press — and why it broke the Church's monopoly on knowledge.</p>
       <span class="go">Open the deck &rarr;</span>
     </a>
     <a class="card" href="./examples/doppler.html">
@@ -64,12 +69,6 @@ footer a{color:var(--accent)}
       <p>How to read a film-noir frame: low-key light, venetian-blind bars, the canted angle, and the doomed voiceover. With a light-lab that splits a face into shadow, a tilt-and-bars composer, and an annotated frame to decode.</p>
       <span class="go">Open the deck &rarr;</span>
     </a>
-    <a class="card" href="./examples/color-mixing.html">
-      <span class="tag">Color &amp; light</span>
-      <h2>Two ways to make a color</h2>
-      <p>Screens add light; printers subtract it. Two live mixers built on real blend-mode physics, plus a gamut demo for why your screen and your printer never quite agree.</p>
-      <span class="go">Open the explainer &rarr;</span>
-    </a>
     <a class="card" href="./examples/ai-act.html">
       <span class="tag">Policy</span>
       <h2>The EU AI Act</h2>
@@ -79,13 +78,13 @@ footer a{color:var(--accent)}
     <a class="card" href="./examples/fair-use.html">
       <span class="tag">Law · slide deck</span>
       <h2>What "fair use" actually means</h2>
-      <p>Not a word count or a 10% rule — a four-factor balancing test, decided case by case. The landmark cases, the Warhol recalibration, and a scenario tool that scores your read against the courts.</p>
+      <p>A four-factor balancing test decided case by case, with no word count or 10% rule. The landmark cases, the Warhol recalibration, and a scenario tool that scores your read against the courts.</p>
       <span class="go">Open the deck &rarr;</span>
     </a>
     <a class="card" href="./examples/fractional-reserve.html">
       <span class="tag">Economics</span>
       <h2>How fractional reserve banking works</h2>
-      <p>Banks keep a sliver of your deposit and lend the rest — and the system quietly creates most of the broad money in the economy. With a live ledger, the money multiplier, and where the textbook model breaks down.</p>
+      <p>Banks keep a sliver of your deposit and lend the rest, and that lending creates most of the broad money in the economy. With a live ledger, the money multiplier, and where the textbook model breaks down.</p>
       <span class="go">Open the explainer &rarr;</span>
     </a>
   </div>
