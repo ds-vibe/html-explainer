@@ -35,7 +35,7 @@ micro-demo** instead of writing a paragraph. Learning-by-doing.
 menu** in the richest UI available in the environment (Cowork, Claude app); if you’re in plain text (e.g., Claude Code), then list them in one message. **If the menu tool caps how many questions you can ask per prompt (Cowork caps around four), ask them in multiple rounds — a first batch, then the rest — or put the overflow questions in the message text. Either way, ask all seven. NEVER silently apply a default to a must-ask (especially AI chat) just because the menu was full — a tool cap is not permission to skip.** Recommend a default for each (one click) — **except AI chat, which has no recommended default: ask it as an open yes/no.** Never skip any of the seven, including the last. **Labels must be self-explanatory — some surfaces (Cowork) show only the option *label* and drop the per-option description, so never rely on the description field to carry the meaning. If a choice isn’t obvious from a short label alone (e.g. *play it straight / go bold*, *scrolling / deck*), fold the gloss into the label text itself and repeat it in the description; when in doubt, put the key distinction in the question or message body too.**
     - **Grounding** — does the user have their own material (doc, PDF, notes, URL) to ground in? If yes, treat it as the **primary source of truth**. Ask this as: **“Do you have your own material to ground in?”** with options “No” (recommended default) and “Yes — I’ll provide it”.
     - **Audience & depth** — newcomer / practitioner / both-layered, and how deep. Drives sequencing.
-    - **Format / reading shape** — scrolling page (default) / slide deck / hybrid. See *Format & reading shape*. **Must be its own question — never combine with style.**
+    - **Format / reading shape** — scrolling page / slide deck / hybrid. **Neither is the default — pre-select the one that fits the topic** (deck for a linear narrative or an ordered sequence; scroll for reference or layered depth-on-demand). Changes the whole IA. See *Format & reading shape*. **Must be its own question — never combine with style.**
     - **Play it straight, or go bold?** — how far to commit the design, and the axis that decides the look, so **ask it before visual style (it gates that question).** **Never silently default to bland** — an unattended build drifts safe; this is what stops it. *“Bold” means committed and cohesive, not loud or decorated.* **Make the explanation UI-proof — never present the two as bare labels.** Some menu surfaces (e.g. Cowork) render only the option *labels* and drop the description field, so the gloss must live where no renderer can hide it: **fold it into the visible label text itself** — e.g. `Play it straight — sharp & professional, theme as a light accent` and `Go bold — immersive art direction built around the topic` — **and** also fill the per-option description (`Play it straight:` *Sharp and professional.* · `Go bold:` *Immersive art direction built around the topic.*) for surfaces that do show it. If you present the interview as plain text rather than a menu, write the gloss inline in the question. The reader must always see what each choice means without hovering or expanding.
         - **Play it straight** — clean editorial *excellence* (Stripe / FT / Vox): restrained layout, theme as a light accent, one subject-derived color. Sharp and polished, not timid. Best for reference, legal, compliance, or when the user wants it sober. → then ask the visual-style register (next question).
         - **Go bold** — commit to one strong, cohesive concept and turn the ambition up: **full art direction** (theme every surface — body, UI, sliders, quiz — into one immersive world, not just an accent, when it’s cohesive); **adventurous format** (break the standard eyebrow→heading→prose rhythm; asymmetry, dramatic scale, unexpected but purposeful structure and motion); **imaginative demos** (reach for the most vivid concept the topic allows, not the safe stepper - see *Themed interactivity is the gold standard* and *Interactivity Patterns* below); **a strong point of view**, with the prose-flair dial (see *Prose voice*) pushed up to match — they move together. Best for evocative, cultural, historical, or physical-phenomenon topics. → the concept pass drives the look (see visual style, next).
@@ -288,11 +288,15 @@ Deliver as a real file (Phase 3), never an inline code block.
 ## Format & reading shape (chosen in Phase 0 — orthogonal to output target)
 
 Same content and demos/quiz inside either; an *IA* choice, decided before sequencing.
+**Match the shape to the material — neither format is the default.**
 
-- **Scrolling page (default).** One long vertical document, scroll-reveal, sticky nav,
-depth-on-demand. Best for skim, reference, deep-linking, self-paced. Most explainers want this.
-- **Slide deck / horizontal click-through.** Full-viewport panels advanced laterally. Best for a
-linear narrative/talk/walkthrough. Build it properly:
+- **Slide deck / horizontal click-through** when the material is a **linear narrative with discrete
+beats**: a story with an arc, an ordered step-by-step process or sequence, a walkthrough, or a
+chronology — anything where *one idea per beat* and a controlled reveal let each stage sink in before
+the next. Decks give pacing and big visual moments a scroll can't (a crisis day by day; a life
+cycle stage by stage; a technique in ordered steps). Roughly half of good explainers are
+deck-shaped, so **don't reflexively recommend scrolling** — when the topic has a clear
+beginning→middle→end or an ordered sequence, recommend the deck. Build it properly:
     - **One concept per slide**, single-viewport; if it overflows, scroll *within* the slide.
     - **Quiz in a deck: one question at a time, never stacked.** Multiple questions on one slide
     overflow the viewport and the deck’s keyboard handler swallows scroll — the user can’t reach question 2+. Fix: paginate the quiz *within* the slide using its own Prev/Next buttons (not the deck’s). Show one question at a time; only the deck advances when the quiz is complete.
@@ -304,7 +308,11 @@ linear narrative/talk/walkthrough. Build it properly:
     `prefers-reduced-motion`. Move focus to the new slide’s heading on advance.
     - **Accessibility:** each slide a labelled `section`/`region`; real buttons; arrow keys don’t break form fields inside a micro-demo.
     - **Trade-off to state:** worse for skim/reference — offer a “jump to slide” menu.
-- **Hybrid:** chaptered scroll with `scroll-snap` between chapters.
+- **Scrolling page** when the material is **reference, dense, scannable, or layered depth-on-demand**:
+the reader skims, jumps around, deep-links, and drills in at their own pace (a policy with tiers and
+a calculator; a concept with many facets; a how-things-work with sidebars). One long vertical
+document, scroll-reveal, sticky nav, depth-on-demand.
+- **Hybrid:** chaptered scroll with `scroll-snap` between chapters — mostly reference, a few narrative stretches.
 
 Keep the chosen shape in **one place** (a layout wrapper + a couple of flags) so switching scroll ⇄
 deck later is contained, not a rewrite.
