@@ -253,9 +253,9 @@ Then run the look-and-fix loop:
 4. When you revise, you need to run this loop again (e.g., check for slop).
 5. **Repeat this loop until you can look at the whole html page and it passes with fresh eyes.  Then ship.**
 
-**The QA gate — fresh-eyes passes, not a self-skim.** Run the Step-0 pre-flight as **discrete passes** (Slop · Structure · Redundancy · Graphics), ideally with fresh eyes — a sub-agent that didn’t write the draft, since the pass that wrote the prose is the worst judge of its own slop. Rank findings **blocker / should-fix / optional** and fail only on blockers. **Re-run the Slop pass on any section you edit** — slop most often re-enters during revisions.
-- **Slop lint (mechanical, on the *final/edited* file — a self-skim misses these):** flags the negation-flip (“not X. It’s Y”) and back-to-back em-dashes; read each hit (appositive dashes pass), then a fresh-eyes read for the shapes. **Done = all passes clear**, not “it builds and looks fine.”
-  `grep -oE '>[^<]{12,}<' f.html | grep -nEi '\b(not|never|n.t)\b[^.]*\. (it|that|this|they) (is|was|did|are)|—[^—]{1,40}—'`
+**The QA gate — fresh-eyes passes, not a self-skim.** Run the Step-0 pre-flight as **discrete passes** (Slop · Structure · Redundancy · Graphics). **If sub-agents are available (Claude Code, Cowork), the Slop pass MUST run through one that didn’t write the draft** — the writer rationalizes its own slop (“the amber is semantic”); without sub-agents, run it as its own pass against the checklist, never a skim of fresh output. The pass covers **coloration too**: pattern-matching the templated default, or accents/eyebrows cycling hues, is slop no matter what semantic story justifies it. Rank findings **blocker / should-fix / optional** and fail only on blockers. **Re-run the Slop pass on any section you edit** — slop most often re-enters during revisions.
+- **Slop lint (mechanical, on the *final/edited* file — a self-skim misses these):** flags the negation-flip (“not X. It’s Y”), its inverted twin (“X are identical. The Y are not.”), and back-to-back em-dashes; read each hit (appositive dashes pass), then a fresh-eyes read for the shapes. **Done = all passes clear**, not “it builds and looks fine.”
+  `grep -oE '>[^<]{12,}<' f.html | grep -nEi '\b(not|never|n.t)\b[^.]*\. (it|that|this|they) (is|was|did|are)|—[^—]{1,40}—|(^|\. )[^.]{1,50}(is|are|was|were) not[.!]'
 
 ## Phase 5 — Verify & ship
 
