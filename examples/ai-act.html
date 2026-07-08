@@ -326,7 +326,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
 <!-- PROHIBITED -->
 <section class="section band" id="prohibited"><div class="wrap">
   <div class="sechead"><span class="eyebrow">§3 · Unacceptable risk</span><h2>Practices the Act bans outright</h2>
-    <p class="lede">Article 5 prohibits a short list of uses deemed incompatible with EU rights. These have been enforceable since 2 February 2025 and carry the top fine.</p></div>
+    <p class="lede">Article 5 prohibits a short list of uses deemed incompatible with EU rights. The original list has been enforceable since 2 February 2025 and carries the top fine; the Digital Omnibus adds one more ban, effective 2 December 2026.</p></div>
   <div class="banlist" id="banList"></div>
 </div></section>
 
@@ -373,6 +373,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
         <li>Synthetic audio, image, video and text must be machine-readable and marked as AI-generated; <strong>deepfakes</strong> must be disclosed.</li>
         <li>Emotion-recognition and biometric-categorisation systems must notify the people exposed to them.</li>
       </ul>
+      <p style="font-size:14px;color:var(--ink-2)">Systems already on the market before 2 August 2026 have until <strong>2 December 2026</strong> to meet the machine-readable marking duty (Article 50(2)); systems placed on the market after that date must comply immediately.</p>
     </div>
     <div>
       <div class="sechead"><span class="eyebrow">§6 · Minimal risk</span><h2>No new duties</h2></div>
@@ -435,7 +436,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);justify-content:space-bet
 <section class="section" id="trust"><div class="wrap">
   <div class="sechead"><span class="eyebrow">Sources &amp; caveats</span><h2>Where this comes from</h2></div>
   <ul class="src-list" id="srcList"></ul>
-  <div class="disclaimer">General explanation of Regulation (EU) 2024/1689 as amended, current to late June 2026, not legal advice. The Digital Omnibus deferrals reflect the provisional agreement endorsed by Parliament on 16 June 2026; formal Council adoption and Official Journal publication were expected shortly after. Confirm against the consolidated text for any compliance decision.</div>
+  <div class="disclaimer">General explanation of Regulation (EU) 2024/1689 as amended, current to early July 2026, not legal advice. The Digital Omnibus was endorsed by Parliament on 16 June 2026 and formally adopted by the Council on 29 June 2026; it enters into force on the third day after Official Journal publication. Confirm against the consolidated text for any compliance decision.</div>
 </div></section>
 
 <footer><div class="wrap">
@@ -518,7 +519,8 @@ const BANS=[
   "Emotion recognition in the workplace and education (narrow safety/medical carve-outs).",
   "Biometric categorisation inferring sensitive attributes (race, beliefs, sexual orientation).",
   "Predictive policing based solely on profiling a person.",
-  "Real-time remote biometric identification in public for law enforcement (narrow, authorised exceptions)."
+  "Real-time remote biometric identification in public for law enforcement (narrow, authorised exceptions).",
+  "Generating non-consensual intimate imagery or child sexual abuse material — added by the Digital Omnibus, banned from 2 December 2026; for providers this covers any system where such output is reasonably foreseeable and reproducible without safeguards."
 ];
 
 const ANNEX3=["Biometrics","Critical infrastructure","Education & vocational training","Employment & worker management","Essential private & public services (credit, insurance, benefits)","Law enforcement","Migration, asylum & border control","Administration of justice & democratic processes"];
