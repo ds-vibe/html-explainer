@@ -1,8 +1,6 @@
 # HTML Explainer
 
-A [Claude](https://claude.ai) **Skill** for building polished, lightly-interactive
-single-page web explainers — the kind of editorial, source-grounded, genuinely useful page
-someone can land on cold and come away understanding a topic.
+A [Claude](https://claude.ai) **Skill** for building polished, interactive HTML explainers as a single page OR a slide deck. Give it a topic, answer a few questions, and it produces a real page that someone can land on cold and come away understanding the basics.
 
 It's a **process, not a template**: the quality comes from an iterative loop (research →
 architect for learning → 10× the visual design → render-and-actually-look → revise), not
@@ -10,10 +8,7 @@ from filling in blanks.
 
 **See it in action: [live examples gallery](https://ds-vibe.github.io/html-explainer/)**
 
-> **Best results: run it in Claude Code with Opus 4.8 at high effort.** Counterintuitively, high
-> effort is both faster and higher quality — stronger first drafts mean fewer quality-loop fix
-> cycles. Claude Code also renders in a real headless browser, so it catches visual bugs the
-> app/cowork (static-only) cannot.
+> **Best results: run it in Claude Code with Opus 4.8 at high effort (or better).** It's both faster and higher quality, since stronger first drafts mean fewer quality-loop fix cycles. Claude Code renders in a real headless browser, so it catches visual bugs the Claude App or Cowork cannot.
 
 ## What it does
 
