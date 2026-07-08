@@ -35,8 +35,8 @@ Built with this skill, hosted on GitHub Pages — each is a self-contained `.htm
 
 | Explainer | Format | Live |
 |---|---|---|
-| How the northern lights happen | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/auroras.html) |
-| The machine that multiplied ideas (Gutenberg's press) | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/gutenberg.html) |
+| Auroras: The Northern Lights | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/auroras.html) |
+| Gutenberg's printing press | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/gutenberg.html) |
 | The Doppler effect (why a siren changes pitch) | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/doppler.html) |
 | The grammar of shadow (reading film noir) | slide deck | [open](https://ds-vibe.github.io/html-explainer/examples/film-noir.html) |
 | The EU AI Act | scrolling page | [open](https://ds-vibe.github.io/html-explainer/examples/ai-act.html) |
