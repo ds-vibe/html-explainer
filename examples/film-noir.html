@@ -1076,6 +1076,10 @@ input[type=range]::-moz-range-thumb{width:18px; height:18px; border-radius:50%; 
     // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
     // Scrolling pages: position just below any fixed/sticky top nav instead.
     requestAnimationFrame(function () {
+      // If the page's own CSS repositioned the launcher (e.g. the assembler's
+      // deck-offset rule), it knows its chrome better than this heuristic — keep it.
+      var cs = getComputedStyle(launch);
+      if (cs.top !== "8px" || cs.right !== "14px") return;
       var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
       if (isDeck) {
         launch.style.top = "auto";
