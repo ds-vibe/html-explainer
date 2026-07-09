@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ISO vs. NSO: how your stock options are taxed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAFAF8;
+  --band:#F0F2F0;
+  --ink:#1A2421;
+  --muted:#5C6663;
+  --line:#DDE1DE;
+  --ordinary:#B42318;   /* taxed as ordinary income */
+  --ordinary-bg:#FBEAE8;
+  --amt:#B45309;        /* AMT exposure */
+  --amt-bg:#FCF0E1;
+  --ltcg:#067647;       /* long-term capital gains */
+  --ltcg-bg:#E4F3EB;
+  --none:#8A948F;       /* no tax event */
+  --accent:#175E54;
+  --s1:4px; --s2:8px; --s3:16px; --s4:24px; --s5:32px; --s6:48px; --s7:64px;
+  --display:'Fraunces',Georgia,serif;
+  --body:'IBM Plex Sans',-apple-system,sans-serif;
+  --header-h:56px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--body);color:var(--ink);background:var(--paper);overflow:hidden;font-size:16px;line-height:1.6}
+button{font-family:var(--body);cursor:pointer}
+
+/* ---------- Deck chrome ---------- */
+.deck-header{position:fixed;top:0;left:0;right:0;height:var(--header-h);z-index:50;
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  padding:0 var(--s4);padding-top:env(safe-area-inset-top);
+  background:rgba(250,250,248,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deck-header .right{display:flex;align-items:center;gap:var(--s3)}
+.counter{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
+.menu-btn{background:none;border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--ink)}
+.menu-btn:hover{border-color:var(--ink)}
+.jump-menu{position:fixed;top:calc(var(--header-h) + env(safe-area-inset-top) + 8px);right:var(--s3);z-index:60;
+  background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(26,36,33,.12);
+  padding:var(--s2);min-width:260px;max-height:70vh;overflow-y:auto;display:none}
+.jump-menu.open{display:block}
+.jump-menu button{display:block;width:100%;text-align:left;background:none;border:none;border-radius:6px;
+  padding:8px 10px;font-size:13.5px;color:var(--ink)}
+.jump-menu button:hover{background:var(--band)}
+.jump-menu button.active{background:var(--ink);color:#fff}
+.jump-menu .jn{display:inline-block;width:22px;color:var(--muted);font-variant-numeric:tabular-nums}
+.jump-menu button.active .jn{color:rgba(255,255,255,.7)}
+
+.deck-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  padding:var(--s2) var(--s4);padding-bottom:calc(var(--s2) + env(safe-area-inset-bottom));
+  pointer-events:none}
+.deck-nav button{pointer-events:auto;min-width:44px;min-height:44px;border-radius:999px;
+  border:1px solid var(--line);background:#fff;font-size:18px;color:var(--ink);
+  box-shadow:0 2px 8px rgba(26,36,33,.08)}
+.deck-nav button:hover:not(:disabled){border-color:var(--ink)}
+.deck-nav button:disabled{opacity:.3;cursor:default}
+
+/* ---------- Track & slides ---------- */
+/* .stage clips the 13-slide-wide track; without it, mobile browsers expand the
+   layout viewport to fit the overflow and the whole deck renders zoomed out */
+.stage{width:100%;height:100dvh;overflow:hidden}
+.track{display:flex;height:100dvh;transition:transform .45s cubic-bezier(.4,0,.2,1)}
+@media (prefers-reduced-motion:reduce){.track{transition:none}}
+.slide{flex:0 0 100vw;width:100vw;height:100dvh;overflow-y:auto;overflow-x:hidden;display:flex;
+  padding:calc(var(--header-h) + env(safe-area-inset-top) + var(--s5)) var(--s4) calc(var(--s7) + env(safe-area-inset-bottom))}
+.slide-inner{max-width:1080px;margin:auto;width:100%}
+#s9 .slide-inner{max-width:860px}
+.slide.band{background:var(--band)}
+.slide h2:focus{outline:none}
+
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--s3)}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(34px,5.5vw,58px);line-height:1.08;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,3.6vw,38px);line-height:1.15;margin-bottom:var(--s4)}
+.lede{font-size:clamp(16px,1.6vw,18.5px);color:var(--muted);max-width:62ch;margin-bottom:var(--s5)}
+p{max-width:66ch}
+.prose p + p{margin-top:var(--s3)}
+
+/* semantic chips */
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 11px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:0 0 8px}
+.chip.ord{color:var(--ordinary);background:var(--ordinary-bg)}
+.chip.amt{color:var(--amt);background:var(--amt-bg)}
+.chip.ltcg{color:var(--ltcg);background:var(--ltcg-bg)}
+.chip.none{color:var(--none);background:#EDEFED}
+.tag{display:inline-block;border:1.5px solid var(--ink);border-radius:6px;padding:2px 9px;font-size:12px;font-weight:700;letter-spacing:.06em}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3);margin:var(--s3) 0 var(--s4)}
+
+/* ---------- Cover ---------- */
+#s0 .slide-inner{display:grid;min-height:calc(100dvh - var(--header-h) - 140px);align-content:center;gap:var(--s4)}
+.cover-kicker{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.cover-sub{font-size:clamp(17px,1.9vw,20px);color:var(--muted);max-width:56ch;line-height:1.55}
+.cover-hint{font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:var(--s2);margin-top:var(--s3)}
+.key{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 8px;font-size:12px;font-weight:600;background:#fff}
+
+/* ---------- Figures ---------- */
+figure{margin:var(--s4) 0}
+figure svg{display:block;width:100%;height:auto}
+@media(max-width:720px){
+  .figwide{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .figwide svg{min-width:720px}
+}
+figcaption{font-size:13px;color:var(--muted);margin-top:var(--s2);max-width:70ch}
+.svg-label{font-family:var(--body);font-size:13px;font-weight:600;fill:var(--ink)}
+.svg-sub{font-family:var(--body);font-size:11.5px;font-weight:500;fill:var(--muted)}
+.svg-num{font-family:var(--body);font-variant-numeric:tabular-nums}
+/* utilities placed after the base classes so they win the cascade (CSS classes
+   override SVG presentation attributes, so fill= / font-size= attrs don't work here) */
+.fw{fill:#fff}.ford{fill:var(--ordinary)}.famt{fill:var(--amt)}.fltcg{fill:var(--ltcg)}.facc{fill:var(--accent)}
+.b7{font-weight:700}.fs15{font-size:15px}.fs17{font-size:17px}.fs18{font-size:18px}
+
+/* two-up */
+.two-up{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:start}
+@media(max-width:820px){.two-up{grid-template-columns:1fr}}
+
+/* comparison table */
+.cmp{width:100%;border-collapse:collapse;font-size:14.5px}
+.cmp th,.cmp td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp thead th{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--ink)}
+.cmp tbody th{font-weight:600;width:26%}
+.cmp .best{color:var(--ltcg);font-weight:600}
+
+/* ---------- Demo widgets ---------- */
+.demo{background:#fff;border:1px solid var(--line);border-radius:14px;padding:var(--s4);margin-top:var(--s4)}
+.slide.band .demo{box-shadow:0 1px 3px rgba(26,36,33,.05)}
+.demo-head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s3)}
+.demo-title{font-weight:700;font-size:15.5px}
+.demo-note{font-size:12px;color:var(--muted)}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--s3) var(--s4);margin-bottom:var(--s4)}
+.ctl label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:6px}
+.ctl output{font-variant-numeric:tabular-nums;color:var(--accent)}
+input[type=range]{width:100%;height:28px;accent-color:var(--accent);touch-action:pan-y}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+@media(max-width:720px){.result-grid{grid-template-columns:1fr}}
+.result-col{border:1px solid var(--line);border-radius:10px;padding:var(--s3)}
+.result-col h4{display:flex;align-items:center;gap:var(--s2);font-size:14px;margin-bottom:var(--s3)}
+.rrow{display:flex;justify-content:space-between;gap:var(--s2);font-size:13.5px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.rrow:last-child{border-bottom:none}
+.rrow .v{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.rrow.total{border-top:2px solid var(--ink);border-bottom:none;margin-top:4px;padding-top:10px;font-weight:700;font-size:14.5px}
+.rrow .v.ord{color:var(--ordinary)} .rrow .v.amt{color:var(--amt)} .rrow .v.ltcg{color:var(--ltcg)}
+.keep-bars{margin-top:var(--s4)}
+.kb-row{display:grid;grid-template-columns:64px 1fr 110px;align-items:center;gap:var(--s3);margin-top:var(--s2)}
+.kb-track{background:var(--band);border-radius:6px;height:26px;overflow:hidden}
+.kb-fill{height:100%;border-radius:6px;transition:width .25s ease}
+.kb-fill{background:var(--accent)}
+.kb-val{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;text-align:right}
+.kb-cap{font-size:12px;color:var(--muted);margin-top:var(--s2)}
+
+/* verdict */
+.verdict{display:flex;align-items:center;gap:var(--s3);border-radius:10px;padding:var(--s3);margin-top:var(--s3);font-weight:600;font-size:15px}
+.verdict.good{background:var(--ltcg-bg);color:var(--ltcg)}
+.verdict.bad{background:var(--ordinary-bg);color:var(--ordinary)}
+.verdict .mark{font-size:20px;line-height:1}
+.cond{display:flex;gap:var(--s4);flex-wrap:wrap;margin-top:var(--s3);font-size:13.5px}
+.cond span{font-weight:600}
+.cond .ok{color:var(--ltcg)} .cond .no{color:var(--ordinary)}
+
+/* fine-print list */
+.fine{counter-reset:fp;list-style:none;margin-top:var(--s4);max-width:74ch}
+.fine li{counter-increment:fp;display:grid;grid-template-columns:52px 1fr;gap:var(--s3);padding:var(--s4) 0;border-top:1px solid var(--line)}
+.fine li::before{content:counter(fp,decimal-leading-zero);font-family:var(--display);font-size:26px;font-weight:600;color:var(--accent);line-height:1}
+.fine b{display:block;margin-bottom:4px;font-size:15.5px}
+.fine p{font-size:14.5px;color:var(--muted);max-width:60ch}
+
+/* decision guide */
+.decide{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);margin-top:var(--s4)}
+@media(max-width:820px){.decide{grid-template-columns:1fr}}
+.decide-col{border-top:3px solid var(--ink);padding-top:var(--s3)}
+.decide-col.iso-b{border-top-color:var(--ltcg)}
+.decide-col.nso-b{border-top-color:var(--ordinary)}
+.decide-col h3{font-size:16px;margin-bottom:var(--s2)}
+.decide-col ul{list-style:none}
+.decide-col li{padding:8px 0 8px 22px;position:relative;font-size:14.5px;border-bottom:1px dashed var(--line)}
+.decide-col li::before{content:"";position:absolute;left:2px;top:15px;width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.5}
+
+/* ---------- Quiz ---------- */
+.quiz{background:#fff;border:1px solid var(--line);border-radius:14px;padding:var(--s4);max-width:680px}
+.q-progress{font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;margin-bottom:var(--s3)}
+.q-text{font-weight:600;font-size:16.5px;margin-bottom:var(--s3);max-width:56ch}
+.q-opts{display:grid;gap:var(--s2)}
+.q-opt{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:12px 14px;font-size:14.5px;line-height:1.45;min-height:44px}
+.q-opt:hover:not(:disabled){border-color:var(--ink)}
+.q-opt:disabled{cursor:default;color:var(--ink);opacity:1}
+.q-opt.correct{border-color:var(--ltcg);background:var(--ltcg-bg)}
+.q-opt.wrong{border-color:var(--ordinary);background:var(--ordinary-bg)}
+.q-feedback{margin-top:var(--s3);border-radius:9px;padding:var(--s3);font-size:14px;display:none}
+.q-feedback.show{display:block}
+.q-feedback.right{background:var(--ltcg-bg)} .q-feedback.wrong{background:var(--ordinary-bg)}
+.q-feedback b{display:block;margin-bottom:4px;font-size:14.5px}
+.q-feedback.right b{color:var(--ltcg)} .q-feedback.wrong b{color:var(--ordinary)}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:var(--s4);gap:var(--s3)}
+.btn-primary{background:var(--ink);color:#fff;border:none;border-radius:8px;padding:12px 26px;font-size:14.5px;font-weight:700;min-height:44px}
+.btn-primary:hover:not(:disabled){background:#000}
+.btn-primary:disabled{opacity:.35;cursor:default}
+.btn-ghost{background:none;border:1px solid var(--line);border-radius:8px;padding:11px 18px;font-size:14px;font-weight:600;color:var(--muted);min-height:44px}
+.btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+.q-score{text-align:center;padding:var(--s4) 0}
+.q-score .big{font-family:var(--display);font-size:44px;font-weight:600}
+.q-score p{margin:var(--s2) auto var(--s4)}
+
+/* sources */
+.src-list{list-style:none;margin-top:var(--s4);max-width:74ch}
+.src-list li{padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.src-list a{color:var(--accent);font-weight:600;text-decoration:none}
+.src-list a:hover{text-decoration:underline}
+.disclaimer{margin-top:var(--s5);padding:var(--s3) var(--s4);background:var(--band);border-radius:10px;font-size:13.5px;color:var(--muted);max-width:74ch}
+
+@media(max-width:640px){
+  .slide{padding-left:var(--s3);padding-right:var(--s3)}
+  .brand{font-size:13px;max-width:46vw}
+}
+/* review-mode launcher: top-right collides with slide content on small screens —
+   park it bottom-center between the deck nav buttons */
+@media(max-width:820px){
+  /* doubled ID beats the assembler's injected #rv-launch rule (same-importance, later in doc) */
+  #rv-launch#rv-launch{top:auto !important;right:auto !important;left:50% !important;
+    transform:translateX(-50%) !important;
+    bottom:calc(12px + env(safe-area-inset-bottom)) !important}
+}
+</style>
+<style>/* assembler: keep launcher clear of deck chrome */ body #rv-launch{top:64px!important;right:16px!important;bottom:auto!important;left:auto!important}</style>
+</head>
+<body data-review-toggle>
+
+<header class="deck-header">
+  <div class="brand">ISO vs. NSO — stock-option taxes</div>
+  <div class="right">
+    <span class="counter" id="counter">1 / 13</span>
+    <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-controls="jumpMenu">Contents</button>
+  </div>
+</header>
+<nav class="jump-menu" id="jumpMenu" aria-label="Jump to slide"></nav>
+
+<div class="stage">
+<main class="track" id="track">
+
+<!-- 1 · COVER -->
+<section class="slide" id="s0" aria-label="Cover">
+  <div class="slide-inner">
+    <div class="cover-kicker">A guide for startup employees</div>
+    <h1>ISO vs. NSO: how your stock options are taxed</h1>
+    <p class="cover-sub">Your offer letter says ISO or NSO. Both give you the same right — to buy shares at a fixed price. The difference is when the IRS taxes you, at what rate, and how much of the upside you keep.</p>
+    <div>
+      <span class="chip ord">Ordinary income tax</span>&nbsp;
+      <span class="chip amt">AMT exposure</span>&nbsp;
+      <span class="chip ltcg">Long-term capital gains</span>
+    </div>
+    <div class="cover-hint">Advance with <span class="key">→</span> <span class="key">Space</span> or swipe · 13 slides · ~9 min</div>
+  </div>
+</section>
+
+<!-- 2 · THE SPREAD -->
+<section class="slide band" id="s1" aria-label="The spread">
+  <div class="slide-inner">
+    <div class="eyebrow">§1 · The instrument</div>
+    <h2 tabindex="-1">Every option is a bet on one gap: the spread</h2>
+    <div class="two-up">
+      <div class="prose">
+        <p>A stock option is the right to buy shares at a fixed <b>strike price</b>, set on the day of your grant. If the company grows, the shares' <b>fair market value</b> (FMV) rises while your strike stays frozen.</p>
+        <p style="margin-top:var(--s3)">The gap between them is the <b>spread</b> — your paper profit. Every tax rule in this deck is a rule about one question: <i>when does the spread count as income, and what kind?</i></p>
+      </div>
+      <figure>
+        <svg viewBox="-16 -16 472 292" role="img" aria-label="Bar chart: strike price $1 versus fair market value $10, with the $9 gap labeled as the spread">
+          <line x1="30" y1="240" x2="430" y2="240" stroke="#DDE1DE" stroke-width="2"/>
+          <rect x="70" y="216" width="110" height="24" fill="#1A2421" rx="3"/>
+          <text x="125" y="204" text-anchor="middle" class="svg-label">Strike $1</text>
+          <text x="125" y="262" text-anchor="middle" class="svg-sub">what you pay</text>
+          <rect x="280" y="24" width="110" height="216" fill="#175E54" rx="3"/>
+          <text x="335" y="12" text-anchor="middle" class="svg-label">FMV $10</text>
+          <text x="335" y="262" text-anchor="middle" class="svg-sub">what it's worth</text>
+          <path d="M 260 216 L 200 216 L 200 24 L 260 24" fill="none" stroke="#175E54" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="230" y="114" text-anchor="middle" class="svg-label facc">The</text>
+          <text x="230" y="132" text-anchor="middle" class="svg-label facc">spread</text>
+          <text x="230" y="150" text-anchor="middle" class="svg-sub svg-num">$9 / share</text>
+        </svg>
+        <figcaption>Illustrative numbers used throughout: strike $1, FMV $10 at exercise.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · LIFECYCLE -->
+<section class="slide" id="s2" aria-label="The lifecycle">
+  <div class="slide-inner">
+    <div class="eyebrow">§2 · The map</div>
+    <h2 tabindex="-1">Same four events, different tax bills</h2>
+    <p class="lede">Options move through grant → vesting → exercise → sale. NSOs tax you in the middle, at exercise. ISOs can defer everything to the sale — at a lower rate — if you follow the holding rules.</p>
+    <div class="legend">
+      <span class="chip none">No tax</span>
+      <span class="chip ord">Ordinary income</span>
+      <span class="chip amt">Possible AMT</span>
+      <span class="chip ltcg">Long-term capital gains</span>
+    </div>
+    <figure class="figwide">
+      <svg viewBox="-16 -16 932 332" role="img" aria-label="Two timelines comparing NSO and ISO tax events at grant, vest, exercise, and sale">
+        <!-- column guides -->
+        <text x="150" y="10" text-anchor="middle" class="svg-label">Grant</text>
+        <text x="370" y="10" text-anchor="middle" class="svg-label">Vest</text>
+        <text x="590" y="10" text-anchor="middle" class="svg-label">Exercise</text>
+        <text x="810" y="10" text-anchor="middle" class="svg-label">Sale</text>
+        <line x1="150" y1="22" x2="150" y2="290" stroke="#DDE1DE" stroke-width="1"/>
+        <line x1="370" y1="22" x2="370" y2="290" stroke="#DDE1DE" stroke-width="1"/>
+        <line x1="590" y1="22" x2="590" y2="290" stroke="#DDE1DE" stroke-width="1"/>
+        <line x1="810" y1="22" x2="810" y2="290" stroke="#DDE1DE" stroke-width="1"/>
+        <!-- NSO rail -->
+        <text x="0" y="95" class="svg-label fs15">NSO</text>
+        <line x1="60" y1="90" x2="880" y2="90" stroke="#1A2421" stroke-width="2"/>
+        <circle cx="150" cy="90" r="9" fill="#8A948F"/>
+        <circle cx="370" cy="90" r="9" fill="#8A948F"/>
+        <circle cx="590" cy="90" r="11" fill="#B42318"/>
+        <circle cx="810" cy="90" r="11" fill="#067647"/>
+        <text x="150" y="120" text-anchor="middle" class="svg-sub">no tax</text>
+        <text x="370" y="120" text-anchor="middle" class="svg-sub">no tax</text>
+        <text x="590" y="120" text-anchor="middle" class="svg-sub ford b7">spread taxed as</text>
+        <text x="590" y="135" text-anchor="middle" class="svg-sub ford b7">ordinary income</text>
+        <text x="810" y="120" text-anchor="middle" class="svg-sub fltcg b7">further gain:</text>
+        <text x="810" y="135" text-anchor="middle" class="svg-sub fltcg b7">capital gains</text>
+        <!-- ISO rail -->
+        <text x="0" y="225" class="svg-label fs15">ISO</text>
+        <line x1="60" y1="220" x2="880" y2="220" stroke="#1A2421" stroke-width="2"/>
+        <circle cx="150" cy="220" r="9" fill="#8A948F"/>
+        <circle cx="370" cy="220" r="9" fill="#8A948F"/>
+        <circle cx="590" cy="220" r="11" fill="#B45309"/>
+        <circle cx="810" cy="220" r="11" fill="#067647"/>
+        <text x="150" y="250" text-anchor="middle" class="svg-sub">no tax</text>
+        <text x="370" y="250" text-anchor="middle" class="svg-sub">no tax</text>
+        <text x="590" y="250" text-anchor="middle" class="svg-sub famt b7">no regular tax —</text>
+        <text x="590" y="265" text-anchor="middle" class="svg-sub famt b7">but AMT possible</text>
+        <text x="810" y="250" text-anchor="middle" class="svg-sub fltcg b7">whole gain: long-term</text>
+        <text x="810" y="265" text-anchor="middle" class="svg-sub fltcg b7">capital gains*</text>
+      </svg>
+      <figcaption>*ISO sale gets long-term capital gains only if the holding rules are met (slide 8). Sell early and the spread becomes ordinary income, like an NSO.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 4 · NSO -->
+<section class="slide band" id="s3" aria-label="NSO taxation">
+  <div class="slide-inner">
+    <div class="eyebrow">§3 · NSO <span style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">— non-qualified stock option</span></div>
+    <h2 tabindex="-1">NSOs: the tax bill arrives the day you exercise</h2>
+    <div class="two-up">
+      <div class="prose">
+        <p>When you exercise an NSO, the spread is treated like salary. It goes on your W-2 as <b>ordinary income</b>, with federal, state, Social Security and Medicare tax withheld — even though you haven't sold a share or seen a dollar of cash.</p>
+        <p>Whatever the shares do after that is a normal capital gain or loss, measured from the FMV on exercise day. Hold the shares more than a year and further gains qualify for long-term rates.</p>
+        <p>NSOs can go to anyone — employees, contractors, advisors, board members. They don't have to meet the ISO rulebook's conditions, so they don't get its tax break.</p>
+      </div>
+      <figure>
+        <svg viewBox="-16 -16 472 312" role="img" aria-label="Stacked bar: a $9 per-share spread at NSO exercise splits into roughly $3.30 tax withheld and $5.70 kept">
+          <text x="110" y="10" text-anchor="middle" class="svg-label">Spread at exercise</text>
+          <rect x="40" y="40" width="140" height="220" fill="#1A2421" rx="3" opacity=".12"/>
+          <rect x="40" y="40" width="140" height="220" fill="none" stroke="#1A2421" stroke-width="1.5" rx="3"/>
+          <text x="110" y="160" text-anchor="middle" class="svg-label svg-num fs17">$9.00</text>
+          <text x="110" y="180" text-anchor="middle" class="svg-sub">per share</text>
+          <text x="330" y="10" text-anchor="middle" class="svg-label">Where it goes</text>
+          <rect x="260" y="40" width="140" height="81" fill="#B42318" rx="3"/>
+          <rect x="260" y="125" width="140" height="135" fill="#175E54" opacity=".22" rx="3"/>
+          <text x="330" y="75" text-anchor="middle" class="svg-label svg-num fw">≈ $3.30</text>
+          <text x="330" y="93" text-anchor="middle" class="svg-sub fw">tax withheld now</text>
+          <text x="330" y="185" text-anchor="middle" class="svg-label svg-num">≈ $5.70</text>
+          <text x="330" y="203" text-anchor="middle" class="svg-sub">yours (in stock)</text>
+          <path d="M 190 150 L 250 150" stroke="#5C6663" stroke-width="2" marker-end="url(#arr)"/>
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5C6663"/></marker></defs>
+        </svg>
+        <figcaption>Illustrative: $9 spread taxed at a flat 37%, the top federal ordinary-income rate. Payroll and state taxes come on top; your combined rate depends on your bracket and state.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · ISO -->
+<section class="slide" id="s4" aria-label="ISO taxation">
+  <div class="slide-inner">
+    <div class="eyebrow">§4 · ISO <span style="color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">— incentive stock option</span></div>
+    <h2 tabindex="-1">ISOs: no tax at exercise — with two asterisks</h2>
+    <div class="two-up">
+      <div class="prose">
+        <p>Exercise an ISO and, for regular tax purposes, nothing happens. No W-2 income, no withholding, no payroll tax. If you then hold the shares long enough (slide 8), the <b>entire</b> gain from strike to sale price is taxed as long-term capital gains — top federal rate 20%, versus 37% for ordinary income.</p>
+        <p>Asterisk one: the spread still counts as income under the <b>alternative minimum tax</b>, a parallel calculation that can bill you in the year you exercise (slide 9).</p>
+        <p>Asterisk two: sell too early and the deal is off — the spread converts to ordinary income, NSO-style. That early sale is called a <b>disqualifying disposition</b>.</p>
+      </div>
+      <figure>
+        <svg viewBox="-16 -16 472 312" role="img" aria-label="Bar chart comparing top federal rates: ordinary income 37 percent versus long-term capital gains 20 percent">
+          <text x="220" y="10" text-anchor="middle" class="svg-label">Top federal rate on your gain</text>
+          <line x1="30" y1="260" x2="410" y2="260" stroke="#DDE1DE" stroke-width="2"/>
+          <rect x="70" y="63" width="120" height="197" fill="#B42318" rx="3"/>
+          <text x="130" y="50" text-anchor="middle" class="svg-label svg-num fs18 ford">37%</text>
+          <text x="130" y="278" text-anchor="middle" class="svg-sub">ordinary income</text>
+          <text x="130" y="292" text-anchor="middle" class="svg-sub">(NSO spread)</text>
+          <rect x="250" y="154" width="120" height="106" fill="#067647" rx="3"/>
+          <text x="310" y="141" text-anchor="middle" class="svg-label svg-num fs18 fltcg">20%</text>
+          <text x="310" y="278" text-anchor="middle" class="svg-sub">long-term cap gains</text>
+          <text x="310" y="292" text-anchor="middle" class="svg-sub">(qualifying ISO)</text>
+        </svg>
+        <figcaption>2026 top federal rates. High earners may add 3.8% net investment income tax to capital gains; state tax applies to both.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · WHAT YOU KEEP -->
+<section class="slide band" id="s5" aria-label="What you keep">
+  <div class="slide-inner">
+    <div class="eyebrow">§5 · The stakes</div>
+    <h2 tabindex="-1">Run one exit through both pipes</h2>
+    <p class="lede">Take 10,000 options, strike $1, exercised at $10 FMV, sold at $30 after an acquisition. Same shares, same $290,000 profit before tax — routed through NSO rules versus qualifying-ISO rules.</p>
+    <figure class="figwide">
+      <svg viewBox="-16 -16 1040 292" role="img" aria-label="Horizontal bars: NSO route keeps about 216,700 dollars of a 290,000 dollar profit; qualifying ISO route keeps 232,000 and defers all tax to sale">
+        <text x="0" y="34" class="svg-label fs15">NSO</text>
+        <rect x="70" y="14" width="560" height="34" fill="#175E54" opacity=".22" rx="4"/>
+        <rect x="630" y="14" width="86" height="34" fill="#B42318" rx="4"/>
+        <rect x="716" y="14" width="103" height="34" fill="#067647" opacity=".35" rx="4"/>
+        <text x="80" y="36" class="svg-label svg-num">keep ≈ $216,700</text>
+        <text x="835" y="30" class="svg-sub ford b7">tax ≈ $73,300</text>
+        <text x="835" y="44" class="svg-sub">$33,300 of it due at exercise</text>
+        <text x="0" y="134" class="svg-label fs15">ISO</text>
+        <rect x="70" y="114" width="599" height="34" fill="#175E54" rx="4"/>
+        <rect x="669" y="114" width="150" height="34" fill="#067647" opacity=".35" rx="4"/>
+        <text x="80" y="136" class="svg-label svg-num fw">keep ≈ $232,000</text>
+        <text x="835" y="130" class="svg-sub fltcg b7">tax ≈ $58,000</text>
+        <text x="835" y="144" class="svg-sub">all due at sale, 20% rate</text>
+        <line x1="70" y1="180" x2="819" y2="180" stroke="#DDE1DE" stroke-width="2"/>
+        <text x="70" y="200" class="svg-sub">$0</text>
+        <text x="819" y="200" text-anchor="end" class="svg-sub svg-num">$290,000 pre-tax profit</text>
+        <text x="70" y="240" class="svg-sub">NSO: $90,000 spread taxed ≈37% at exercise ($33,300), then $200,000 further gain taxed 20% at sale ($40,000).</text>
+        <text x="70" y="258" class="svg-sub">ISO: entire $290,000 gain taxed 20% at sale (assumes holding rules met; possible AMT at exercise ignored here — see slide 9).</text>
+      </svg>
+      <figcaption>Illustrative federal-only math at flat rates. The next slide lets you change every number.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 7 · CALCULATOR (centerpiece) -->
+<section class="slide" id="s6" aria-label="Interactive calculator">
+  <div class="slide-inner">
+    <div class="eyebrow">§6 · Try it yourself</div>
+    <h2 tabindex="-1">The exercise-and-sale calculator</h2>
+    <p class="lede">Drag the sliders to match your own grant. Both columns update live: what each option type costs at exercise, at sale, and what you keep.</p>
+    <div class="demo">
+      <div class="demo-head">
+        <span class="demo-title">Your scenario</span>
+        <span class="demo-note">Simplified flat rates: 37% ordinary income · 20% long-term capital gains · federal only</span>
+      </div>
+      <p style="font-size:12px;font-style:italic;color:var(--muted);margin:-6px 0 var(--s3)">Illustrative only — assumes a single filer; it does not model joint filing, state tax, AMT phaseouts, or the rest of your return.</p>
+      <div class="controls">
+        <div class="ctl"><label>Options <output id="o-sh">10,000</output></label>
+          <input type="range" id="in-sh" min="500" max="50000" step="500" value="10000" aria-label="Number of options"></div>
+        <div class="ctl"><label>Strike price <output id="o-st">$1.00</output></label>
+          <input type="range" id="in-st" min="0.25" max="10" step="0.25" value="1" aria-label="Strike price in dollars"></div>
+        <div class="ctl"><label>FMV at exercise <output id="o-fmv">$10.00</output></label>
+          <input type="range" id="in-fmv" min="0.5" max="60" step="0.5" value="10" aria-label="Fair market value at exercise"></div>
+        <div class="ctl"><label>Sale price <output id="o-sp">$30.00</output></label>
+          <input type="range" id="in-sp" min="0.5" max="120" step="0.5" value="30" aria-label="Sale price per share"></div>
+      </div>
+      <div class="result-grid">
+        <div class="result-col">
+          <h4><span class="tag">NSO</span> ordinary income at exercise</h4>
+          <div class="rrow"><span>Cost to exercise</span><span class="v" id="n-cost">$10,000</span></div>
+          <div class="rrow"><span>Spread (taxed now)</span><span class="v" id="n-spread">$90,000</span></div>
+          <div class="rrow"><span>Tax at exercise <span class="chip ord" style="padding:1px 8px">37%</span></span><span class="v ord" id="n-tax1">−$33,300</span></div>
+          <div class="rrow"><span>Tax at sale <span class="chip ltcg" style="padding:1px 8px">20%</span></span><span class="v ltcg" id="n-tax2">−$40,000</span></div>
+          <div class="rrow total"><span>You keep</span><span class="v" id="n-keep">$216,700</span></div>
+        </div>
+        <div class="result-col">
+          <h4><span class="tag">ISO</span> qualifying disposition</h4>
+          <div class="rrow"><span>Cost to exercise</span><span class="v" id="i-cost">$10,000</span></div>
+          <div class="rrow"><span>Regular tax at exercise</span><span class="v" id="i-tax0">$0</span></div>
+          <div class="rrow"><span>AMT exposure <span class="chip amt" style="padding:1px 8px">≈ 28%</span></span><span class="v amt" id="i-amt">≈ $25,200</span></div>
+          <div class="rrow"><span>Tax at sale <span class="chip ltcg" style="padding:1px 8px">20%</span></span><span class="v ltcg" id="i-tax2">−$58,000</span></div>
+          <div class="rrow total"><span>You keep</span><span class="v" id="i-keep">$232,000</span></div>
+        </div>
+      </div>
+      <div class="keep-bars">
+        <div class="kb-row"><span class="svg-sub" style="font-size:13px;font-weight:700">NSO</span><div class="kb-track"><div class="kb-fill nso" id="bar-nso" style="width:75%"></div></div><span class="kb-val" id="val-nso">$216,700</span></div>
+        <div class="kb-row"><span class="svg-sub" style="font-size:13px;font-weight:700">ISO</span><div class="kb-track"><div class="kb-fill iso" id="bar-iso" style="width:80%"></div></div><span class="kb-val" id="val-iso">$232,000</span></div>
+        <p class="kb-cap" id="kb-note">After-tax proceeds, assuming NSO shares also held &gt;1 year after exercise and ISO holding rules met. AMT (amber) is a rough worst case, often recovered later as a credit — it is not subtracted from the ISO total. Very large exercises can exceed it: past $500K single / $1M joint of AMT income, the exemption phases out at 50¢ per dollar and effective rates approach 40% (see slide 9).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · HOLDING PERIODS -->
+<section class="slide band" id="s7" aria-label="Holding periods">
+  <div class="slide-inner">
+    <div class="eyebrow">§7 · The two clocks</div>
+    <h2 tabindex="-1">ISO's deal has two clocks, and both must run out</h2>
+    <p class="lede">A sale is a <b>qualifying disposition</b> — all long-term capital gains — only if you sell more than <b>2 years after grant</b> and more than <b>1 year after exercise</b>. Miss either clock and the spread converts to ordinary income.</p>
+    <div class="demo">
+      <div class="demo-head">
+        <span class="demo-title">Pick your dates, read the verdict</span>
+        <span class="demo-note">Grant is month 0</span>
+      </div>
+      <div class="controls">
+        <div class="ctl"><label>Exercise month <output id="o-ex">month 18</output></label>
+          <input type="range" id="in-ex" min="12" max="36" step="1" value="18" aria-label="Exercise month after grant"></div>
+        <div class="ctl"><label>Sale month <output id="o-sl">month 26</output></label>
+          <input type="range" id="in-sl" min="13" max="72" step="1" value="26" aria-label="Sale month after grant"></div>
+      </div>
+      <figure class="figwide" style="margin:var(--s2) 0 0">
+        <svg viewBox="-16 -16 932 172" role="img" aria-label="Timeline showing grant, exercise, and sale markers with the two holding-period clocks" id="hold-svg">
+          <line x1="40" y1="70" x2="880" y2="70" stroke="#DDE1DE" stroke-width="3"/>
+          <g id="hp-bars"></g>
+          <circle cx="40" cy="70" r="9" fill="#1A2421"/>
+          <text x="40" y="46" text-anchor="middle" class="svg-label">Grant</text>
+          <circle id="hp-ex" cx="250" cy="70" r="9" fill="#B45309"/>
+          <text id="hp-ex-l" x="250" y="46" text-anchor="middle" class="svg-label">Exercise</text>
+          <circle id="hp-sl" cx="343" cy="70" r="9" fill="#067647"/>
+          <text id="hp-sl-l" x="343" y="110" text-anchor="middle" class="svg-label">Sale</text>
+          <text x="40" y="132" class="svg-sub">month 0</text>
+          <text x="880" y="132" text-anchor="end" class="svg-sub">month 72</text>
+        </svg>
+      </figure>
+      <div class="cond">
+        <span id="c1" class="no">✗ 2 years from grant</span>
+        <span id="c2" class="no">✗ 1 year from exercise</span>
+      </div>
+      <div class="verdict bad" id="hp-verdict" aria-live="polite">
+        <span class="mark">✗</span><span id="hp-text">Disqualifying — the spread is taxed as ordinary income, like an NSO.</span>
+      </div>
+      <p class="kb-cap" style="margin-top:var(--s3)">Two mechanics differ from a true NSO: a disqualifying sale has no withholding (you settle it through estimated tax), and if you sell in the exercise year for less than the exercise-day FMV, the ordinary income is capped at your actual gain.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · AMT -->
+<section class="slide" id="s8" aria-label="AMT">
+  <div class="slide-inner">
+    <div class="eyebrow">§8 · The catch</div>
+    <h2 tabindex="-1">AMT: the parallel tax that can hit ISO exercises</h2>
+    <div class="two-up">
+      <div class="prose">
+        <p>The alternative minimum tax is a second income-tax calculation that runs alongside the regular one. You pay whichever is <b>higher</b>. For most people the two never diverge — until an ISO exercise, because the AMT counts your untaxed spread as income.</p>
+        <p>The math, roughly: add the spread to your income, subtract the AMT exemption (<b>$90,100</b> single / <b>$140,200</b> joint for 2026), and apply 26–28%. Big exercises got harsher in 2026: above <b>$500,000</b> of AMT income (<b>$1,000,000</b> joint) the exemption phases out at 50 cents per dollar, pushing the effective marginal rate to roughly 40% — on shares you cannot sell yet.</p>
+        <p>Two softeners. A small exercise often triggers nothing — AMT only bites once the parallel calculation overtakes your regular tax, the crossover in the chart. And AMT paid on an ISO exercise usually becomes a <b>credit</b> you recover against future years' regular tax — a prepayment rather than a pure loss, but the cash is due now.</p>
+      </div>
+      <figure>
+        <svg viewBox="-16 -16 472 332" role="img" aria-label="Illustration: as ISO spread grows, tentative AMT rises and overtakes regular tax; the excess is the AMT bill">
+          <text x="220" y="8" text-anchor="middle" class="svg-label">One filer, growing ISO spread →</text>
+          <line x1="50" y1="270" x2="420" y2="270" stroke="#DDE1DE" stroke-width="2"/>
+          <line x1="50" y1="270" x2="50" y2="30" stroke="#DDE1DE" stroke-width="2"/>
+          <line x1="50" y1="180" x2="420" y2="180" stroke="#B42318" stroke-width="2.5" stroke-dasharray="7 5"/>
+          <text x="58" y="168" class="svg-sub ford b7">regular tax (flat — spread untaxed)</text>
+          <path d="M 50 268 L 170 240 L 420 60" fill="none" stroke="#B45309" stroke-width="3"/>
+          <text x="240" y="95" class="svg-sub famt b7">AMT calculation</text>
+          <path d="M 258 180 L 420 180 L 420 62 Z" fill="#B45309" opacity=".18"/>
+          <circle cx="258" cy="180" r="6" fill="#B45309"/>
+          <text x="258" y="212" text-anchor="middle" class="svg-sub b7">crossover</text>
+          <text x="385" y="145" text-anchor="middle" class="svg-sub famt b7">you owe</text>
+          <text x="385" y="160" text-anchor="middle" class="svg-sub famt b7">the gap</text>
+          <text x="50" y="292" class="svg-sub">small spread</text>
+          <text x="420" y="292" text-anchor="end" class="svg-sub">large spread</text>
+        </svg>
+        <figcaption>Schematic, not to scale. Below the crossover, exercising triggers no AMT; beyond it, you owe the amber gap in the exercise year.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · FINE PRINT -->
+<section class="slide band" id="s9" aria-label="Fine print">
+  <div class="slide-inner">
+    <div class="eyebrow">§9 · Fine print that bites</div>
+    <h2 tabindex="-1">Three rules that quietly reshape your grant</h2>
+    <ol class="fine">
+      <li><div><b>The $100K rule caps ISOs</b>
+        <p>Only $100,000 of options (valued at grant-date FMV) may become exercisable as ISOs in any calendar year. Large grants routinely split: the first $100K per year stays ISO, the overflow is automatically NSO. Check your grant paperwork — many "ISO grants" are mixed.</p></div></li>
+      <li><div><b>Leaving starts a 90-day fuse</b>
+        <p>ISO status survives only 3 months after you leave the company (12 months if you leave on disability; waived at death). Exercise later than that — even under a company that offers a 5- or 10-year extended window — and the option is taxed as an NSO. The extended window is real; the ISO treatment is what expires.</p></div></li>
+      <li><div><b>ISOs are for employees only</b>
+        <p>Contractors, advisors, and non-employee directors cannot receive ISOs at all. If you consult before converting to full-time, that early grant is an NSO by law, whatever the size.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 11 · DECISION GUIDE -->
+<section class="slide" id="s10" aria-label="Decision guide">
+  <div class="slide-inner">
+    <div class="eyebrow">§10 · So what do I do?</div>
+    <h2 tabindex="-1">The questions that actually decide it</h2>
+    <p class="lede">You usually don't choose which type you get — the company does. What you control is <b>when to exercise</b> and <b>when to sell</b>. These are the questions a good advisor will ask.</p>
+    <div class="decide">
+      <div class="decide-col iso-b" style="color:var(--ltcg)">
+        <h3 style="color:var(--ink)">Holding ISOs? Ask:</h3>
+        <ul style="color:var(--ink)">
+          <li>Can I afford the exercise cost <b>and</b> a possible AMT bill, in cash, on stock I can't sell?</li>
+          <li>Does exercising early — while the spread is small — keep me under the AMT exemption?</li>
+          <li>Can I realistically hold 1 year past exercise (and 2 past grant) given my exit timeline?</li>
+          <li>Am I near the 90-day post-departure fuse?</li>
+        </ul>
+      </div>
+      <div class="decide-col nso-b" style="color:var(--ordinary)">
+        <h3 style="color:var(--ink)">Holding NSOs? Ask:</h3>
+        <ul style="color:var(--ink)">
+          <li>Do I have cash for the strike price <b>plus</b> withholding on the spread (often 30% or more), immediately?</li>
+          <li>Is the spread small enough today that exercising now beats a bigger ordinary-income hit later?</li>
+          <li>Will I hold the shares a year after exercise so further gains go long-term?</li>
+          <li>Does a cashless / sell-to-cover exercise at exit make more sense than fronting cash?</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:var(--s5);font-size:14.5px;color:var(--muted);max-width:70ch">The common thread: taxes reward exercising when the spread is small and holding long — and punish waiting until the spread is huge and the timeline is short. A tax professional can run your real numbers before you commit either way.</p>
+  </div>
+</section>
+
+<!-- 12 · QUIZ -->
+<section class="slide band" id="s11" aria-label="Quiz">
+  <div class="slide-inner">
+    <div class="eyebrow">§11 · Check yourself</div>
+    <h2 tabindex="-1">Four questions before you go</h2>
+    <div class="quiz" id="quiz">
+      <div class="q-progress" id="q-progress">Question 1 of 4</div>
+      <div id="q-body"></div>
+      <div class="q-feedback" id="q-feedback"></div>
+      <div class="q-nav">
+        <button class="btn-ghost" id="q-prev">← Back</button>
+        <button class="btn-primary" id="q-next" disabled>Next question →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · SOURCES -->
+<section class="slide" id="s12" aria-label="Sources">
+  <div class="slide-inner">
+    <div class="eyebrow">§12 · Sources &amp; the small print</div>
+    <h2 tabindex="-1">Where this comes from</h2>
+    <ul class="src-list">
+      <li><a href="https://www.irs.gov/publications/p525" target="_blank" rel="noopener">IRS Publication 525 — Taxable and Nontaxable Income</a><br><span style="color:var(--muted);font-size:13.5px">The primary rules for statutory (ISO) and nonstatutory (NSO) option taxation.</span></li>
+      <li><a href="https://www.law.cornell.edu/uscode/text/26/422" target="_blank" rel="noopener">26 U.S. Code §422 — Incentive stock options</a><br><span style="color:var(--muted);font-size:13.5px">The statute: holding periods, the $100,000 limit, the 3-month post-employment rule.</span></li>
+      <li><a href="https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill" target="_blank" rel="noopener">IRS — Tax year 2026 inflation adjustments</a><br><span style="color:var(--muted);font-size:13.5px">2026 AMT exemption ($90,100 single / $140,200 joint) and phaseout thresholds.</span></li>
+      <li><a href="https://www.irs.gov/instructions/i6251" target="_blank" rel="noopener">IRS Form 6251 instructions — Alternative Minimum Tax</a><br><span style="color:var(--muted);font-size:13.5px">How the ISO spread enters the AMT calculation, and the minimum tax credit.</span></li>
+      <li><a href="https://taxfoundation.org/data/all/federal/2026-tax-brackets/" target="_blank" rel="noopener">Tax Foundation — 2026 federal tax brackets</a><br><span style="color:var(--muted);font-size:13.5px">Ordinary and capital-gains rate schedules used in the illustrations.</span></li>
+    </ul>
+    <div class="disclaimer">
+      <b>This is education, not advice.</b> All dollar figures in charts and the calculator are illustrative and use simplified flat rates; your bracket, state, payroll-tax position, and AMT situation will differ. Settled rules (what's taxed when) are stated per the statute; anything involving your numbers deserves a session with a tax professional before you exercise.
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div class="deck-nav">
+  <button id="prevBtn" aria-label="Previous slide">←</button>
+  <button id="nextBtn" aria-label="Next slide">→</button>
+</div>
+
+<script>
+(function(){
+  /* ---------- Deck engine ---------- */
+  var track = document.getElementById('track');
+  var slides = Array.prototype.slice.call(track.children);
+  var N = slides.length, cur = 0;
+  var counter = document.getElementById('counter');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var menuBtn = document.getElementById('menuBtn');
+  var jumpMenu = document.getElementById('jumpMenu');
+  var titles = ['Cover','The spread','The lifecycle map','NSO: taxed at exercise','ISO: deferred, two asterisks','Run one exit through both','Calculator','The two clocks','AMT','Fine print','Decision guide','Quiz','Sources'];
+
+  titles.forEach(function(t,i){
+    var b = document.createElement('button');
+    b.innerHTML = '<span class="jn">'+(i+1)+'</span>'+t;
+    b.addEventListener('click', function(){ go(i); toggleMenu(false); });
+    jumpMenu.appendChild(b);
+  });
+
+  function toggleMenu(force){
+    var open = typeof force==='boolean' ? force : !jumpMenu.classList.contains('open');
+    jumpMenu.classList.toggle('open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+  }
+  menuBtn.addEventListener('click', function(){ toggleMenu(); });
+  document.addEventListener('click', function(e){
+    if(!jumpMenu.contains(e.target) && e.target!==menuBtn) toggleMenu(false);
+  });
+
+  function go(i, skipFocus){
+    cur = Math.max(0, Math.min(N-1, i));
+    track.style.transform = 'translateX(-'+(cur*100)+'vw)';
+    counter.textContent = (cur+1)+' / '+N;
+    prevBtn.disabled = cur===0;
+    nextBtn.disabled = cur===N-1;
+    Array.prototype.forEach.call(jumpMenu.children, function(b,j){ b.classList.toggle('active', j===cur); });
+    if(history.replaceState) history.replaceState(null,'','#'+(cur+1));
+    if(!skipFocus){
+      var h = slides[cur].querySelector('h2, h1');
+      if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+    }
+    slides[cur].scrollTop = slides[cur].scrollTop; /* keep */
+  }
+  prevBtn.addEventListener('click', function(){ go(cur-1); });
+  nextBtn.addEventListener('click', function(){ go(cur+1); });
+
+  document.addEventListener('keydown', function(e){
+    var t = e.target, tag = t.tagName;
+    if(tag==='INPUT' || tag==='TEXTAREA' || tag==='SELECT') return;
+    if(e.key===' ' && tag==='BUTTON') return; /* let buttons activate */
+    if(e.key==='ArrowRight' || e.key==='PageDown' || e.key===' '){ e.preventDefault(); go(cur+1); }
+    else if(e.key==='ArrowLeft' || e.key==='PageUp'){ e.preventDefault(); go(cur-1); }
+    else if(e.key==='Home'){ e.preventDefault(); go(0); }
+    else if(e.key==='End'){ e.preventDefault(); go(N-1); }
+  });
+
+  var tx=null, ty=null;
+  document.addEventListener('touchstart', function(e){
+    if(e.target.closest('input[type=range]') || e.target.closest('.figwide')) { tx=null; return; }
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(tx===null) return;
+    var dx = e.changedTouches[0].clientX - tx;
+    var dy = e.changedTouches[0].clientY - ty;
+    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.5){ go(dx<0 ? cur+1 : cur-1); }
+    tx = null;
+  }, {passive:true});
+
+  window.addEventListener('hashchange', function(){
+    var n = parseInt(location.hash.slice(1),10);
+    if(!isNaN(n) && n>=1 && n<=N && n-1!==cur) go(n-1);
+  });
+  var initial = parseInt(location.hash.slice(1),10);
+  go(!isNaN(initial) && initial>=1 && initial<=N ? initial-1 : 0, true);
+
+  /* ---------- Helpers ---------- */
+  function fmt(n){
+    var neg = n<0; n = Math.abs(Math.round(n));
+    return (neg?'−$':'$') + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  }
+  function fmt2(n){ return '$' + n.toFixed(2); }
+
+  /* ---------- Calculator ---------- */
+  var ORD = 0.37, LTCG = 0.20, AMTR = 0.28;
+  var $ = function(id){ return document.getElementById(id); };
+  var inSh=$('in-sh'), inSt=$('in-st'), inFmv=$('in-fmv'), inSp=$('in-sp');
+
+  function calc(){
+    var sh=+inSh.value, st=+inSt.value, fmv=+inFmv.value, sp=+inSp.value;
+    $('o-sh').textContent = sh.toLocaleString('en-US');
+    $('o-st').textContent = fmt2(st);
+    $('o-fmv').textContent = fmt2(fmv);
+    $('o-sp').textContent = fmt2(sp);
+
+    var cost = sh*st;
+    var spread = Math.max(0, sh*(fmv-st));
+    var nsoTax1 = spread*ORD;
+    var nsoGain2 = sh*(sp-fmv);
+    var nsoTax2 = Math.max(0, nsoGain2)*LTCG;
+    var nsoKeep = sh*sp - cost - nsoTax1 - nsoTax2;
+    var isoGain = sh*(sp-st);
+    var isoTax2 = Math.max(0, isoGain)*LTCG;
+    var isoKeep = sh*sp - cost - isoTax2;
+    var amtMax = spread*AMTR;
+
+    $('n-cost').textContent = fmt(cost);
+    $('n-spread').textContent = fmt(spread);
+    $('n-tax1').textContent = fmt(-nsoTax1);
+    $('n-tax2').textContent = nsoGain2>=0 ? fmt(-nsoTax2) : '$0 (sold below FMV)';
+    $('n-keep').textContent = fmt(nsoKeep);
+    $('i-cost').textContent = fmt(cost);
+    $('i-amt').textContent = '≈ ' + fmt(amtMax);
+    $('i-tax2').textContent = isoGain>=0 ? fmt(-isoTax2) : '$0 (loss)';
+    $('i-keep').textContent = fmt(isoKeep);
+
+    var maxKeep = Math.max(nsoKeep, isoKeep, 1);
+    $('bar-nso').style.width = Math.max(2, nsoKeep/maxKeep*100) + '%';
+    $('bar-iso').style.width = Math.max(2, isoKeep/maxKeep*100) + '%';
+    $('val-nso').textContent = fmt(nsoKeep);
+    $('val-iso').textContent = fmt(isoKeep);
+  }
+  [inSh,inSt,inFmv,inSp].forEach(function(el){ el.addEventListener('input', calc); });
+  calc();
+
+  /* ---------- Holding-period demo ---------- */
+  var inEx=$('in-ex'), inSl=$('in-sl');
+  var X0=40, X72=880, MO=(X72-X0)/72;
+  function xAt(m){ return X0 + m*MO; }
+
+  function hold(){
+    var ex=+inEx.value, sl=+inSl.value;
+    if(sl <= ex){ sl = ex+1; inSl.value = sl; }
+    inSl.min = ex+1;
+    $('o-ex').textContent = 'month ' + ex;
+    $('o-sl').textContent = 'month ' + sl;
+
+    var exX = xAt(ex), slX = xAt(sl);
+    $('hp-ex').setAttribute('cx', exX);
+    $('hp-ex-l').setAttribute('x', exX);
+    $('hp-sl').setAttribute('cx', slX);
+    $('hp-sl-l').setAttribute('x', slX);
+
+    var okGrant = sl > 24, okEx = sl > ex+12;
+    var qualifies = okGrant && okEx;
+    var c1=$('c1'), c2=$('c2');
+    c1.textContent = (okGrant?'✓':'✗') + ' 2 years from grant' + (okGrant?'':' — need month '+25+'+');
+    c1.className = okGrant?'ok':'no';
+    c2.textContent = (okEx?'✓':'✗') + ' 1 year from exercise' + (okEx?'':' — need month '+(ex+13)+'+');
+    c2.className = okEx?'ok':'no';
+
+    /* progress bars under the rail: the two clocks */
+    var bars = $('hp-bars');
+    var b1end = Math.min(slX, xAt(24));
+    var b2end = Math.min(slX, xAt(ex+12));
+    bars.innerHTML =
+      '<rect x="'+X0+'" y="82" width="'+Math.max(0,b1end-X0)+'" height="6" rx="3" fill="'+(okGrant?'#067647':'#B42318')+'" opacity=".7"/>' +
+      '<rect x="'+exX+'" y="92" width="'+Math.max(0,b2end-exX)+'" height="6" rx="3" fill="'+(okEx?'#067647':'#B42318')+'" opacity=".7"/>';
+
+    var v=$('hp-verdict'), txt=$('hp-text');
+    v.className = 'verdict ' + (qualifies?'good':'bad');
+    v.firstElementChild.textContent = qualifies?'✓':'✗';
+    txt.textContent = qualifies
+      ? 'Qualifying disposition — the entire gain from strike to sale price is long-term capital gains.'
+      : 'Disqualifying — the spread is taxed as ordinary income, like an NSO.';
+    $('hp-sl').setAttribute('fill', qualifies ? '#067647' : '#B42318');
+  }
+  inEx.addEventListener('input', hold);
+  inSl.addEventListener('input', hold);
+  hold();
+
+  /* ---------- Quiz ---------- */
+  var QUIZ = [
+    { q:'You exercise NSOs while the company is still private. FMV is well above your strike. What happens at tax time?',
+      opts:['Nothing until you sell the shares',
+            'The spread is taxed now as ordinary income, through payroll withholding',
+            'The spread is taxed now at capital-gains rates'],
+      a:1,
+      why:'NSO spread is compensation the moment you exercise — W-2 income with withholding — even though you received stock, not cash.' },
+    { q:'What makes an ISO sale a qualifying disposition (all long-term capital gains)?',
+      opts:['Holding the shares at least 1 year after exercise',
+            'Holding at least 2 years from grant AND at least 1 year from exercise',
+            'Exercising while still employed'],
+      a:1,
+      why:'Both clocks must run out. Meeting only one — say, 1 year past exercise but only 18 months past grant — still disqualifies the sale.' },
+    { q:'You exercise a large block of ISOs in March and hold the shares. Which tax could you owe for that year?',
+      opts:['None — ISOs are tax-free until sale',
+            'Ordinary income tax on the spread',
+            'Alternative minimum tax, because the spread counts as AMT income'],
+      a:2,
+      why:'No regular tax is due, but the spread enters the AMT calculation. If it pushes your AMT above your regular tax, you owe the difference that year.' },
+    { q:'Your new grant lets $150,000 worth of options (at grant-date value) become exercisable next year. What does the $100K rule do?',
+      opts:['Cancels the extra $50,000 of options',
+            'Treats the extra $50,000 as NSOs',
+            'Defers the extra $50,000 to the following year as ISOs'],
+      a:1,
+      why:'The overflow above $100K per year keeps vesting on schedule — it just loses ISO treatment and is taxed as NSOs.' }
+  ];
+  var qi=0, answered=[], score=0, done=false;
+  var qBody=$('q-body'), qFb=$('q-feedback'), qProg=$('q-progress'), qPrev=$('q-prev'), qNext=$('q-next');
+
+  function renderQ(){
+    done=false;
+    var item = QUIZ[qi];
+    qProg.textContent = 'Question '+(qi+1)+' of '+QUIZ.length;
+    var html = '<div class="q-text">'+item.q+'</div><div class="q-opts">';
+    item.opts.forEach(function(o,j){ html += '<button class="q-opt" data-j="'+j+'">'+o+'</button>'; });
+    qBody.innerHTML = html + '</div>';
+    var prior = answered[qi];
+    qFb.className='q-feedback'; qFb.innerHTML='';
+    if(prior!==undefined) showAnswer(prior, true);
+    else qNext.disabled = true;
+    qPrev.style.visibility = qi===0 ? 'hidden' : 'visible';
+    qNext.textContent = qi===QUIZ.length-1 ? 'See my score →' : 'Next question →';
+    Array.prototype.forEach.call(qBody.querySelectorAll('.q-opt'), function(b){
+      b.addEventListener('click', function(){ if(answered[qi]===undefined) showAnswer(+b.dataset.j, false); });
+    });
+  }
+  function showAnswer(j, restoring){
+    var item = QUIZ[qi];
+    if(!restoring){ answered[qi]=j; if(j===item.a) score++; }
+    var right = j===item.a;
+    Array.prototype.forEach.call(qBody.querySelectorAll('.q-opt'), function(b,k){
+      b.disabled = true;
+      if(k===item.a) b.classList.add('correct');
+      if(k===j && !right) b.classList.add('wrong');
+      if(k===item.a) b.innerHTML = '✓ ' + b.innerHTML;
+      else if(k===j && !right) b.innerHTML = '✗ ' + b.innerHTML;
+    });
+    qFb.className = 'q-feedback show ' + (right?'right':'wrong');
+    qFb.innerHTML = '<b>'+(right?'✓ Correct':'✗ Not quite')+'</b>' + item.why;
+    qNext.disabled = false;
+  }
+  function renderScore(){
+    done=true;
+    qProg.textContent = 'Done';
+    qBody.innerHTML = '<div class="q-score"><div class="big">'+score+' / '+QUIZ.length+'</div>'+
+      '<p style="color:var(--muted)">'+(score===4?'All four — you have the mechanics down.':
+        score>=3?'Solid. One re-read of the missed slide and you have it.':
+        'Worth a second pass — slides 3–9 carry the core.')+'</p>'+
+      '<button class="btn-primary" id="q-retry">Retake quiz</button></div>';
+    qFb.className='q-feedback'; qFb.innerHTML='';
+    qNext.disabled = true;
+    qPrev.style.visibility='visible';
+    $('q-retry').addEventListener('click', function(){ qi=0; answered=[]; score=0; renderQ(); });
+  }
+  qNext.addEventListener('click', function(){
+    if(qi===QUIZ.length-1) renderScore(); else { qi++; renderQ(); }
+  });
+  qPrev.addEventListener('click', function(){
+    if(done){ renderQ(); return; }
+    if(qi>0){ qi--; renderQ(); }
+  });
+  renderQ();
+})();
+</script>
+
+<!-- Review & edit overlay — injected by assemble.mjs (invariant; do not hand-edit) -->
+<script>
+/* =====================================================================
+   review-mode.js — drop-in "Review & edit" overlay for html-explainer pages
+
+   WHAT IT IS
+   A self-contained client-side overlay that lets a reader edit or annotate
+   an explainer in-place, then export the result — the front end of the
+   Phase 6 revise loop. No server. Works deployed or from a local file.
+
+   HOW TO USE (two steps)
+   1. Paste this entire block inside a <script> just before </body> in the
+      built HTML. It injects its own <style> and builds its own UI; there is
+      nothing else to wire up.
+   2. If the page has its own keyboard handler (e.g. a slide deck), add
+      `|| e.target.isContentEditable` to its "am I typing?" guard so editing
+      text doesn't trigger navigation. (Scrolling pages usually need nothing.)
+
+   ACTIVATION
+   - Deployed: append `?edit` to the URL. Hand reviewers a *labelled* link
+     (View = the plain URL; Review & edit = the URL + `?edit`).
+   - Local file (no second URL to give out): add the attribute
+     `<body data-review-toggle>` and a prominent top-right "Review & edit"
+     button appears that turns the toolbar on.
+
+   OPTIONAL DECK HOOK
+   - On a deck where off-screen sections can't be reached by scrollIntoView,
+     define `window.reviewGoto = note => goToSlide(note.slideIdx)` so the
+     panel's "jump to annotation" works. (Store slideIdx on the note via the
+     same hook if you need it.) Falls back to scrollIntoView otherwise.
+
+   LIMITS (state these in the hand-off)
+   - Edits/notes are per-browser: no shared live document, no server save
+     (localStorage is best-effort and not always available on file://).
+   - `contenteditable` edits the rendered markup, NOT JS-rendered content
+     (quiz/demo data arrays) — route those changes through the *note* path.
+   ===================================================================== */
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var viaQuery = qs.has("edit");
+  var viaToggle = document.body.hasAttribute("data-review-toggle");
+  if (!viaQuery && !viaToggle) return;
+
+  // ---- styles (use the page's design tokens, with fallbacks) ----
+  var css = [
+    "body.rv-on #topbar{top:46px}", // example: offset a known fixed header; harmless if absent
+    "body.rv-pad{padding-top:46px}", // scrolling pages: push content below the toolbar (decks skip this)
+    "#rv-bar{position:fixed;top:0;left:0;right:0;min-height:46px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#23211c;color:#f6f3ec;font-family:var(--sans,system-ui,sans-serif);font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.25);flex-wrap:wrap}",
+    "#rv-bar .rv-tag{font-family:var(--mono,ui-monospace,monospace);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#e6b566;display:flex;align-items:center;gap:7px}",
+    "#rv-bar .rv-tag::before{content:'';width:7px;height:7px;border-radius:50%;background:#e6b566}",
+    ".rv-seg{display:inline-flex;border:1px solid #4a463d;border-radius:8px;overflow:hidden}",
+    ".rv-seg button{background:none;border:none;color:#cfc9bb;font-family:inherit;font-size:12px;padding:6px 11px;cursor:pointer}",
+    ".rv-seg button.on{background:#e6b566;color:#23211c;font-weight:600}",
+    ".rv-act{background:#3a362e;border:1px solid #4a463d;color:#f6f3ec;font-family:inherit;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}",
+    ".rv-act:hover{background:#4a463d}",
+    "#rv-bar .rv-spacer{flex:1}",
+    "#rv-bar .rv-exit{color:#cfc9bb;text-decoration:none;font-size:12px;border-bottom:1px dashed #6a6456;cursor:pointer}",
+    "#rv-launch{position:fixed;top:8px;right:14px;z-index:9002;background:#b9772a;color:#fff;border:none;border-radius:24px;padding:11px 18px;font-family:var(--sans,system-ui,sans-serif);font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28);display:inline-flex;align-items:center;gap:7px}",
+    "#rv-launch:hover{background:#a3641f}",
+    "#rv-launch svg{display:block}",
+    "body.rv-mode-edit [data-rv-edit]:hover{outline:2px dashed #1f6f8b;outline-offset:3px;cursor:text}",
+    "body.rv-mode-edit [data-rv-edit]:focus{outline:2px solid #1f6f8b;outline-offset:3px;background:rgba(31,111,139,.06)}",
+    "body.rv-mode-note .rv-target:hover{cursor:crosshair;outline:1px dashed #b9772a;outline-offset:2px}",
+    ".rv-annotated{outline:2px dashed #b9772a !important;outline-offset:3px;background:rgba(185,119,42,.09)}",
+    ".rv-flash{animation:rvflash 1.2s ease}",
+    "@keyframes rvflash{0%,100%{background:transparent}30%{background:rgba(230,181,102,.35)}}",
+    "#rv-notes{position:fixed;top:46px;right:0;bottom:0;width:330px;max-width:86vw;z-index:8999;background:var(--card,#fffdf8);border-left:1px solid var(--line-strong,#c8bfab);box-shadow:-6px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}",
+    "#rv-notes.open{transform:none}",
+    "#rv-notes .rv-notes-hd{display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 0}",
+    "#rv-notes h4{font-family:var(--display,Georgia,serif);font-size:16px;margin:0;padding:16px 18px 10px;color:var(--ink,#23211c)}",
+    "#rv-collapse{font-family:var(--sans,sans-serif);font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ink-faint,#8a8478);background:transparent;border:1px solid var(--line,#ddd5c5);border-radius:7px;padding:5px 10px;cursor:pointer}",
+    "#rv-collapse:hover{color:var(--ink,#23211c);border-color:var(--line-strong,#c8bfab)}",
+    "#rv-notes .rv-list{flex:1;overflow:auto;padding:0 14px 14px}",
+    "#rv-notes .rv-empty{color:var(--ink-faint,#8a8478);font-size:13px;padding:10px 4px;font-style:italic;line-height:1.5}",
+    ".rv-note{border:1px solid var(--line,#ddd5c5);border-radius:10px;padding:11px 12px;margin-bottom:9px;background:var(--card,#fffdf8)}",
+    ".rv-note .rv-loc{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--augment,#b9772a);cursor:pointer}",
+    ".rv-note .rv-ex{font-size:12px;color:var(--ink-faint,#8a8478);margin:4px 0;line-height:1.4}",
+    ".rv-note .rv-txt{font-size:13.5px;color:var(--ink,#23211c);line-height:1.45}",
+    ".rv-note .rv-del{float:right;border:none;background:none;color:var(--ink-faint,#8a8478);cursor:pointer;font-size:15px;line-height:1}",
+    "#rv-pop{position:fixed;z-index:9010;width:280px;background:var(--card,#fffdf8);border:1px solid var(--line-strong,#c8bfab);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px;display:none}",
+    "#rv-pop.open{display:block}",
+    "#rv-pop .rv-ex{font-size:11.5px;color:var(--ink-faint,#8a8478);margin-bottom:8px;line-height:1.4;max-height:48px;overflow:hidden}",
+    "#rv-pop textarea{width:100%;height:74px;resize:vertical;font-family:var(--sans,system-ui,sans-serif);font-size:13px;border:1px solid var(--line-strong,#c8bfab);border-radius:8px;padding:8px;box-sizing:border-box}",
+    "#rv-pop .rv-pop-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}",
+    "#rv-pop button{font-family:var(--sans,system-ui,sans-serif);font-size:12px;padding:6px 12px;border-radius:7px;cursor:pointer;border:1px solid var(--line-strong,#c8bfab);background:var(--card,#fffdf8)}",
+    "#rv-pop button.rv-save{background:#b9772a;color:#fff;border-color:#b9772a}",
+    ".rv-toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#23211c;color:#f6f3ec;font-size:13px;padding:9px 16px;border-radius:20px;z-index:9010;opacity:0;transition:opacity .25s;pointer-events:none}",
+    ".rv-toast.show{opacity:1}",
+    "#rv-fallback{position:fixed;inset:0;z-index:9020;background:rgba(35,33,28,.5);display:none;align-items:center;justify-content:center;padding:24px}",
+    "#rv-fallback.open{display:flex}",
+    "#rv-fallback .rv-fb-card{background:var(--card,#fffdf8);border-radius:12px;padding:16px;max-width:560px;width:100%}",
+    "#rv-fallback textarea{width:100%;height:240px;font-family:var(--mono,ui-monospace,monospace);font-size:12px;box-sizing:border-box}"
+  ].join("\n");
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+  // state must be initialised before activate() can render
+  var built = false, mode = "interact", pendingEl = null, notes = load();
+
+  function $(id) { return document.getElementById(id); }
+
+  // local files: show a launcher button instead of opening immediately
+  if (viaToggle && !viaQuery) {
+    var launch = document.createElement("button");
+    launch.id = "rv-launch";
+    launch.setAttribute("aria-label", "Review & edit this page");
+    launch.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Review &amp; edit</span>';
+    launch.onclick = function () { launch.style.display = "none"; activate(); };
+    document.body.appendChild(launch);
+    // Slide decks put their nav in the top-right — move launcher to bottom-left to avoid collision.
+    // Scrolling pages: position just below any fixed/sticky top nav instead.
+    requestAnimationFrame(function () {
+      // If the page's own CSS repositioned the launcher (e.g. the assembler's
+      // deck-offset rule), it knows its chrome better than this heuristic — keep it.
+      var cs = getComputedStyle(launch);
+      if (cs.top !== "8px" || cs.right !== "14px") return;
+      var isDeck = !!document.querySelector(".slide,[data-deck],[data-slide],.slides-track,.deck");
+      if (isDeck) {
+        launch.style.top = "auto";
+        launch.style.right = "auto";
+        launch.style.bottom = "16px";
+        launch.style.left = "14px";
+      } else {
+        var navBottom = 0;
+        document.querySelectorAll("nav,header,[role=navigation],[role=banner]").forEach(function (el) {
+          var s = getComputedStyle(el);
+          if (s.position === "fixed" || s.position === "sticky") {
+            navBottom = Math.max(navBottom, el.getBoundingClientRect().bottom);
+          }
+        });
+        if (navBottom > 0) launch.style.top = (navBottom + 8) + "px";
+      }
+    });
+  } else {
+    activate();
+  }
+
+  function activate() {
+    document.body.classList.add("rv-on");
+    if (!document.querySelector(".slide,[data-deck]")) document.body.classList.add("rv-pad");
+    var bar = document.getElementById("rv-bar"); if (bar) bar.style.display = ""; // re-show on re-entry
+    if (built) return;
+    built = true;
+    markEditable();
+    buildToolbar();
+    buildPanel();
+    buildPopover();
+    buildFallback();
+    renderNotes();
+  }
+
+  // ---- editable prose (broad, but never controls or the review UI) ----
+  function markEditable() {
+    // Skip the overlay's own UI, interactive controls, and anything already
+    // covered by an editable ancestor (so we don't double-mark nested text).
+    var skip = "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,input,textarea,select,[data-rv-edit],[contenteditable],[data-rv-edit-exclude]";
+    function mark(el) {
+      if (el.closest(skip)) return;
+      el.setAttribute("data-rv-edit", "");
+    }
+    // 1) Known text-bearing elements (broadened well past the old p/h/li set:
+    //    table cells, summaries, definition lists, captions all hold prose too).
+    var sel = "h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,figure,summary,caption,td,th,dt,dd,button,a,label,[data-rv-edit-include]";
+    Array.prototype.forEach.call(document.querySelectorAll(sel), mark);
+    // 2) Generic containers (div/section/etc.) that hold their OWN text directly
+    //    rather than via a block child — extremely common in AI-generated markup,
+    //    and the reason "some text wasn't editable". Only mark the ones with loose
+    //    text so we don't turn whole layout wrappers into one big editable blob.
+    Array.prototype.forEach.call(
+      document.querySelectorAll("div,section,article,header,footer,main,aside,span"),
+      function (el) {
+        var ownText = Array.prototype.some.call(el.childNodes, function (n) {
+          return n.nodeType === 3 && n.textContent.trim();
+        });
+        if (ownText) mark(el);
+      }
+    );
+  }
+
+  function buildToolbar() {
+    var bar = document.createElement("div");
+    bar.id = "rv-bar";
+    bar.innerHTML =
+      '<span class="rv-tag">Review mode</span>' +
+      '<div class="rv-seg" id="rv-seg">' +
+        '<button data-mode="interact" class="on">Preview</button>' +
+        '<button data-mode="edit">Edit text</button>' +
+        '<button data-mode="note">Add note</button>' +
+      "</div>" +
+      '<span class="rv-spacer"></span>' +
+      '<button class="rv-act" id="rv-toggle-notes">Notes (0)</button>' +
+      '<button class="rv-act" id="rv-copy">Copy notes for LLM</button>' +
+      '<button class="rv-act" id="rv-download">Download edits</button>' +
+      '<span class="rv-exit" id="rv-exit">Exit</span>';
+    document.body.appendChild(bar);
+    Array.prototype.forEach.call(bar.querySelectorAll("#rv-seg button"), function (b) {
+      b.onclick = function () { setMode(b.dataset.mode); };
+    });
+    $("rv-toggle-notes").onclick = function () { $("rv-notes").classList.toggle("open"); };
+    $("rv-copy").onclick = copyBrief;
+    $("rv-download").onclick = downloadEdits;
+    $("rv-exit").onclick = function () {
+      if (viaQuery) location.href = location.pathname; // drop ?edit
+      else { document.body.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note", "rv-pad"); setMode("interact"); $("rv-bar").style.display = "none"; var l = $("rv-launch"); if (l) l.style.display = ""; }
+    };
+  }
+
+  function buildPanel() {
+    var p = document.createElement("div");
+    p.id = "rv-notes";
+    p.innerHTML = '<div class="rv-notes-hd"><h4>Annotations</h4><button id="rv-collapse" title="Collapse panel (your notes are kept)" aria-label="Collapse panel">Collapse &rsaquo;</button></div><div class="rv-list" id="rv-list"></div>';
+    document.body.appendChild(p);
+    // Collapse hides the panel without deleting notes (they persist in
+    // localStorage and reopen via the toolbar's "Notes (N)" button).
+    $("rv-collapse").onclick = function () { $("rv-notes").classList.remove("open"); };
+  }
+
+  function buildPopover() {
+    var pop = document.createElement("div");
+    pop.id = "rv-pop";
+    pop.innerHTML =
+      '<div class="rv-ex" id="rv-pop-ex"></div>' +
+      '<textarea id="rv-pop-ta" placeholder="What should change here?"></textarea>' +
+      '<div class="rv-pop-act"><button id="rv-pop-cancel">Cancel</button>' +
+      '<button class="rv-save" id="rv-pop-save">Save note</button></div>';
+    document.body.appendChild(pop);
+    $("rv-pop-cancel").onclick = closePop;
+    $("rv-pop-save").onclick = saveNote;
+  }
+
+  function buildFallback() {
+    var f = document.createElement("div");
+    f.id = "rv-fallback";
+    f.innerHTML = '<div class="rv-fb-card"><p style="margin:0 0 8px;font-family:var(--sans,sans-serif);font-size:13px">Copy the revision brief below (clipboard was blocked):</p><textarea id="rv-fb-ta" readonly></textarea><div style="text-align:right;margin-top:8px"><button class="rv-act" id="rv-fb-close" style="background:#23211c">Close</button></div></div>';
+    document.body.appendChild(f);
+    $("rv-fb-close").onclick = function () { f.classList.remove("open"); };
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle("rv-mode-edit", m === "edit");
+    document.body.classList.toggle("rv-mode-note", m === "note");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-rv-edit]"), function (el) {
+      el.contentEditable = (m === "edit" ? "true" : "false");
+      el.classList.toggle("rv-target", m === "note");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#rv-seg button"), function (b) {
+      b.classList.toggle("on", b.dataset.mode === m);
+    });
+    if (m !== "note") closePop();
+  }
+
+  // ---- note capture (capture-phase so it beats demo handlers) ----
+  document.addEventListener("click", function (e) {
+    if (mode !== "note") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    var el = e.target;
+    if (!el || el === document.body || el === document.documentElement) return;
+    e.preventDefault(); e.stopPropagation();
+    pendingEl = el;
+    var ex = excerpt(el);
+    $("rv-pop-ex").textContent = "“" + ex + "”";
+    $("rv-pop-ta").value = "";
+    openPop(e.clientX, e.clientY);
+    setTimeout(function () { $("rv-pop-ta").focus(); }, 30);
+  }, true);
+
+  // In Edit mode, clicking an editable button/link must place the caret to edit
+  // its text — NOT trigger its action. Capture-phase so it beats page handlers.
+  document.addEventListener("click", function (e) {
+    if (mode !== "edit") return;
+    if (e.target.closest("#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch")) return;
+    if (e.target.closest("[data-rv-edit]") && e.target.closest("button,a")) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+
+  function saveNote() {
+    var txt = $("rv-pop-ta").value.trim();
+    if (!txt || !pendingEl) { closePop(); return; }
+    pendingEl.classList.add("rv-annotated");
+    notes.push({ loc: locate(pendingEl), excerpt: excerpt(pendingEl), note: txt, el: pendingEl });
+    closePop(); save(); renderNotes();
+    $("rv-notes").classList.add("open"); toast("Note added");
+  }
+
+  function openPop(x, y) {
+    var pop = $("rv-pop");
+    pop.classList.add("open");
+    var w = 280, h = pop.offsetHeight || 190;
+    pop.style.left = Math.max(12, Math.min(x, window.innerWidth - w - 12)) + "px";
+    pop.style.top = Math.max(54, Math.min(y, window.innerHeight - h - 12)) + "px";
+  }
+  function closePop() { $("rv-pop") && $("rv-pop").classList.remove("open"); pendingEl = null; }
+
+  function renderNotes() {
+    $("rv-toggle-notes").textContent = "Notes (" + notes.length + ")";
+    var list = $("rv-list");
+    if (!notes.length) {
+      list.innerHTML = '<div class="rv-empty">No annotations yet. Switch to “Add note”, then click any text to leave a comment for the LLM.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    notes.forEach(function (n, i) {
+      var d = document.createElement("div");
+      d.className = "rv-note";
+      d.innerHTML =
+        '<button class="rv-del" title="Delete this note">×</button>' +
+        '<div class="rv-loc">' + esc(n.loc) + "</div>" +
+        '<div class="rv-ex">“' + esc(n.excerpt) + '”</div>' +
+        '<div class="rv-txt">' + esc(n.note) + "</div>";
+      d.querySelector(".rv-loc").onclick = function () { gotoNote(n); };
+      d.querySelector(".rv-del").onclick = function () { notes.splice(i, 1); save(); renderNotes(); };
+      list.appendChild(d);
+    });
+  }
+
+  // Shared revision-brief text, used by both "Copy notes" and the download.
+  function briefText() {
+    var out = "# Revision requests\n(" + notes.length + " annotation" + (notes.length > 1 ? "s" : "") + " from a reviewer)\n\n";
+    notes.forEach(function (n, i) {
+      out += (i + 1) + ". " + n.loc + "\n   Text: \"" + n.excerpt + "\"\n   Change: " + n.note + "\n\n";
+    });
+    out += "Please apply these to the source HTML, keeping the structured data arrays and CSS tokens intact, then re-screenshot to verify.";
+    return out;
+  }
+
+  function copyBrief() {
+    if (!notes.length) { toast("No notes yet"); return; }
+    copy(briefText());
+  }
+
+  function downloadEdits() {
+    var was = mode; setMode("interact");
+    var clone = document.documentElement.cloneNode(true);
+    rm(clone, "#rv-bar,#rv-notes,#rv-pop,#rv-fallback,#rv-launch,.rv-toast");
+    Array.prototype.forEach.call(clone.querySelectorAll("[data-rv-edit]"), function (n) {
+      n.removeAttribute("data-rv-edit"); n.removeAttribute("contenteditable"); n.classList.remove("rv-target");
+    });
+    Array.prototype.forEach.call(clone.querySelectorAll(".rv-annotated"), function (n) { n.classList.remove("rv-annotated"); });
+    var b = clone.querySelector("body");
+    if (b) b.classList.remove("rv-on", "rv-mode-edit", "rv-mode-note");
+    var html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    // Append the reviewer's notes as an HTML comment so a single download carries
+    // BOTH the inline text edits and the comments. Invisible on the rendered page;
+    // sanitize so note text can't break out of the comment.
+    if (notes.length) {
+      var safe = briefText().replace(/<!--/g, "<!-").replace(/-->/g, "->").replace(/--/g, "—");
+      html += "\n\n<!-- ===== REVIEWER NOTES (" + notes.length + ") — appended by review-mode.js =====\n\n" +
+              safe + "\n\n===== end reviewer notes ===== -->\n";
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    a.download = (document.title || "page").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-edited.html";
+    a.click();
+    setMode(was);
+    toast(notes.length ? "Downloaded — edits + " + notes.length + " note" + (notes.length > 1 ? "s" : "") : "Downloaded edited copy");
+  }
+
+  // ---- location label: nearest section heading, deck-agnostic ----
+  function locate(el) {
+    var sec = el.closest("section,[data-section],.slide,article");
+    var head = sec && sec.querySelector("h1,h2,h3,h4");
+    if (!head) head = nearestHeading(el);
+    return head ? head.innerText.trim().replace(/\s+/g, " ").slice(0, 60) : "Page";
+  }
+  function nearestHeading(el) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll("h1,h2,h3,h4"))
+      .filter(function (h) { return !h.closest("#rv-bar,#rv-notes,#rv-pop"); });
+    var best = null;
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      if (h === el || (h.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) best = h;
+      else break;
+    }
+    return best;
+  }
+  function gotoNote(n) {
+    if (typeof window.reviewGoto === "function") { window.reviewGoto(n); return; }
+    if (n.el && n.el.isConnected) {
+      n.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      n.el.classList.add("rv-flash");
+      setTimeout(function () { n.el.classList.remove("rv-flash"); }, 1200);
+    }
+  }
+
+  // ---- helpers ----
+  function excerpt(el) { return (el.innerText || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 140); }
+  function esc(s) { return (s || "").replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function rm(root, sel) { Array.prototype.forEach.call(root.querySelectorAll(sel), function (n) { n.remove(); }); }
+  // Per-page key so notes from one explainer never leak into another on the same origin.
+  function notesKey() { try { return "rv-notes:" + (location.pathname || "") + (location.search || ""); } catch (e) { return "rv-notes"; } }
+  function save() { try { localStorage.setItem(notesKey(), JSON.stringify(notes.map(function (n) { return { loc: n.loc, excerpt: n.excerpt, note: n.note }; }))); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem(notesKey()) || "[]"); } catch (e) { return []; } }
+  function copy(t) {
+    var ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t); ok = true; } } catch (e) {}
+    if (ok) { toast("Revision brief copied — paste it to the LLM"); }
+    else { $("rv-fb-ta").value = t; $("rv-fallback").classList.add("open"); $("rv-fb-ta").select(); } // clipboard blocked (e.g. file://)
+  }
+  var tT;
+  function toast(m) {
+    var el = document.querySelector(".rv-toast");
+    if (!el) { el = document.createElement("div"); el.className = "rv-toast"; document.body.appendChild(el); }
+    el.textContent = m; el.classList.add("show");
+    clearTimeout(tT); tT = setTimeout(function () { el.classList.remove("show"); }, 1900);
+  }
+})();
+
+</script>
+</body>
+</html>
